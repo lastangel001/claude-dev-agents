@@ -1,0 +1,86 @@
+# claude-dev-agents
+
+Curated [Claude Code](https://claude.com/claude-code) **subagents** and **skills** for PHP and Python development — strictly-typed, tested, idiomatic code with built-in reviewers.
+
+## What's inside
+
+### Agents (`agents/`)
+| Agent | Purpose |
+|-------|---------|
+| `php-developer` | PHP 8.3+ builder — Laravel/Symfony APIs, services, CLI, queues, packages |
+| `php-reviewer` | PHP reviewer — PSR-12, strict types, security (SQLi/XSS/CSRF), framework patterns |
+| `python-developer` | Python 3.11+ builder — FastAPI/Flask/Django, async, CLI, data pipelines |
+| `python-reviewer` | Python reviewer — PEP 8, type hints, security, performance |
+
+### Skills (`skills/`)
+| Skill | Purpose |
+|-------|---------|
+| `php-patterns` | Idiomatic PHP 8.3+ patterns — enums, readonly DTOs, repository/service layers, testing |
+| `python-patterns` | Idiomatic Python 3.11+ patterns — type hints, async, FastAPI essentials |
+
+## Install
+
+### One-liner
+
+**macOS / Linux:**
+```bash
+curl -fsSL https://raw.githubusercontent.com/lastangel001/claude-dev-agents/main/install.sh | bash
+```
+
+**Windows (PowerShell):**
+```powershell
+irm https://raw.githubusercontent.com/lastangel001/claude-dev-agents/main/install.ps1 | iex
+```
+
+### Scope: user vs project
+
+By default the installer copies into your **user** Claude config (`~/.claude/`), making the agents and skills available in every project.
+
+To install into the **current project only** (`./.claude/`):
+
+```bash
+# macOS / Linux
+curl -fsSL https://raw.githubusercontent.com/lastangel001/claude-dev-agents/main/install.sh | bash -s -- --project
+```
+
+```powershell
+# Windows — clone then run with -Project
+git clone https://github.com/lastangel001/claude-dev-agents
+.\claude-dev-agents\install.ps1 -Project
+```
+
+### Manual
+
+```bash
+git clone https://github.com/lastangel001/claude-dev-agents
+cd claude-dev-agents
+./install.sh            # user scope  (~/.claude)
+./install.sh --project  # project scope (./.claude)
+```
+
+The installer copies:
+- `agents/*.md`  →  `<scope>/.claude/agents/`
+- `skills/*/`    →  `<scope>/.claude/skills/`
+
+Existing files with the same name are backed up to `*.bak` before overwrite.
+
+## Use
+
+After install, restart Claude Code (or start a new session). Agents are invoked automatically by Claude when relevant, or explicitly:
+
+```
+> use the php-developer agent to build a Laravel webhook controller
+```
+
+Skills activate automatically based on their description, or via the `Skill` tool.
+
+## Uninstall
+
+```bash
+./install.sh --uninstall            # from user scope
+./install.sh --uninstall --project  # from project scope
+```
+
+## License
+
+MIT — see [LICENSE](LICENSE).

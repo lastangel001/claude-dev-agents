@@ -1,0 +1,7 @@
+# Claude Code local project settings — not for distribution
+.claude/settings.local.json
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.bak
