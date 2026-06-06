@@ -1,6 +1,7 @@
 <#
 .SYNOPSIS
   Installer for claude-dev-agents — copies agents + skills into Claude Code config.
+  Agents/skills are auto-discovered from the repo; no list to maintain.
 .EXAMPLE
   .\install.ps1                  # user scope   (~\.claude)
   .\install.ps1 -Project         # project scope (.\.claude)
@@ -15,36 +16,14 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 
-$Repo   = 'lastangel001/claude-dev-agents'
-$Agents = @('php-developer','php-reviewer','python-developer','python-reviewer')
-$Skills = @('php-patterns','python-patterns')
+$Repo = 'lastangel001/claude-dev-agents'
 
 $Base = if ($Project) { Join-Path (Get-Location) '.claude' } else { Join-Path $HOME '.claude' }
 $AgentsDir = Join-Path $Base 'agents'
 $SkillsDir = Join-Path $Base 'skills'
 $scopeName = if ($Project) { 'project' } else { 'user' }
 
-function Backup-IfExists($path) {
-  if (Test-Path $path) {
-    $bak = "$path.bak"
-    if (Test-Path $bak) { Remove-Item $bak -Recurse -Force }
-    Move-Item $path $bak
-    Write-Host "  backed up -> $bak"
-  }
-}
-
-if ($Uninstall) {
-  Write-Host "Uninstalling from $Base ..."
-  foreach ($a in $Agents) { $p = Join-Path $AgentsDir "$a.md"; if (Test-Path $p) { Remove-Item $p -Force; Write-Host "  removed agent $a" } }
-  foreach ($s in $Skills) { $p = Join-Path $SkillsDir $s;     if (Test-Path $p) { Remove-Item $p -Recurse -Force; Write-Host "  removed skill $s" } }
-  Write-Host "Done."
-  return
-}
-
-Write-Host "Installing claude-dev-agents -> $Base ($scopeName scope)"
-New-Item -ItemType Directory -Force -Path $AgentsDir, $SkillsDir | Out-Null
-
-# Determine source: local repo dir (if script lives next to agents/) else download tarball.
+# Resolve source: local repo dir (if script lives next to agents/) else download tarball.
 $scriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { $null }
 $src = $null
 $tmp = $null
@@ -60,6 +39,39 @@ if ($scriptDir -and (Test-Path (Join-Path $scriptDir 'agents'))) {
   $src = (Get-ChildItem -Path $tmp -Directory -Filter 'claude-dev-agents-*' | Select-Object -First 1).FullName
   if (-not $src -or -not (Test-Path (Join-Path $src 'agents'))) { throw "download looks wrong: no agents/ dir" }
 }
+
+# Auto-discover: every .md under agents/, every dir under skills/.
+$Agents = @(Get-ChildItem -Path (Join-Path $src 'agents') -Filter '*.md' -File | ForEach-Object { $_.BaseName })
+$Skills = @()
+$skillsSrc = Join-Path $src 'skills'
+if (Test-Path $skillsSrc) {
+  $Skills = @(Get-ChildItem -Path $skillsSrc -Directory | ForEach-Object { $_.Name })
+}
+
+# Backups go OUTSIDE agents/ and skills/ so Claude Code never loads a .bak as a
+# duplicate agent/skill. One timestamped dir per run under $Base\.cda-backups.
+$BackupRoot = Join-Path $Base (Join-Path '.cda-backups' (Get-Date -Format 'yyyyMMdd-HHmmss'))
+function Backup-IfExists($path) {
+  if (Test-Path $path) {
+    $rel = $path.Substring($Base.Length).TrimStart('\','/')
+    $dest = Join-Path $BackupRoot $rel
+    New-Item -ItemType Directory -Force -Path (Split-Path $dest -Parent) | Out-Null
+    Move-Item $path $dest
+    Write-Host "  backed up -> $dest"
+  }
+}
+
+if ($Uninstall) {
+  Write-Host "Uninstalling from $Base ..."
+  foreach ($a in $Agents) { $p = Join-Path $AgentsDir "$a.md"; if (Test-Path $p) { Remove-Item $p -Force; Write-Host "  removed agent $a" } }
+  foreach ($s in $Skills) { $p = Join-Path $SkillsDir $s;     if (Test-Path $p) { Remove-Item $p -Recurse -Force; Write-Host "  removed skill $s" } }
+  if ($tmp) { Remove-Item $tmp -Recurse -Force }
+  Write-Host "Done."
+  return
+}
+
+Write-Host "Installing claude-dev-agents -> $Base ($scopeName scope)"
+New-Item -ItemType Directory -Force -Path $AgentsDir, $SkillsDir | Out-Null
 
 Write-Host "Agents:"
 foreach ($a in $Agents) {
