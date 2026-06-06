@@ -1,5 +1,5 @@
 # Shell scripts must stay LF even on Windows checkouts (CRLF breaks the shebang).
 *.sh text eol=lf
-# PowerShell is fine either way; keep CRLF on Windows.
-*.ps1 text eol=crlf
+# Force LF for PowerShell too (pwsh 6+ handles LF fine on Windows).
+*.ps1 text eol=lf
 *.md  text
