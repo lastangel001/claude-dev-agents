@@ -1,12 +1,13 @@
 # claude-dev-agents
 
-Curated [Claude Code](https://claude.com/claude-code) **subagents** and **skills** for PHP and Python development — strictly-typed, tested, idiomatic code with built-in reviewers.
+Curated [Claude Code](https://claude.com/claude-code) **subagents** and **skills** for software development — a language-agnostic systems architect plus strictly-typed, tested, idiomatic PHP and Python builders with built-in reviewers.
 
 ## What's inside
 
 ### Agents (`agents/`)
 | Agent | Purpose |
 |-------|---------|
+| `architect` | Language-agnostic systems architect — read-only advisor; designs, trade-offs, ADRs grounded in the real codebase |
 | `php-developer` | PHP 8.3+ builder — Laravel/Symfony APIs, services, CLI, queues, packages |
 | `php-reviewer` | PHP reviewer — PSR-12, strict types, security (SQLi/XSS/CSRF), framework patterns |
 | `python-developer` | Python 3.11+ builder — FastAPI/Flask/Django, async, CLI, data pipelines |
@@ -58,17 +59,18 @@ cd claude-dev-agents
 ./install.sh --project  # project scope (./.claude)
 ```
 
-The installer copies:
+The installer auto-discovers and copies **every** agent and skill in the repo (no list to maintain):
 - `agents/*.md`  →  `<scope>/.claude/agents/`
 - `skills/*/`    →  `<scope>/.claude/skills/`
 
-Existing files with the same name are backed up to `*.bak` before overwrite.
+Existing files with the same name are backed up to a timestamped dir under `<scope>/.claude/.cda-backups/` before overwrite — kept outside `agents/` and `skills/` so Claude Code never loads a backup as a duplicate.
 
 ## Use
 
 After install, restart Claude Code (or start a new session). Agents are invoked automatically by Claude when relevant, or explicitly:
 
 ```
+> use the architect agent to design the data sync between service A and B
 > use the php-developer agent to build a Laravel webhook controller
 ```
 
