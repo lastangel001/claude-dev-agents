@@ -7,7 +7,7 @@ Curated [Claude Code](https://claude.com/claude-code) **subagents** and **skills
 ### Agents (`agents/`)
 | Agent | Purpose |
 |-------|---------|
-| `architect` | Language-agnostic systems architect — read-only advisor; designs, trade-offs, ADRs grounded in the real codebase |
+| `architect` | Language-agnostic systems architect — designs, trade-offs, ADRs grounded in the real codebase; writes docs/ADRs, never code |
 | `php-developer` | PHP 8.3+ builder — Laravel/Symfony APIs, services, CLI, queues, packages |
 | `php-reviewer` | PHP reviewer — PSR-12, strict types, security (SQLi/XSS/CSRF), framework patterns |
 | `python-developer` | Python 3.11+ builder — FastAPI/Flask/Django, async, CLI, data pipelines |
