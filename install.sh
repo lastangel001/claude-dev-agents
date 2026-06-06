@@ -6,6 +6,10 @@
 #   ./install.sh --project           install to project scope (./.claude)
 #   ./install.sh --uninstall         remove from user scope
 #   ./install.sh --uninstall --project
+#
+# Uninstall is receipt-driven (see docs/adr/0001): install writes a manifest of the
+# exact files it placed plus a content hash for each. Uninstall removes only files it
+# can prove it owns and that the user has not modified. No manifest -> refuse to delete.
 set -euo pipefail
 
 REPO="lastangel001/claude-dev-agents"
@@ -29,6 +33,46 @@ else
 fi
 AGENTS_DIR="${BASE}/agents"
 SKILLS_DIR="${BASE}/skills"
+MANIFEST="${BASE}/.cda-manifest"   # install receipt: "<relpath>\t<sha256|nohash>" per line
+
+# SHA-256 of a file, portable across Linux (sha256sum) and macOS (shasum). "nohash"
+# when no tool is available — uninstall then removes by ownership only, without an
+# edit check, and says so.
+sha_of() {
+  if command -v sha256sum >/dev/null 2>&1; then sha256sum "$1" | awk '{print $1}';
+  elif command -v shasum   >/dev/null 2>&1; then shasum -a 256 "$1" | awk '{print $1}';
+  else echo "nohash"; fi
+}
+
+if [ "$ACTION" = "uninstall" ]; then
+  echo "Uninstalling from ${BASE} ..."
+  if [ ! -f "$MANIFEST" ]; then
+    echo "  no install manifest at ${MANIFEST}" >&2
+    echo "  refusing to delete — cannot prove which files belong to claude-dev-agents." >&2
+    echo "  remove unwanted files manually from ${AGENTS_DIR} and ${SKILLS_DIR}." >&2
+    exit 1
+  fi
+  while IFS=$'\t' read -r rel hash; do
+    [ -n "${rel:-}" ] || continue
+    target="${BASE}/${rel}"
+    if [ ! -e "$target" ]; then echo "  gone, skip   ${rel}"; continue; fi
+    if [ "$hash" != "nohash" ]; then
+      if [ "$(sha_of "$target")" != "$hash" ]; then
+        echo "  modified, KEPT ${rel}"; continue
+      fi
+    else
+      echo "  (unverified) ${rel}"
+    fi
+    rm -f "$target" && echo "  removed      ${rel}"
+  done < "$MANIFEST"
+  # Drop skill dirs left empty after their files were removed.
+  [ -d "$SKILLS_DIR" ] && find "$SKILLS_DIR" -mindepth 1 -type d -empty -delete 2>/dev/null || true
+  rm -f "$MANIFEST"
+  echo "Done."
+  exit 0
+fi
+
+# ---- install ----------------------------------------------------------------
 
 # Resolve source dir: local repo (script lives next to agents/) else download tarball.
 SCRIPT_DIR=""
@@ -68,13 +112,9 @@ backup() {
   mv "$1" "$dest" && echo "  backed up -> $dest"
 }
 
-if [ "$ACTION" = "uninstall" ]; then
-  echo "Uninstalling from ${BASE} ..."
-  for a in "${AGENTS[@]}"; do rm -f "${AGENTS_DIR}/${a}.md" && echo "  removed agent ${a}"; done
-  for s in "${SKILLS[@]}"; do rm -rf "${SKILLS_DIR}/${s}" && echo "  removed skill ${s}"; done
-  echo "Done."
-  exit 0
-fi
+# Build the install receipt in a temp file, swap into place at the end.
+MANIFEST_TMP="$(mktemp)"
+record() { local p="$1"; printf '%s\t%s\n' "${p#${BASE}/}" "$(sha_of "$p")" >> "$MANIFEST_TMP"; }
 
 echo "Installing claude-dev-agents -> ${BASE} (${SCOPE} scope)"
 mkdir -p "$AGENTS_DIR" "$SKILLS_DIR"
@@ -83,14 +123,18 @@ echo "Agents:"
 for a in "${AGENTS[@]}"; do
   backup "${AGENTS_DIR}/${a}.md"
   cp "${SRC}/agents/${a}.md" "${AGENTS_DIR}/${a}.md"
+  record "${AGENTS_DIR}/${a}.md"
   echo "  installed agent ${a}"
 done
 echo "Skills:"
 for s in "${SKILLS[@]}"; do
   backup "${SKILLS_DIR}/${s}"
   cp -R "${SRC}/skills/${s}" "${SKILLS_DIR}/${s}"
+  while IFS= read -r f; do record "$f"; done < <(find "${SKILLS_DIR}/${s}" -type f)
   echo "  installed skill ${s}"
 done
+
+mv "$MANIFEST_TMP" "$MANIFEST"
 
 echo ""
 echo "Done. Restart Claude Code (or start a new session) to pick up the changes."

@@ -83,6 +83,8 @@ Skills activate automatically based on their description, or via the `Skill` too
 ./install.sh --uninstall --project  # from project scope
 ```
 
+Uninstall is **receipt-driven** (see [ADR-0001](docs/adr/0001-name-keyed-install-set-as-uninstall-manifest.md)): install records every file it places, with a content hash, in `<scope>/.claude/.cda-manifest`. Uninstall removes only files it can prove it installed and that you have **not** modified — your edits and same-named files from other sources are kept, not deleted. If no manifest is present, uninstall refuses rather than guess.
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
