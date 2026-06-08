@@ -1,6 +1,10 @@
 # claude-dev-agents
 
+![version](https://img.shields.io/badge/version-1.0.0-blue)
+
 Curated [Claude Code](https://claude.com/claude-code) **subagents** and **skills** for software development — a language-agnostic systems architect plus strictly-typed, tested, idiomatic PHP and Python builders with built-in reviewers.
+
+> Check installed version: `./install.sh --version` (or `.\install.ps1 -Version`).
 
 ## What's inside
 

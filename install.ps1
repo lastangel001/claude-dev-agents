@@ -16,9 +16,13 @@
 [CmdletBinding()]
 param(
   [switch]$Project,
-  [switch]$Uninstall
+  [switch]$Uninstall,
+  [switch]$Version
 )
 $ErrorActionPreference = 'Stop'
+
+$AppVersion = '1.0.0'
+if ($Version) { Write-Host "claude-dev-agents $AppVersion"; return }
 
 $Repo = 'lastangel001/claude-dev-agents'
 
@@ -105,7 +109,7 @@ function Backup-IfExists($path) {
 $manifestLines = New-Object System.Collections.Generic.List[string]
 function Record($path) { $manifestLines.Add("$(To-Rel $path)`t$(Get-Sha $path)") }
 
-Write-Host "Installing claude-dev-agents -> $Base ($scopeName scope)"
+Write-Host "Installing claude-dev-agents v$AppVersion -> $Base ($scopeName scope)"
 New-Item -ItemType Directory -Force -Path $AgentsDir, $SkillsDir | Out-Null
 
 Write-Host "Agents:"

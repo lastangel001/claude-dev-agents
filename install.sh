@@ -12,16 +12,18 @@
 # can prove it owns and that the user has not modified. No manifest -> refuse to delete.
 set -euo pipefail
 
+VERSION="1.0.0"
 REPO="lastangel001/claude-dev-agents"
 
 SCOPE="user"
 ACTION="install"
 for arg in "$@"; do
   case "$arg" in
-    --project)   SCOPE="project" ;;
-    --user)      SCOPE="user" ;;
-    --uninstall) ACTION="uninstall" ;;
-    -h|--help)   grep '^#' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    --project)        SCOPE="project" ;;
+    --user)           SCOPE="user" ;;
+    --uninstall)      ACTION="uninstall" ;;
+    -v|--version)     echo "claude-dev-agents ${VERSION}"; exit 0 ;;
+    -h|--help)        grep '^#' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) echo "unknown arg: $arg" >&2; exit 1 ;;
   esac
 done
@@ -116,7 +118,7 @@ backup() {
 MANIFEST_TMP="$(mktemp)"
 record() { local p="$1"; printf '%s\t%s\n' "${p#${BASE}/}" "$(sha_of "$p")" >> "$MANIFEST_TMP"; }
 
-echo "Installing claude-dev-agents -> ${BASE} (${SCOPE} scope)"
+echo "Installing claude-dev-agents v${VERSION} -> ${BASE} (${SCOPE} scope)"
 mkdir -p "$AGENTS_DIR" "$SKILLS_DIR"
 
 echo "Agents:"
