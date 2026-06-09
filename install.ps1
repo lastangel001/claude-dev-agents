@@ -21,7 +21,7 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 
-$AppVersion = '1.0.0'
+$AppVersion = '1.1.0'
 if ($Version) { Write-Host "claude-dev-agents $AppVersion"; return }
 
 $Repo = 'lastangel001/claude-dev-agents'

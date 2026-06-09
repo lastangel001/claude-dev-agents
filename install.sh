@@ -12,7 +12,7 @@
 # can prove it owns and that the user has not modified. No manifest -> refuse to delete.
 set -euo pipefail
 
-VERSION="1.0.0"
+VERSION="1.1.0"
 REPO="lastangel001/claude-dev-agents"
 
 SCOPE="user"

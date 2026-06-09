@@ -3,7 +3,7 @@
 All notable changes to this project are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versioning is [SemVer](https://semver.org/).
 
-## [Unreleased]
+## [1.1.0] — 2026-06-09
 
 ### Agents
 - `backlog-planner` — scans the codebase and produces a consistently-structured,
