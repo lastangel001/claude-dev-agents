@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-  Installer for claude-dev-agents — copies agents + skills into Claude Code config.
+  Installer for claude-dev-agents -- copies agents + skills into Claude Code config.
   Agents/skills are auto-discovered from the repo; no list to maintain.
 .DESCRIPTION
   Uninstall is receipt-driven (see docs/adr/0001): install writes a manifest of the
@@ -21,7 +21,12 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 
+# Single source of truth for the version: read the sibling VERSION file when
+# running from a local checkout; fall back to the embedded constant only for the
+# piped-remote case (irm | iex) where $PSScriptRoot is empty / no file is present.
 $AppVersion = '1.1.0'
+$verFile = if ($PSScriptRoot) { Join-Path $PSScriptRoot 'VERSION' } else { $null }
+if ($verFile -and (Test-Path $verFile)) { $AppVersion = (Get-Content $verFile -Raw).Trim() }
 if ($Version) { Write-Host "claude-dev-agents $AppVersion"; return }
 
 $Repo = 'lastangel001/claude-dev-agents'
@@ -38,10 +43,10 @@ function To-Rel($path)  { $path.Substring($Base.Length).TrimStart('\','/') }
 if ($Uninstall) {
   Write-Host "Uninstalling from $Base ..."
   if (-not (Test-Path $Manifest)) {
-    Write-Error "no install manifest at $Manifest`n  refusing to delete — cannot prove which files belong to claude-dev-agents.`n  remove unwanted files manually from $AgentsDir and $SkillsDir."
+    Write-Error "no install manifest at $Manifest`n  refusing to delete -- cannot prove which files belong to claude-dev-agents.`n  remove unwanted files manually from $AgentsDir and $SkillsDir."
     return
   }
-  foreach ($line in Get-Content $Manifest) {
+  foreach ($line in Get-Content $Manifest -Encoding utf8) {
     if (-not $line.Trim()) { continue }
     $parts = $line -split "`t", 2
     $rel = $parts[0]; $hash = if ($parts.Count -gt 1) { $parts[1] } else { 'nohash' }
@@ -79,7 +84,7 @@ if ($scriptDir -and (Test-Path (Join-Path $scriptDir 'agents'))) {
   New-Item -ItemType Directory -Force -Path $tmp | Out-Null
   $tgz = Join-Path $tmp 'repo.tgz'
   Write-Host "Downloading $Repo v$AppVersion ..."
-  # Pin to the released tag, not the moving main tip — a piped install must fetch
+  # Pin to the released tag, not the moving main tip -- a piped install must fetch
   # exactly the version this script reports, with no surprise upstream content.
   Invoke-WebRequest -Uri "https://github.com/$Repo/archive/refs/tags/v$AppVersion.tar.gz" -OutFile $tgz -UseBasicParsing
   tar -xzf $tgz -C $tmp
@@ -131,7 +136,9 @@ foreach ($s in $Skills) {
   Write-Host "  installed skill $s"
 }
 
-Set-Content -Path $Manifest -Value $manifestLines -NoNewline:$false
+# Pin UTF-8 so the manifest is byte-stable; read it back with the same encoding
+# (Get-Content -Encoding utf8 strips the BOM, so the first relpath stays intact).
+Set-Content -Path $Manifest -Value $manifestLines -NoNewline:$false -Encoding utf8
 
 if ($tmp) { Remove-Item $tmp -Recurse -Force }
 Write-Host ""

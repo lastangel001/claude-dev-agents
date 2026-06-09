@@ -12,7 +12,20 @@
 # can prove it owns and that the user has not modified. No manifest -> refuse to delete.
 set -euo pipefail
 
-VERSION="1.1.0"
+# Resolve where this script lives (empty when piped via curl|bash).
+SCRIPT_DIR=""
+if [ -n "${BASH_SOURCE:-}" ] && [ -f "${BASH_SOURCE[0]}" ]; then
+  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+fi
+
+# Single source of truth for the version: read the sibling VERSION file when
+# running from a local checkout; fall back to the embedded constant only for the
+# piped-remote case where no file is present.
+if [ -n "$SCRIPT_DIR" ] && [ -f "${SCRIPT_DIR}/VERSION" ]; then
+  VERSION="$(tr -d '[:space:]' < "${SCRIPT_DIR}/VERSION")"
+else
+  VERSION="1.1.0"
+fi
 REPO="lastangel001/claude-dev-agents"
 
 SCOPE="user"
@@ -54,7 +67,9 @@ if [ "$ACTION" = "uninstall" ]; then
     echo "  remove unwanted files manually from ${AGENTS_DIR} and ${SKILLS_DIR}." >&2
     exit 1
   fi
-  while IFS=$'\t' read -r rel hash; do
+  # `|| [ -n "$rel" ]` processes a final record that lacks a trailing newline,
+  # which `read` alone would silently drop.
+  while IFS=$'\t' read -r rel hash || [ -n "${rel:-}" ]; do
     [ -n "${rel:-}" ] || continue
     target="${BASE}/${rel}"
     if [ ! -e "$target" ]; then echo "  gone, skip   ${rel}"; continue; fi
@@ -77,11 +92,6 @@ fi
 # ---- install ----------------------------------------------------------------
 
 # Resolve source dir: local repo (script lives next to agents/) else download tarball.
-SCRIPT_DIR=""
-if [ -n "${BASH_SOURCE:-}" ] && [ -f "${BASH_SOURCE[0]}" ]; then
-  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-fi
-
 if [ -n "$SCRIPT_DIR" ] && [ -d "${SCRIPT_DIR}/agents" ]; then
   SRC="$SCRIPT_DIR"
 else

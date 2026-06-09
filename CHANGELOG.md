@@ -3,6 +3,20 @@
 All notable changes to this project are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versioning is [SemVer](https://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+- **BL-002** (reliability): the version was hardcoded in four places and the `VERSION` file was
+  never read. Both installers now read the sibling `VERSION` at runtime (embedded constant kept only
+  as the piped-remote fallback), so a release bump touches one file. ([install.sh](install.sh), [install.ps1](install.ps1))
+- **BL-006** (reliability): bash uninstall's `while read` loop could silently drop the manifest's
+  final record if it lacked a trailing newline. Guarded the loop with `|| [ -n "$rel" ]`. ([install.sh](install.sh))
+- **BL-007** (reliability): the PowerShell manifest was written in the shell-default encoding. Pinned
+  `-Encoding utf8` on both the write and the read-back (BOM is stripped on read, first relpath intact). ([install.ps1](install.ps1))
+- **BL-012** (bug): `install.ps1` failed to parse under Windows PowerShell 5.1 `-File` on non-UTF-8
+  system locales (em-dash characters with no BOM) — breaking the documented local / `-Project`
+  install. Installer text is now ASCII-only. ([install.ps1](install.ps1))
+
 ## [1.1.0] — 2026-06-09
 
 ### Agents

@@ -5,45 +5,32 @@
 
 ## Summary
 
-- **Items:** 9 open — P0: 3 · P1: 4 · P2: 1 · P3: 1  (2 resolved — see `## Resolved`)
-- **By type:** bug 0 · security 1 · perf 0 · reliability 3 · debt 2 · testing 1 · DX 2 · feature 0
-- **Top 3 to do now:** BL-002, BL-004, BL-005
+- **Items:** 6 open — P0: 2 · P1: 2 · P2: 1 · P3: 1  (5 resolved — see `## Resolved`)
+- **By type:** bug 0 · security 1 · perf 0 · reliability 0 · debt 2 · testing 1 · DX 2 · feature 0
+- **Top 3 to do now:** BL-004, BL-005, BL-009
 - **One-line health read:** Small, well-documented distribution package in good shape; the real risk surface is the two hand-duplicated installers and the remote-install path, neither of which has any automated verification.
 
 ## Priority Matrix (Impact × Effort)
 
 |              | Effort S/M (low) | Effort L/XL (high) |
 |--------------|------------------|--------------------|
-| **Impact high (4–5)** | **Quick wins** — BL-002, BL-004 | **Big bets** — BL-003 |
-| **Impact low (1–3)**  | **Fill-ins** — BL-005, BL-006, BL-007, BL-009, BL-010 | **Money pit** — BL-011 |
+| **Impact high (4–5)** | **Quick wins** — BL-004 | **Big bets** — BL-003 |
+| **Impact low (1–3)**  | **Fill-ins** — BL-005, BL-009, BL-010 | **Money pit** — BL-011 |
 
 ## Backlog (sorted by ICE score)
 
 | ID | Type | Title | Impact | Conf | Effort | ICE | Priority |
 |----|------|-------|:------:|:----:|:------:|:---:|:--------:|
-| BL-002 | reliability | Version string duplicated 4× and installers ignore `VERSION` file | 4 | 5 | S | 20.0 | P0 |
 | BL-004 | security | `nohash` fallback lets uninstall delete files without the edit check | 4 | 4 | S | 16.0 | P0 |
 | BL-005 | debt | Hardcoded `lastangel001/...` repo slug across files | 3 | 5 | S | 15.0 | P0 |
-| BL-006 | reliability | bash uninstall can drop manifest's final line if no trailing newline | 3 | 3 | S | 9.0 | P1 |
 | BL-009 | DX | No CONTRIBUTING / installer-parity guide for two-impl maintenance | 2 | 4 | S | 8.0 | P1 |
 | BL-010 | debt | PowerShell `-Version` short-circuits before arg validation | 2 | 4 | S | 8.0 | P1 |
-| BL-007 | reliability | PowerShell manifest written in shell-default encoding | 2 | 3 | S | 6.0 | P1 |
 | BL-003 | testing | No CI / tests keeping the two installers in lock-step | 4 | 4 | M | 5.33 | P2 |
 | BL-011 | DX | No agent/skill schema-lint to catch frontmatter drift | 2 | 3 | M | 2.0 | P3 |
 
-> Note: three small high-value items (BL-002/004/005) clear the P0 threshold (ICE ≥ 12); the long tail of low-impact fixes sits in P1–P3. BL-004 is a security item rated Impact 4 (not 5), so the "Impact-5 security → always ≥P1" override is moot — it already lands P0 on its own ICE.
+> Note: BL-004/005 clear the P0 threshold (ICE ≥ 12); the rest sit in P1–P3. BL-004 is a security item rated Impact 4 (not 5), so the "Impact-5 security → always ≥P1" override is moot — it already lands P0 on its own ICE.
 
 ## Item Details
-
-### BL-002 — Version string duplicated 4× and installers ignore `VERSION` file
-- **Type:** reliability
-- **Priority:** P0 (ICE 20.0 = Impact 4 × Conf 5 / Effort 1)
-- **Pain / problem:** The version `1.0.0` is hardcoded independently in four places and the dedicated `VERSION` file is never read by either installer. Bumping a release means editing all of them by hand; any miss makes `--version` lie or the README badge drift from what ships.
-- **Evidence:** `VERSION:1`; `install.sh:15` (`VERSION="1.0.0"`); `install.ps1:24` (`$AppVersion = '1.0.0'`); `README.md:3` (badge `version-1.0.0`). `CHANGELOG.md:6` is a fifth manual touch point.
-- **Impact on system:** Guaranteed-to-drift state. `--version` is the user-facing truth source (README:7 tells users to trust it) yet it is decoupled from the `VERSION` file that exists precisely to be the single source.
-- **Effort:** S, 1 pt — have both installers read the sibling `VERSION` file when running locally (fall back to an embedded constant only for the remote pipe case where no file is present).
-- **Suggested fix:** Read `$scriptDir/VERSION` / `${SCRIPT_DIR}/VERSION` at runtime; keep a single embedded fallback for piped-remote execution. Add a release checklist (or BL-003 CI step) asserting the four locations agree.
-- **Dependencies / risk:** Now load-bearing — the tag-pinned download (resolved BL-001) fetches `refs/tags/v$VERSION`, so a wrong/drifted version string breaks remote install outright. Low remediation risk.
 
 ### BL-004 — `nohash` fallback lets uninstall delete files without the edit check
 - **Type:** security
@@ -65,16 +52,6 @@
 - **Suggested fix:** Keep one authoritative constant per installer (already there) and add a release-time check (BL-003) that the README slugs match. No code-path change strictly required.
 - **Dependencies / risk:** None.
 
-### BL-006 — bash uninstall can drop manifest's final line if no trailing newline
-- **Type:** reliability
-- **Priority:** P1 (ICE 9.0 = Impact 3 × Conf 3 / Effort 1)
-- **Pain / problem:** `while IFS=$'\t' read -r rel hash; ... done < "$MANIFEST"` will silently skip a final record that lacks a trailing newline. Today `record()` uses `printf '...\n'` so the file ends with a newline and the bug is masked — but the loop has no `|| [ -n "$rel" ]` guard, so any future change to manifest writing (or a hand-edited/concatenated manifest) orphans the last installed file on uninstall.
-- **Evidence:** `install.sh:57-69` (read loop); `install.sh:119` (`printf '%s\t%s\n'` — current mitigation). The PowerShell reader (`install.ps1:44` `Get-Content`) is not affected.
-- **Impact on system:** Latent orphan-file bug; one installed agent/skill survives uninstall undetected if the trailing-newline invariant ever breaks.
-- **Effort:** S, 1 pt — standard fix: `while ... read -r rel hash || [ -n "${rel:-}" ]; do`.
-- **Suggested fix:** Add the `|| [ -n "${rel:-}" ]` continuation to the read loop so the last unterminated line is still processed.
-- **Dependencies / risk:** None; defensive one-liner.
-
 ### BL-009 — No CONTRIBUTING / installer-parity guide for two-impl maintenance
 - **Type:** DX
 - **Priority:** P1 (ICE 8.0 = Impact 2 × Conf 4 / Effort 1)
@@ -95,16 +72,6 @@
 - **Suggested fix:** Add `[switch]$Help` echoing usage (or rely on `Get-Help` comment block already present) and document parity.
 - **Dependencies / risk:** Pairs with BL-009/BL-003.
 
-### BL-007 — PowerShell manifest written in shell-default encoding
-- **Type:** reliability
-- **Priority:** P1 (ICE 6.0 = Impact 2 × Conf 3 / Effort 1)
-- **Pain / problem:** `Set-Content -Path $Manifest -Value $manifestLines -NoNewline:$false` does not specify `-Encoding`. Windows PowerShell 5.1 defaults to ANSI/Default and may emit a BOM via other cmdlets; content is ASCII (relpaths + hex hashes) today, but a non-ASCII path segment in a future skill name would be mis-encoded, and a BOM could corrupt the first relpath on read-back.
-- **Evidence:** `install.ps1:132` (`Set-Content ... -NoNewline:$false`, no `-Encoding`); read back at `install.ps1:44` (`Get-Content $Manifest`).
-- **Impact on system:** Low today (ASCII-only paths). Becomes a real uninstall-miss if any path contains non-ASCII or a BOM sneaks in.
-- **Effort:** S, 1 pt — add `-Encoding utf8` to the write (and `-Encoding utf8` to the matching `Get-Content` for symmetry).
-- **Suggested fix:** Pin both write and read to UTF-8 (no BOM) so manifests are byte-stable across PowerShell editions.
-- **Dependencies / risk:** Coordinate with BL-003 parity (bash writes UTF-8/locale bytes).
-
 ### BL-003 — No CI / tests keeping the two installers in lock-step
 - **Type:** testing
 - **Priority:** P2 (ICE 5.33 = Impact 4 × Conf 4 / Effort 3)
@@ -113,7 +80,7 @@
 - **Impact on system:** Regressions in either installer (especially the destructive uninstall path) ship unnoticed. The receipt format diverging between the two breaks cross-tool uninstall.
 - **Effort:** M, 3 pts — add a CI workflow running shellcheck + PSScriptAnalyzer, plus an install→uninstall smoke test on Linux and Windows runners asserting identical manifest output.
 - **Suggested fix:** GitHub Actions matrix (ubuntu + windows): lint both scripts, run install into a temp scope, diff the two `.cda-manifest` files, run uninstall, assert clean removal and refusal-without-manifest.
-- **Dependencies / risk:** Enables/locks in BL-002, BL-006, BL-007. No production risk; pure additive tooling. (Low ICE reflects M effort, not low value — it de-risks several P0/P1 items.)
+- **Dependencies / risk:** Would guard the now-resolved BL-002/006/007 (and the em-dash class, BL-012) against regression — exactly the drift this CI is meant to catch. Pure additive tooling, no production risk. (Low ICE reflects M effort, not low value.)
 
 ### BL-011 — No agent/skill schema-lint to catch frontmatter drift
 - **Type:** DX
@@ -129,6 +96,10 @@
 
 Retired items — one line each; IDs are not reused. Full detail in [CHANGELOG.md](../../CHANGELOG.md).
 
+- **BL-012** (bug) — `install.ps1` failed to parse under Windows PowerShell 5.1 `-File` on non-UTF-8 locales (em-dash chars, no BOM). Resolved 2026-06-09 — installer text is ASCII-only. (Found while fixing BL-002/007.)
+- **BL-002** (reliability) — Version string duplicated 4× and installers ignored the `VERSION` file. Resolved 2026-06-09 — both installers read the sibling `VERSION` at runtime, embedded constant only as piped-remote fallback.
+- **BL-006** (reliability) — bash uninstall could drop the manifest's final line if it lacked a trailing newline. Resolved 2026-06-09 — read loop guarded with `|| [ -n "$rel" ]`.
+- **BL-007** (reliability) — PowerShell manifest written in shell-default encoding. Resolved 2026-06-09 — pinned `-Encoding utf8` on both write and read-back.
 - **BL-001** (security) — Remote one-liner installed `main` HEAD with no integrity check. Resolved 2026-06-09, commit `344bdd7` — installers pin download to `refs/tags/v$VERSION`.
 - **BL-008** (bug) — `*.md text` EOL normalization could mismatch recorded hashes. Resolved 2026-06-09, commit `344bdd7` — `.gitattributes` pins `*.md text eol=lf`.
 
