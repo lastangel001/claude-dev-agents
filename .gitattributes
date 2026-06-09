@@ -2,4 +2,7 @@
 *.sh text eol=lf
 # Force LF for PowerShell too (pwsh 6+ handles LF fine on Windows).
 *.ps1 text eol=lf
-*.md  text
+# Pin LF for Markdown too: the installer hashes agent .md files, and a manifest
+# produced on one checkout must match re-hashing on any other (e.g. shared
+# ~/.claude across WSL + Windows). CRLF normalization would diverge the hashes.
+*.md  text eol=lf

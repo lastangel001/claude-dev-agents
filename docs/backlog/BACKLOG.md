@@ -38,6 +38,7 @@
 ## Item Details
 
 ### BL-001 — Remote one-liner installs `main` HEAD with no integrity check
+- **Status:** ✅ Resolved — installers now pin the download to `refs/tags/v$VERSION` (`install.sh:94`, `install.ps1:84`).
 - **Type:** security
 - **Priority:** P1 (ICE 16.0 = Impact 4 × Conf 4 / Effort 1)
 - **Pain / problem:** The advertised install path (`curl ... | bash`, `irm ... | iex`) downloads `archive/refs/heads/main.tar.gz` — the moving branch tip — then pipes it straight into a shell. There is no checksum, no signature, and no pinning to the released tag. A user running the v1.0.0 one-liner can receive arbitrary later (or compromised) `main` content, and the script reports itself as "v1.0.0" regardless.
@@ -108,6 +109,7 @@
 - **Dependencies / risk:** Coordinate with BL-003 parity (bash writes UTF-8/locale bytes).
 
 ### BL-008 — `*.md text` EOL normalization can mismatch recorded hashes
+- **Status:** ✅ Resolved — `.gitattributes` now pins `*.md text eol=lf` to match the scripts.
 - **Type:** bug
 - **Priority:** P1 (ICE 6.0 = Impact 3 × Conf 2 / Effort 1)
 - **Pain / problem:** `.gitattributes` declares `*.md text` with no `eol=`, so Git normalizes agent `.md` line endings to the platform native on checkout (CRLF on Windows). The installer hashes and copies the file as checked out, and uninstall re-hashes the same on-disk file — symmetric, so today it matches. The risk is asymmetry: if a manifest produced on one platform/checkout is used to uninstall against a differently-normalized checkout (e.g. shared `~/.claude` across WSL and Windows), hashes diverge and files are "modified, KEPT" forever.

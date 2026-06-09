@@ -78,8 +78,10 @@ if ($scriptDir -and (Test-Path (Join-Path $scriptDir 'agents'))) {
   $tmp = Join-Path ([System.IO.Path]::GetTempPath()) ("cda_" + [System.IO.Path]::GetRandomFileName())
   New-Item -ItemType Directory -Force -Path $tmp | Out-Null
   $tgz = Join-Path $tmp 'repo.tgz'
-  Write-Host "Downloading $Repo ..."
-  Invoke-WebRequest -Uri "https://github.com/$Repo/archive/refs/heads/main.tar.gz" -OutFile $tgz -UseBasicParsing
+  Write-Host "Downloading $Repo v$AppVersion ..."
+  # Pin to the released tag, not the moving main tip — a piped install must fetch
+  # exactly the version this script reports, with no surprise upstream content.
+  Invoke-WebRequest -Uri "https://github.com/$Repo/archive/refs/tags/v$AppVersion.tar.gz" -OutFile $tgz -UseBasicParsing
   tar -xzf $tgz -C $tmp
   $src = (Get-ChildItem -Path $tmp -Directory -Filter 'claude-dev-agents-*' | Select-Object -First 1).FullName
   if (-not $src -or -not (Test-Path (Join-Path $src 'agents'))) { throw "download looks wrong: no agents/ dir" }

@@ -88,8 +88,10 @@ else
   command -v curl >/dev/null || { echo "curl required for remote install" >&2; exit 1; }
   TMP="$(mktemp -d)"
   trap 'rm -rf "$TMP"' EXIT
-  echo "Downloading ${REPO} ..."
-  curl -fsSL "https://github.com/${REPO}/archive/refs/heads/main.tar.gz" -o "${TMP}/repo.tgz"
+  echo "Downloading ${REPO} v${VERSION} ..."
+  # Pin to the released tag, not the moving main tip — a piped install must fetch
+  # exactly the version this script reports, with no surprise upstream content.
+  curl -fsSL "https://github.com/${REPO}/archive/refs/tags/v${VERSION}.tar.gz" -o "${TMP}/repo.tgz"
   tar -xzf "${TMP}/repo.tgz" -C "$TMP"
   SRC="$(find "$TMP" -maxdepth 1 -type d -name 'claude-dev-agents-*' | head -1)"
   [ -d "${SRC}/agents" ] || { echo "download looks wrong: no agents/ dir" >&2; exit 1; }
