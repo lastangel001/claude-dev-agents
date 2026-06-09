@@ -5,48 +5,35 @@
 
 ## Summary
 
-- **Items:** 11 total — P0: 0 · P1: 6 · P2: 4 · P3: 1
-- **By type:** bug 1 · security 2 · perf 0 · reliability 3 · debt 2 · testing 1 · DX 2 · feature 0
-- **Top 3 to do now:** BL-001, BL-002, BL-003
+- **Items:** 9 open — P1: 8 · P2: 1 · P3: 0  (2 resolved — see `## Resolved`)
+- **By type:** bug 0 · security 1 · perf 0 · reliability 3 · debt 2 · testing 1 · DX 2 · feature 0
+- **Top 3 to do now:** BL-002, BL-004, BL-005
 - **One-line health read:** Small, well-documented distribution package in good shape; the real risk surface is the two hand-duplicated installers and the remote-install path, neither of which has any automated verification.
 
 ## Priority Matrix (Impact × Effort)
 
 |              | Effort S/M (low) | Effort L/XL (high) |
 |--------------|------------------|--------------------|
-| **Impact high (4–5)** | **Quick wins** — BL-001, BL-002, BL-004 | **Big bets** — BL-003 |
-| **Impact low (1–3)**  | **Fill-ins** — BL-005, BL-006, BL-007, BL-008, BL-009, BL-010 | **Money pit** — BL-011 |
+| **Impact high (4–5)** | **Quick wins** — BL-002, BL-004 | **Big bets** — BL-003 |
+| **Impact low (1–3)**  | **Fill-ins** — BL-005, BL-006, BL-007, BL-009, BL-010 | **Money pit** — BL-011 |
 
 ## Backlog (sorted by ICE score)
 
 | ID | Type | Title | Impact | Conf | Effort | ICE | Priority |
 |----|------|-------|:------:|:----:|:------:|:---:|:--------:|
-| BL-001 | security | Remote one-liner installs `main` HEAD with no integrity check | 4 | 4 | S | 16.0 | P1 |
 | BL-002 | reliability | Version string duplicated 4× and installers ignore `VERSION` file | 4 | 5 | S | 20.0 | P1 |
 | BL-003 | testing | No CI / tests keeping the two installers in lock-step | 4 | 4 | M | 5.33 | P1 |
 | BL-004 | security | `nohash` fallback lets uninstall delete files without the edit check | 4 | 4 | S | 16.0 | P1 |
 | BL-005 | debt | Hardcoded `lastangel001/...` repo slug across files | 3 | 5 | S | 15.0 | P1 |
 | BL-006 | reliability | bash uninstall can drop manifest's final line if no trailing newline | 3 | 3 | S | 9.0 | P1 |
 | BL-007 | reliability | PowerShell manifest written in shell-default encoding | 2 | 3 | S | 6.0 | P1 |
-| BL-008 | bug | `*.md text` EOL normalization can mismatch recorded hashes | 3 | 2 | S | 6.0 | P1 |
 | BL-009 | DX | No CONTRIBUTING / installer-parity guide for two-impl maintenance | 2 | 4 | S | 8.0 | P1 |
 | BL-010 | debt | PowerShell `-Version` short-circuits before arg validation | 2 | 4 | S | 8.0 | P1 |
 | BL-011 | DX | No agent/skill schema-lint to catch frontmatter drift | 2 | 3 | M | 2.0 | P2 |
 
-> Note: ICE bands place most items in P1 (4.0–7.99) or above. BL-011 lands in P2. None reach P0 (≥8.0 *and* material) — this is a healthy small repo, not a fire. BL-001 and BL-004 are security items rated Impact 4 (not 5), so the "Impact-5 security → always ≥P1" override does not apply; they already sort to P1 on their own ICE.
+> Note: most open items land in P1; BL-011 in P2. BL-004 is a security item rated Impact 4 (not 5), so the "Impact-5 security → always ≥P1" override does not apply; it sorts to P1 on its own ICE.
 
 ## Item Details
-
-### BL-001 — Remote one-liner installs `main` HEAD with no integrity check
-- **Status:** ✅ Resolved — installers now pin the download to `refs/tags/v$VERSION` (`install.sh:94`, `install.ps1:84`).
-- **Type:** security
-- **Priority:** P1 (ICE 16.0 = Impact 4 × Conf 4 / Effort 1)
-- **Pain / problem:** The advertised install path (`curl ... | bash`, `irm ... | iex`) downloads `archive/refs/heads/main.tar.gz` — the moving branch tip — then pipes it straight into a shell. There is no checksum, no signature, and no pinning to the released tag. A user running the v1.0.0 one-liner can receive arbitrary later (or compromised) `main` content, and the script reports itself as "v1.0.0" regardless.
-- **Evidence:** `install.sh:92`, `install.ps1:82` (`refs/heads/main.tar.gz`); `README.md:33` / `README.md:38` (piped one-liners); version constant `install.sh:15`, `install.ps1:24`.
-- **Impact on system:** Supply-chain exposure on the primary documented install flow. Pipe-to-shell with an unpinned, unverified source is the canonical footgun; blast radius is the user's machine and `~/.claude`.
-- **Effort:** S, 1 pt — switch the tarball URL to the released tag (`refs/tags/v${VERSION}`) and/or document cloning a tag; optionally add a published SHA256 to verify before extract.
-- **Suggested fix:** Pin the download to `refs/tags/v$VERSION` instead of `main`; publish a checksum and verify it pre-extraction. At minimum, document the unpinned nature in README so users opt in knowingly.
-- **Dependencies / risk:** Coupled with BL-002 (single version source). Low remediation risk; URL change is localized.
 
 ### BL-002 — Version string duplicated 4× and installers ignore `VERSION` file
 - **Type:** reliability
@@ -108,17 +95,6 @@
 - **Suggested fix:** Pin both write and read to UTF-8 (no BOM) so manifests are byte-stable across PowerShell editions.
 - **Dependencies / risk:** Coordinate with BL-003 parity (bash writes UTF-8/locale bytes).
 
-### BL-008 — `*.md text` EOL normalization can mismatch recorded hashes
-- **Status:** ✅ Resolved — `.gitattributes` now pins `*.md text eol=lf` to match the scripts.
-- **Type:** bug
-- **Priority:** P1 (ICE 6.0 = Impact 3 × Conf 2 / Effort 1)
-- **Pain / problem:** `.gitattributes` declares `*.md text` with no `eol=`, so Git normalizes agent `.md` line endings to the platform native on checkout (CRLF on Windows). The installer hashes and copies the file as checked out, and uninstall re-hashes the same on-disk file — symmetric, so today it matches. The risk is asymmetry: if a manifest produced on one platform/checkout is used to uninstall against a differently-normalized checkout (e.g. shared `~/.claude` across WSL and Windows), hashes diverge and files are "modified, KEPT" forever.
-- **Evidence:** `.gitattributes:5` (`*.md  text` — no `eol`); contrast `*.sh`/`*.ps1` pinned to `eol=lf` at `.gitattributes:2,4`. Hash compare: `install.sh:62`, `install.ps1:51`.
-- **Impact on system:** Cross-environment uninstall leaves orphaned agent files. Narrow trigger (mixed WSL/Windows on a shared home), hence Conf 2.
-- **Effort:** S, 1 pt — pin `*.md text eol=lf` to match the scripts, or normalize EOL before hashing.
-- **Suggested fix:** Set `*.md text eol=lf` in `.gitattributes` so the same bytes hash identically everywhere; verify no editor re-introduces CRLF.
-- **Dependencies / risk:** Cosmetic for editors that expect CRLF on Windows; low.
-
 ### BL-009 — No CONTRIBUTING / installer-parity guide for two-impl maintenance
 - **Type:** DX
 - **Priority:** P1 (ICE 8.0 = Impact 2 × Conf 4 / Effort 1)
@@ -148,6 +124,13 @@
 - **Effort:** M, 3 pts — a small lint (any language already implied by the skills) asserting required frontmatter keys, `name == basename`, and known `tools`/`model` values, wired into BL-003 CI.
 - **Suggested fix:** Add a frontmatter linter run in CI; assert name↔filename and required keys.
 - **Dependencies / risk:** Builds on BL-003 CI; otherwise standalone.
+
+## Resolved
+
+Retired items — one line each; IDs are not reused. Full detail in [CHANGELOG.md](../../CHANGELOG.md).
+
+- **BL-001** (security) — Remote one-liner installed `main` HEAD with no integrity check. Resolved 2026-06-09, commit `344bdd7` — installers pin download to `refs/tags/v$VERSION`.
+- **BL-008** (bug) — `*.md text` EOL normalization could mismatch recorded hashes. Resolved 2026-06-09, commit `344bdd7` — `.gitattributes` pins `*.md text eol=lf`.
 
 ## Notes
 

@@ -3,6 +3,24 @@
 All notable changes to this project are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versioning is [SemVer](https://semver.org/).
 
+## [Unreleased]
+
+### Agents
+- `backlog-planner` — scans the codebase and produces a consistently-structured,
+  ICE-prioritized development backlog (pain · impact · effort) at `docs/backlog/BACKLOG.md`.
+  Docs-writer only, never edits code. Stable item IDs across runs; resolved items retire to
+  a thin `## Resolved` log pointing here.
+
+### Fixed
+- **BL-001** (security): installers downloaded `refs/heads/main` — the moving branch tip — via
+  `curl|bash` / `irm|iex` with no pinning to the reported version. Now pin the tarball to
+  `refs/tags/v$VERSION` so a piped install fetches exactly the released, immutable version.
+  ([install.sh:94](install.sh), [install.ps1:84](install.ps1))
+- **BL-008** (bug): `*.md` was `text` with no `eol`, so Git normalized agent `.md` line endings
+  to the platform native; a manifest hashed on one checkout could mismatch re-hashing on another
+  (shared `~/.claude` across WSL + Windows), stranding files as "modified, KEPT" on uninstall.
+  Pin `*.md text eol=lf` to match `*.sh` / `*.ps1`. ([.gitattributes](.gitattributes))
+
 ## [1.0.0] — 2026-06-08
 
 First tagged release.

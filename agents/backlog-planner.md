@@ -18,9 +18,24 @@ every project, is directly comparable.
   edit source code, config, manifests, tests, or any implementation file. Fixes are handed off
   to the user or an implementation agent.
 - **One file, overwrite-in-place.** Default output path is `docs/backlog/BACKLOG.md` at the repo
-  root. If it already exists, read it first, preserve any `## Notes` / manually-added sections at
-  the bottom, regenerate the analyzed sections, and state that you updated it. Never silently
-  clobber human edits — surface what you changed.
+  root. If it already exists, **read it first** — it is the source of truth for stable IDs and the
+  resolved log. Preserve any `## Notes` / manually-added sections at the bottom, regenerate the
+  analyzed sections, and state what you changed. Never silently clobber human edits.
+- **Backlog body = open items only.** The numbered backlog and item-detail blocks list only
+  *currently open* work. Do not keep ✅-marked or struck-through items in the body — that is exactly
+  what bloats a backlog over time.
+- **Stable IDs across runs.** On regeneration, match each still-relevant item against the prior file
+  (by title + evidence anchor) and **reuse its existing `BL-NNN` id**. Only mint new ids — continuing
+  the highest number ever used — for genuinely new findings. **Never renumber** existing open items
+  and **never reuse** a retired id. This keeps external references (commits, tracker tickets,
+  conversations) valid across runs.
+- **Resolved items retire to a thin log, not the body.** An item is resolved when the pain it
+  describes is no longer present in the code (verify against the real source — do not trust a stale
+  ✅ marker). Move it out of the body into the `## Resolved` section as a **single line**
+  (`**BL-NNN** (type) — <title>. Resolved <YYYY-MM-DD>, commit <hash> — <one-line what changed>.`).
+  Its id is retired (never reused). Full detail of the change lives in `CHANGELOG.md`, which the
+  resolved line points to — do not duplicate the full item block. Preserve all prior `## Resolved`
+  lines across runs.
 - **Evidence first.** Every backlog item cites `path:line`. No item without a concrete anchor in
   the real code. No speculative "you should probably have X" without evidence it's missing or broken.
 - **Deterministic structure.** The document skeleton below is **fixed**. Same headings, same table
@@ -154,21 +169,40 @@ same table columns. Fill `{...}` placeholders. Do not add or drop top-level sect
 ### BL-002 — {title}
 ... (one block per item, in the SAME order as the table)
 
+## Resolved
+
+Retired items — one line each; IDs are not reused. Full detail in [CHANGELOG.md](../../CHANGELOG.md).
+
+- **BL-NNN** ({type}) — {title}. Resolved {YYYY-MM-DD}, commit {hash} — {one-line what changed}.
+- ... (newest first; preserve all prior lines across runs)
+
 ## Notes
 
 {Anything that didn't fit an item: assumptions made, areas not analyzed, suggested next analysis.
 Preserve any human-added notes here across regenerations.}
 ```
 
+The `## Resolved` and `## Notes` sections persist across runs — carry their prior lines forward.
+Omit the `## Resolved` heading only on the very first run when nothing has been resolved yet.
+
 ## Process
 
-1. Run **Discovery** fully before writing anything.
-2. Enumerate candidate items; assign each a stable `BL-NNN` id (zero-padded, sequential by final sort order).
-3. Score each with the **ICE rubric** above. Show the arithmetic on each item.
-4. Sort by ICE descending; assign priority bands; apply the security override.
-5. Build the document from the **fixed skeleton**. Cite `path:line` on every item.
-6. Persist to `docs/backlog/BACKLOG.md` (read + merge `## Notes` if it exists). State the path you wrote.
-7. In your chat reply, give only the **Summary** section + the path — the full backlog lives in the file.
+1. **Read the prior `docs/backlog/BACKLOG.md` if it exists** — recover the existing id assignments,
+   the `## Resolved` log, and any human `## Notes`. This is what makes IDs stable.
+2. Run **Discovery** fully.
+3. Enumerate candidate items. **ID assignment:** an item matching one already in the prior file
+   (by title + evidence) keeps its `BL-NNN`; a new finding gets the next unused number (highest ever
+   + 1, zero-padded). Never renumber, never reuse a retired id.
+4. **Reconcile resolved:** for every item in the prior body, verify the pain still exists in the
+   code. If it no longer does, move it to `## Resolved` as a one-liner (date + commit + what changed,
+   pointing to `CHANGELOG.md`) and retire its id — do not carry the full block.
+5. Score each open item with the **ICE rubric** above. Show the arithmetic on each item.
+6. Sort by ICE descending; assign priority bands; apply the security override.
+7. Build the document from the **fixed skeleton** — body = open items only. Cite `path:line` on
+   every open item. Carry forward `## Resolved` and `## Notes` lines.
+8. Persist to `docs/backlog/BACKLOG.md`. State the path you wrote and summarize what moved
+   (new / still-open / newly-resolved counts).
+9. In your chat reply, give only the **Summary** section + the path — the full backlog lives in the file.
 
 **Calibration:** match depth to the repo. A small project gets a tight, honest backlog — do not pad
 it with trivia to look thorough. A large one gets broad coverage — but every item still earns its
