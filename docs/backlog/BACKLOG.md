@@ -5,16 +5,16 @@
 
 ## Summary
 
-- **Items:** 6 open — P0: 2 · P1: 2 · P2: 1 · P3: 1  (5 resolved — see `## Resolved`)
-- **By type:** bug 0 · security 1 · perf 0 · reliability 0 · debt 2 · testing 1 · DX 2 · feature 0
-- **Top 3 to do now:** BL-004, BL-005, BL-009
+- **Items:** 5 open — P0: 2 · P1: 2 · P2: 0 · P3: 1  (6 resolved — see `## Resolved`)
+- **By type:** bug 0 · security 1 · perf 0 · reliability 0 · debt 2 · testing 0 · DX 2 · feature 0
+- **Top 3 to do now:** BL-004, BL-005, BL-009 (BL-003 CI now live — test 10 red until BL-004 fixed)
 - **One-line health read:** Small, well-documented distribution package in good shape; the real risk surface is the two hand-duplicated installers and the remote-install path, neither of which has any automated verification.
 
 ## Priority Matrix (Impact × Effort)
 
 |              | Effort S/M (low) | Effort L/XL (high) |
 |--------------|------------------|--------------------|
-| **Impact high (4–5)** | **Quick wins** — BL-004 | **Big bets** — BL-003 |
+| **Impact high (4–5)** | **Quick wins** — BL-004 | **Big bets** — (none open) |
 | **Impact low (1–3)**  | **Fill-ins** — BL-005, BL-009, BL-010 | **Money pit** — BL-011 |
 
 ## Backlog (sorted by ICE score)
@@ -25,7 +25,6 @@
 | BL-005 | debt | Hardcoded `lastangel001/...` repo slug across files | 3 | 5 | S | 15.0 | P0 |
 | BL-009 | DX | No CONTRIBUTING / installer-parity guide for two-impl maintenance | 2 | 4 | S | 8.0 | P1 |
 | BL-010 | debt | PowerShell `-Version` short-circuits before arg validation | 2 | 4 | S | 8.0 | P1 |
-| BL-003 | testing | No CI / tests keeping the two installers in lock-step | 4 | 4 | M | 5.33 | P2 |
 | BL-011 | DX | No agent/skill schema-lint to catch frontmatter drift | 2 | 3 | M | 2.0 | P3 |
 
 > Note: BL-004/005 clear the P0 threshold (ICE ≥ 12); the rest sit in P1–P3. BL-004 is a security item rated Impact 4 (not 5), so the "Impact-5 security → always ≥P1" override is moot — it already lands P0 on its own ICE.
@@ -72,16 +71,6 @@
 - **Suggested fix:** Add `[switch]$Help` echoing usage (or rely on `Get-Help` comment block already present) and document parity.
 - **Dependencies / risk:** Pairs with BL-009/BL-003.
 
-### BL-003 — No CI / tests keeping the two installers in lock-step
-- **Type:** testing
-- **Priority:** P2 (ICE 5.33 = Impact 4 × Conf 4 / Effort 3)
-- **Pain / problem:** There is no `.github/workflows`, no shellcheck, no PSScriptAnalyzer, and no smoke test. The project ships two parallel implementations (`install.sh`, `install.ps1`) that must behave identically — install, manifest format, hash check, uninstall, backup — with nothing mechanically verifying they agree. ADR-0001 itself flags this duplication as a standing hazard.
-- **Evidence:** No `.github/` or CI config in the tree (repo root listing). ADR-0001 consequence: "Two installer implementations (bash + PowerShell) must keep receipt format in lock-step, duplicating the logic" (`docs/adr/0001-...:85-86`). Manifest format defined twice: `install.sh:38`/`install.sh:119` vs `install.ps1:33`/`install.ps1:110`.
-- **Impact on system:** Regressions in either installer (especially the destructive uninstall path) ship unnoticed. The receipt format diverging between the two breaks cross-tool uninstall.
-- **Effort:** M, 3 pts — add a CI workflow running shellcheck + PSScriptAnalyzer, plus an install→uninstall smoke test on Linux and Windows runners asserting identical manifest output.
-- **Suggested fix:** GitHub Actions matrix (ubuntu + windows): lint both scripts, run install into a temp scope, diff the two `.cda-manifest` files, run uninstall, assert clean removal and refusal-without-manifest.
-- **Dependencies / risk:** Would guard the now-resolved BL-002/006/007 (and the em-dash class, BL-012) against regression — exactly the drift this CI is meant to catch. Pure additive tooling, no production risk. (Low ICE reflects M effort, not low value.)
-
 ### BL-011 — No agent/skill schema-lint to catch frontmatter drift
 - **Type:** DX
 - **Priority:** P3 (ICE 2.0 = Impact 2 × Conf 3 / Effort 3)
@@ -100,6 +89,7 @@ Retired items — one line each; IDs are not reused. Full detail in [CHANGELOG.m
 - **BL-002** (reliability) — Version string duplicated 4× and installers ignored the `VERSION` file. Resolved 2026-06-09 — both installers read the sibling `VERSION` at runtime, embedded constant only as piped-remote fallback.
 - **BL-006** (reliability) — bash uninstall could drop the manifest's final line if it lacked a trailing newline. Resolved 2026-06-09 — read loop guarded with `|| [ -n "$rel" ]`.
 - **BL-007** (reliability) — PowerShell manifest written in shell-default encoding. Resolved 2026-06-09 — pinned `-Encoding utf8` on both write and read-back.
+- **BL-003** (testing) — No CI keeping the two installers in lock-step. Resolved 2026-06-09, commit `e91833f` — 5-job GitHub Actions workflow + `test/` scripts (shellcheck, PS 5.1 AST gate, smoke matrix, parity diff). Smoke test 10 intentionally red until BL-004 fixed.
 - **BL-001** (security) — Remote one-liner installed `main` HEAD with no integrity check. Resolved 2026-06-09, commit `344bdd7` — installers pin download to `refs/tags/v$VERSION`.
 - **BL-008** (bug) — `*.md text` EOL normalization could mismatch recorded hashes. Resolved 2026-06-09, commit `344bdd7` — `.gitattributes` pins `*.md text eol=lf`.
 
@@ -108,4 +98,4 @@ Retired items — one line each; IDs are not reused. Full detail in [CHANGELOG.m
 - **Scope treated as code:** per the run brief, shell scripts (`install.sh`, `install.ps1`), agent prompts (`agents/*.md`), skill docs (`skills/*/SKILL.md`), `VERSION`/`CHANGELOG.md`/`README.md`, `.gitattributes`, and ADRs were all analyzed as the codebase.
 - **What's healthy and deliberately NOT flagged:** the receipt-driven uninstall (ADR-0001) is a genuinely careful design; the backup-outside-`agents/`-`skills/` choice is correct (`install.sh:106-108`); auto-discovery for *install* is sound. The TODO/FIXME/HACK strings found in `agents/php-reviewer.md` and `agents/backlog-planner.md` are review-checklist prose, not real code markers — correctly excluded.
 - **Areas not deeply analyzed:** the *content quality* of the agent prompts and pattern skills (e.g. whether each PHP/Python idiom is optimal) was not audited — that is editorial review, not backlog triage, and would need a domain pass. No datastore, runtime, or network code exists to analyze for the usual perf/N+1/timeout classes — hence zero perf items.
-- **Suggested next analysis:** once BL-003 CI exists, add a cross-platform end-to-end test installing into a throwaway `~/.claude` on both OSes and asserting Claude Code can enumerate every shipped agent/skill.
+- **Suggested next analysis:** BL-003 CI now live — next natural extension: a cross-platform end-to-end test installing into a throwaway `~/.claude` on both OSes and asserting Claude Code can enumerate every shipped agent/skill.
