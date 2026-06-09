@@ -5,7 +5,7 @@
 
 ## Summary
 
-- **Items:** 9 open — P1: 8 · P2: 1 · P3: 0  (2 resolved — see `## Resolved`)
+- **Items:** 9 open — P0: 3 · P1: 4 · P2: 1 · P3: 1  (2 resolved — see `## Resolved`)
 - **By type:** bug 0 · security 1 · perf 0 · reliability 3 · debt 2 · testing 1 · DX 2 · feature 0
 - **Top 3 to do now:** BL-002, BL-004, BL-005
 - **One-line health read:** Small, well-documented distribution package in good shape; the real risk surface is the two hand-duplicated installers and the remote-install path, neither of which has any automated verification.
@@ -21,43 +21,33 @@
 
 | ID | Type | Title | Impact | Conf | Effort | ICE | Priority |
 |----|------|-------|:------:|:----:|:------:|:---:|:--------:|
-| BL-002 | reliability | Version string duplicated 4× and installers ignore `VERSION` file | 4 | 5 | S | 20.0 | P1 |
-| BL-003 | testing | No CI / tests keeping the two installers in lock-step | 4 | 4 | M | 5.33 | P1 |
-| BL-004 | security | `nohash` fallback lets uninstall delete files without the edit check | 4 | 4 | S | 16.0 | P1 |
-| BL-005 | debt | Hardcoded `lastangel001/...` repo slug across files | 3 | 5 | S | 15.0 | P1 |
+| BL-002 | reliability | Version string duplicated 4× and installers ignore `VERSION` file | 4 | 5 | S | 20.0 | P0 |
+| BL-004 | security | `nohash` fallback lets uninstall delete files without the edit check | 4 | 4 | S | 16.0 | P0 |
+| BL-005 | debt | Hardcoded `lastangel001/...` repo slug across files | 3 | 5 | S | 15.0 | P0 |
 | BL-006 | reliability | bash uninstall can drop manifest's final line if no trailing newline | 3 | 3 | S | 9.0 | P1 |
-| BL-007 | reliability | PowerShell manifest written in shell-default encoding | 2 | 3 | S | 6.0 | P1 |
 | BL-009 | DX | No CONTRIBUTING / installer-parity guide for two-impl maintenance | 2 | 4 | S | 8.0 | P1 |
 | BL-010 | debt | PowerShell `-Version` short-circuits before arg validation | 2 | 4 | S | 8.0 | P1 |
-| BL-011 | DX | No agent/skill schema-lint to catch frontmatter drift | 2 | 3 | M | 2.0 | P2 |
+| BL-007 | reliability | PowerShell manifest written in shell-default encoding | 2 | 3 | S | 6.0 | P1 |
+| BL-003 | testing | No CI / tests keeping the two installers in lock-step | 4 | 4 | M | 5.33 | P2 |
+| BL-011 | DX | No agent/skill schema-lint to catch frontmatter drift | 2 | 3 | M | 2.0 | P3 |
 
-> Note: most open items land in P1; BL-011 in P2. BL-004 is a security item rated Impact 4 (not 5), so the "Impact-5 security → always ≥P1" override does not apply; it sorts to P1 on its own ICE.
+> Note: three small high-value items (BL-002/004/005) clear the P0 threshold (ICE ≥ 12); the long tail of low-impact fixes sits in P1–P3. BL-004 is a security item rated Impact 4 (not 5), so the "Impact-5 security → always ≥P1" override is moot — it already lands P0 on its own ICE.
 
 ## Item Details
 
 ### BL-002 — Version string duplicated 4× and installers ignore `VERSION` file
 - **Type:** reliability
-- **Priority:** P1 (ICE 20.0 = Impact 4 × Conf 5 / Effort 1)
+- **Priority:** P0 (ICE 20.0 = Impact 4 × Conf 5 / Effort 1)
 - **Pain / problem:** The version `1.0.0` is hardcoded independently in four places and the dedicated `VERSION` file is never read by either installer. Bumping a release means editing all of them by hand; any miss makes `--version` lie or the README badge drift from what ships.
 - **Evidence:** `VERSION:1`; `install.sh:15` (`VERSION="1.0.0"`); `install.ps1:24` (`$AppVersion = '1.0.0'`); `README.md:3` (badge `version-1.0.0`). `CHANGELOG.md:6` is a fifth manual touch point.
 - **Impact on system:** Guaranteed-to-drift state. `--version` is the user-facing truth source (README:7 tells users to trust it) yet it is decoupled from the `VERSION` file that exists precisely to be the single source.
 - **Effort:** S, 1 pt — have both installers read the sibling `VERSION` file when running locally (fall back to an embedded constant only for the remote pipe case where no file is present).
 - **Suggested fix:** Read `$scriptDir/VERSION` / `${SCRIPT_DIR}/VERSION` at runtime; keep a single embedded fallback for piped-remote execution. Add a release checklist (or BL-003 CI step) asserting the four locations agree.
-- **Dependencies / risk:** Pairs with BL-001 (tag-pinned download needs a trustworthy version). Low risk.
-
-### BL-003 — No CI / tests keeping the two installers in lock-step
-- **Type:** testing
-- **Priority:** P1 (ICE 5.33 = Impact 4 × Conf 4 / Effort 3)
-- **Pain / problem:** There is no `.github/workflows`, no shellcheck, no PSScriptAnalyzer, and no smoke test. The project ships two parallel implementations (`install.sh`, `install.ps1`) that must behave identically — install, manifest format, hash check, uninstall, backup — with nothing mechanically verifying they agree. ADR-0001 itself flags this duplication as a standing hazard.
-- **Evidence:** No `.github/` or CI config in the tree (repo root listing). ADR-0001 consequence: "Two installer implementations (bash + PowerShell) must keep receipt format in lock-step, duplicating the logic" (`docs/adr/0001-...:85-86`). Manifest format defined twice: `install.sh:38`/`install.sh:119` vs `install.ps1:33`/`install.ps1:110`.
-- **Impact on system:** Regressions in either installer (especially the destructive uninstall path) ship unnoticed. The receipt format diverging between the two breaks cross-tool uninstall.
-- **Effort:** M, 3 pts — add a CI workflow running shellcheck + PSScriptAnalyzer, plus an install→uninstall smoke test on Linux and Windows runners asserting identical manifest output.
-- **Suggested fix:** GitHub Actions matrix (ubuntu + windows): lint both scripts, run install into a temp scope, diff the two `.cda-manifest` files, run uninstall, assert clean removal and refusal-without-manifest.
-- **Dependencies / risk:** Enables/locks in BL-002, BL-006, BL-007. No production risk; pure additive tooling.
+- **Dependencies / risk:** Now load-bearing — the tag-pinned download (resolved BL-001) fetches `refs/tags/v$VERSION`, so a wrong/drifted version string breaks remote install outright. Low remediation risk.
 
 ### BL-004 — `nohash` fallback lets uninstall delete files without the edit check
 - **Type:** security
-- **Priority:** P1 (ICE 16.0 = Impact 4 × Conf 4 / Effort 1)
+- **Priority:** P0 (ICE 16.0 = Impact 4 × Conf 4 / Effort 1)
 - **Pain / problem:** On a system with neither `sha256sum` nor `shasum`, `sha_of` records the literal `nohash`. At uninstall, a `nohash` record skips the content-comparison guard and deletes the file by ownership alone, printing only `(unverified)`. This re-opens the exact silent-data-loss path ADR-0001 was written to close — a user-edited, same-named file gets removed without the edit check.
 - **Evidence:** `install.sh:46` (`else echo "nohash"`); `install.sh:61-68` (`if [ "$hash" != "nohash" ]` … else `(unverified)` … then `rm -f`). The Windows side always has `Get-FileHash` so this is bash-only, but the manifest format is shared.
 - **Impact on system:** Data loss on minimal/container Linux images lacking coreutils hashing tools. Lower likelihood than a normal install, but the outcome is deletion of unverified user files — the same severity class ADR-0001 rated a one-way door.
@@ -67,7 +57,7 @@
 
 ### BL-005 — Hardcoded `lastangel001/...` repo slug across files
 - **Type:** debt
-- **Priority:** P1 (ICE 15.0 = Impact 3 × Conf 5 / Effort 1)
+- **Priority:** P0 (ICE 15.0 = Impact 3 × Conf 5 / Effort 1)
 - **Pain / problem:** The GitHub owner/repo slug `lastangel001/claude-dev-agents` is hardcoded in both installers and four README locations. A fork or owner rename silently breaks every remote install and the README one-liners with a 404, with no single place to fix.
 - **Evidence:** `install.sh:16` (`REPO="lastangel001/claude-dev-agents"`); `install.ps1:27` (`$Repo = 'lastangel001/...'`); `README.md:14`, `README.md:33`, `README.md:38`, `README.md:49`, `README.md:54`, `README.md:61`.
 - **Impact on system:** Maintainability friction and broken remote install on any fork/rename. Not a runtime hazard for the canonical repo, but high duplication.
@@ -84,16 +74,6 @@
 - **Effort:** S, 1 pt — standard fix: `while ... read -r rel hash || [ -n "${rel:-}" ]; do`.
 - **Suggested fix:** Add the `|| [ -n "${rel:-}" ]` continuation to the read loop so the last unterminated line is still processed.
 - **Dependencies / risk:** None; defensive one-liner.
-
-### BL-007 — PowerShell manifest written in shell-default encoding
-- **Type:** reliability
-- **Priority:** P1 (ICE 6.0 = Impact 2 × Conf 3 / Effort 1)
-- **Pain / problem:** `Set-Content -Path $Manifest -Value $manifestLines -NoNewline:$false` does not specify `-Encoding`. Windows PowerShell 5.1 defaults to ANSI/Default and may emit a BOM via other cmdlets; content is ASCII (relpaths + hex hashes) today, but a non-ASCII path segment in a future skill name would be mis-encoded, and a BOM could corrupt the first relpath on read-back.
-- **Evidence:** `install.ps1:132` (`Set-Content ... -NoNewline:$false`, no `-Encoding`); read back at `install.ps1:44` (`Get-Content $Manifest`).
-- **Impact on system:** Low today (ASCII-only paths). Becomes a real uninstall-miss if any path contains non-ASCII or a BOM sneaks in.
-- **Effort:** S, 1 pt — add `-Encoding utf8` to the write (and `-Encoding utf8` to the matching `Get-Content` for symmetry).
-- **Suggested fix:** Pin both write and read to UTF-8 (no BOM) so manifests are byte-stable across PowerShell editions.
-- **Dependencies / risk:** Coordinate with BL-003 parity (bash writes UTF-8/locale bytes).
 
 ### BL-009 — No CONTRIBUTING / installer-parity guide for two-impl maintenance
 - **Type:** DX
@@ -115,9 +95,29 @@
 - **Suggested fix:** Add `[switch]$Help` echoing usage (or rely on `Get-Help` comment block already present) and document parity.
 - **Dependencies / risk:** Pairs with BL-009/BL-003.
 
+### BL-007 — PowerShell manifest written in shell-default encoding
+- **Type:** reliability
+- **Priority:** P1 (ICE 6.0 = Impact 2 × Conf 3 / Effort 1)
+- **Pain / problem:** `Set-Content -Path $Manifest -Value $manifestLines -NoNewline:$false` does not specify `-Encoding`. Windows PowerShell 5.1 defaults to ANSI/Default and may emit a BOM via other cmdlets; content is ASCII (relpaths + hex hashes) today, but a non-ASCII path segment in a future skill name would be mis-encoded, and a BOM could corrupt the first relpath on read-back.
+- **Evidence:** `install.ps1:132` (`Set-Content ... -NoNewline:$false`, no `-Encoding`); read back at `install.ps1:44` (`Get-Content $Manifest`).
+- **Impact on system:** Low today (ASCII-only paths). Becomes a real uninstall-miss if any path contains non-ASCII or a BOM sneaks in.
+- **Effort:** S, 1 pt — add `-Encoding utf8` to the write (and `-Encoding utf8` to the matching `Get-Content` for symmetry).
+- **Suggested fix:** Pin both write and read to UTF-8 (no BOM) so manifests are byte-stable across PowerShell editions.
+- **Dependencies / risk:** Coordinate with BL-003 parity (bash writes UTF-8/locale bytes).
+
+### BL-003 — No CI / tests keeping the two installers in lock-step
+- **Type:** testing
+- **Priority:** P2 (ICE 5.33 = Impact 4 × Conf 4 / Effort 3)
+- **Pain / problem:** There is no `.github/workflows`, no shellcheck, no PSScriptAnalyzer, and no smoke test. The project ships two parallel implementations (`install.sh`, `install.ps1`) that must behave identically — install, manifest format, hash check, uninstall, backup — with nothing mechanically verifying they agree. ADR-0001 itself flags this duplication as a standing hazard.
+- **Evidence:** No `.github/` or CI config in the tree (repo root listing). ADR-0001 consequence: "Two installer implementations (bash + PowerShell) must keep receipt format in lock-step, duplicating the logic" (`docs/adr/0001-...:85-86`). Manifest format defined twice: `install.sh:38`/`install.sh:119` vs `install.ps1:33`/`install.ps1:110`.
+- **Impact on system:** Regressions in either installer (especially the destructive uninstall path) ship unnoticed. The receipt format diverging between the two breaks cross-tool uninstall.
+- **Effort:** M, 3 pts — add a CI workflow running shellcheck + PSScriptAnalyzer, plus an install→uninstall smoke test on Linux and Windows runners asserting identical manifest output.
+- **Suggested fix:** GitHub Actions matrix (ubuntu + windows): lint both scripts, run install into a temp scope, diff the two `.cda-manifest` files, run uninstall, assert clean removal and refusal-without-manifest.
+- **Dependencies / risk:** Enables/locks in BL-002, BL-006, BL-007. No production risk; pure additive tooling. (Low ICE reflects M effort, not low value — it de-risks several P0/P1 items.)
+
 ### BL-011 — No agent/skill schema-lint to catch frontmatter drift
 - **Type:** DX
-- **Priority:** P2 (ICE 2.0 = Impact 2 × Conf 3 / Effort 3)
+- **Priority:** P3 (ICE 2.0 = Impact 2 × Conf 3 / Effort 3)
 - **Pain / problem:** Agents and skills depend on well-formed YAML frontmatter (`name`, `description`, `tools`, `model` for agents; `name`, `description` for skills) — the installer auto-discovers by filename and Claude Code loads by frontmatter. Nothing validates that every `agents/*.md` has the required keys and a `name` matching its filename, or that `tools` lists are valid. A typo'd `name:` ships silently and the agent fails to load at the user's end.
 - **Evidence:** Auto-discovery keys off filename only: `install.sh:100`, `install.ps1:89` (`BaseName`); frontmatter is the load contract, e.g. `agents/architect.md:1-6`, `skills/php-patterns/SKILL.md:1-4`. No validator in the tree.
 - **Impact on system:** Broken/duplicate agents only surface in the user's session, not at build time. Localized, low frequency.

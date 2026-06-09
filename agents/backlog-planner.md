@@ -111,13 +111,17 @@ Every item gets three integer sub-scores **1–5** and a derived priority. Use t
 **ICE score** = `round( (Impact × Confidence) / Effort_points , 2 )`. Higher = do sooner.
 Sort the backlog by ICE score **descending**. Break ties by higher Impact, then lower Effort.
 
+The score ranges **~0.13 to 25** (Impact×Confidence is 1–25, Effort-points is 1–8). The bands below
+are calibrated to that range — do not invent extra qualifiers ("…and material") to move an item
+between bands; the number alone decides the band.
+
 **Priority band** (derived from ICE score, fixed thresholds):
 | Band | ICE score | |
 |---|---|---|
-| **P0** | ≥ 8.0 | do now |
-| **P1** | 4.0 – 7.99 | next |
-| **P2** | 2.0 – 3.99 | soon |
-| **P3** | < 2.0 | backlog / someday |
+| **P0** | ≥ 12.0 | do now |
+| **P1** | 6.0 – 11.99 | next |
+| **P2** | 2.5 – 5.99 | soon |
+| **P3** | < 2.5 | backlog / someday |
 
 Security items rated Impact 5 are **always at least P1** regardless of computed band — note this
 override explicitly on the item.
