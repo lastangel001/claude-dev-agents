@@ -5,4 +5,8 @@
 # Pin LF for Markdown too: the installer hashes agent .md files, and a manifest
 # produced on one checkout must match re-hashing on any other (e.g. shared
 # ~/.claude across WSL + Windows). CRLF normalization would diverge the hashes.
-*.md  text eol=lf
+*.md   text eol=lf
+# CI configs and PowerShell data files: LF for consistency.
+*.yml  text eol=lf
+*.yaml text eol=lf
+*.psd1 text eol=lf

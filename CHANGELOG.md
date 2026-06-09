@@ -5,6 +5,14 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+### Added
+- **BL-003** (testing): GitHub Actions CI (`ci.yml`) with 5 independent jobs + `ci-pass` aggregator:
+  `static-bash` (shellcheck + version-check); `static-pwsh-windows` (PS 5.1 AST parse + `-File` smoke + PSScriptAnalyzer);
+  `static-pwsh7` (pwsh 7 parity); `smoke` (matrix ubuntu/macos/windows, PS 5.1 + pwsh 7);
+  `parity` (bash vs pwsh7 normalized manifest diff). Test scripts in `test/` — no external test framework.
+  Smoke test 10 intentionally fails until BL-004 is fixed (nohash-entry safety gate).
+  ([.github/workflows/ci.yml](.github/workflows/ci.yml), [test/](test/))
+
 ### Fixed
 - **BL-002** (reliability): the version was hardcoded in four places and the `VERSION` file was
   never read. Both installers now read the sibling `VERSION` at runtime (embedded constant kept only
