@@ -5,6 +5,52 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+### Changed
+- `python-reviewer` rewritten to parity with `php-reviewer`: confidence-based filtering,
+  pre-report gate, HIGH/CRITICAL proof requirement, Python-specific false-positives list,
+  "zero findings is valid", review summary table + verdict, project-conventions section.
+  Approval criteria aligned across both reviewers (Block = CRITICAL, Warning = HIGH);
+  severity calibration fixed (manual resource management is HIGH, not CRITICAL);
+  model raised to opus. ([agents/python-reviewer.md](agents/python-reviewer.md))
+- Skills restructured for progressive disclosure: `SKILL.md` is now a thin entry
+  (principles digest, quick reference, anti-patterns, routing table) and full pattern
+  content moved to `references/*.md` read on demand — agents load only what the task
+  needs. No content lost. ([skills/php-patterns/](skills/php-patterns/),
+  [skills/python-patterns/](skills/python-patterns/))
+- Developer/reviewer agents now load skills via direct `Read` (Glob for
+  `**/skills/<name>/SKILL.md`, then needed `references/*.md`) — subagents have no
+  `Skill` tool, so the previous "activate the skill" instruction could never fire.
+- `backlog-planner` gains `Bash` restricted to read-only git (`git log/show/rev-parse/diff --stat`)
+  so `## Resolved` lines carry real commit hashes and dates; writes `commit unknown` when
+  git is unavailable. ([agents/backlog-planner.md](agents/backlog-planner.md))
+- `data-analyst`: all data-derived strings are HTML-escaped (`html.escape`); report written
+  with explicit `encoding="utf-8"` + `<meta charset="utf-8">`; `py -3` launcher fallback
+  on Windows. ([agents/data-analyst.md](agents/data-analyst.md))
+- `python-developer`: added Django and Flask sections (the description promised them, the
+  body covered only FastAPI). ([agents/python-developer.md](agents/python-developer.md))
+- `architect` / `backlog-planner`: one-shot subagent semantics — critical ambiguity returns
+  questions as the result; otherwise proceed with explicitly listed assumptions.
+- `python-patterns` skill description now lists activation triggers (matching `php-patterns`)
+  for better auto-activation.
+
+### Fixed
+- PHP: `#[AsService]` does not exist in Symfony — replaced with real wiring guidance
+  (auto-registration, `#[Autowire]`/`#[AutoconfigureTag]`) in `php-developer` and the skill;
+  mislabeled "Spaceship/strict equality" rule renamed; `@dataProvider` docblock updated to
+  the PHPUnit 10+ `#[DataProvider]` attribute; `phpstan` baseline bumped to `^2.0`;
+  `pdo.persistent` corrected to `PDO::ATTR_PERSISTENT`.
+- Python: `x = x or []` mutable-default advice replaced with `if x is None: x = []`
+  (the `or` form silently replaces a caller's empty list); EAFP example rewritten
+  (undefined `default_value`, and `dict.get` is the real idiom); comprehension section
+  no longer contradicts itself; `timer` context manager wraps `yield` in `try/finally`;
+  missing `collections.abc` imports added; `datetime.now(UTC)` in dataclass example;
+  deprecated `[tool.ruff] select` moved to `[tool.ruff.lint]`; tooling consolidated on
+  ruff (black/isort/pylint marked as alternatives).
+
+### Added
+- Smoke tests (bash + PowerShell) assert every installed skill ships `references/*.md`.
+  ([test/smoke.sh](test/smoke.sh), [test/smoke.ps1](test/smoke.ps1))
+
 ## [1.2.0] — 2026-06-10
 
 ### Agents

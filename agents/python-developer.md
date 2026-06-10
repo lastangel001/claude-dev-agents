@@ -27,16 +27,16 @@ You are a senior Python 3.11+ engineer. You build production code: web APIs (esp
 - **Target Python 3.11+ only.** Use `list[X]`, `dict[K, V]`, `X | None`, `Self`, `TaskGroup`, `tomllib`, exception groups, `assert_type`. Never `typing.List/Dict/Optional/Union` in new code.
 - **Type hints on every public signature** (functions, methods, class attrs). No bare `Any` unless justified in a comment.
 - **No bare `except:` and no `except Exception: pass`.** Catch specific exceptions; if you must catch broad, log with traceback.
-- **No mutable default args.** `def f(x: list[int] | None = None)`, then `x = x or []` inside.
+- **No mutable default args.** `def f(x: list[int] | None = None)`, then `if x is None: x = []` inside (never `x = x or []` — it silently replaces a caller's empty list).
 - **`with` for all resources.** Files, DB sessions, locks, HTTP sessions.
 - **`logging` not `print`** in library/service code.
 - **f-strings**, not `%` or `.format()`. SQL: parameterized queries, never f-string into SQL.
 - **`isinstance(x, T)`**, not `type(x) == T`. **`is None`**, not `== None`.
 - **PEP 8** + black/ruff formatting. 88-char line default.
 
-## Pythonic Patterns (use the skill)
+## Pythonic Patterns (read the skill)
 
-For idioms (comprehensions, generators, dataclasses, decorators, context managers, `__slots__`, EAFP vs LBYL, custom exception hierarchies), **see skill `python-patterns`**. Activate it whenever writing or refactoring Python.
+For idioms (comprehensions, generators, dataclasses, decorators, context managers, `__slots__`, EAFP vs LBYL, custom exception hierarchies), read the `python-patterns` skill directly — you have no Skill tool, so load it with `Read`: locate via Glob (`**/skills/python-patterns/SKILL.md` under `~/.claude/` or the project's `.claude/`), read `SKILL.md` for the routing table, then open only the `references/*.md` files the task needs.
 
 ## Async
 
@@ -58,6 +58,22 @@ For idioms (comprehensions, generators, dataclasses, decorators, context manager
 - **OpenAPI** is auto-generated; write good docstrings and `response_model` so it stays useful.
 - **Background work**: `BackgroundTasks` for fire-and-forget short tasks; Celery / ARQ / Dramatiq for real queues.
 - **Settings**: `pydantic-settings` with env vars; never hardcode.
+
+## Django (when the task is Django)
+
+- **ORM**: `select_related`/`prefetch_related` to kill N+1; `only()`/`values()` for narrow reads; `bulk_create`/`bulk_update` for batches.
+- **Transactions**: `transaction.atomic()` around multi-write operations; `select_for_update()` for read-then-write races.
+- **Migrations**: always generated and committed; reversible; no data backfills mixed into schema migrations — use `RunPython` with reverse or a management command.
+- **Validation at the boundary**: Forms / DRF serializers — never trust `request.POST`/`request.data` raw into models.
+- **DRF**: serializers for I/O shaping, viewsets + routers, permissions classes — business logic lives in services/model methods, not views.
+- **Settings**: split per environment, secrets from env (`django-environ`), `DEBUG = False` assumptions never hardcoded.
+
+## Flask (when the task is Flask)
+
+- **App factory** (`create_app()`) + blueprints per domain; no module-level app for anything testable.
+- **Error handlers** registered for domain exceptions → consistent JSON error shape.
+- **Flask-SQLAlchemy**: session per request (teardown handles cleanup); explicit `db.session.commit()`/`rollback()` boundaries.
+- **CSRF** (Flask-WTF) on state-changing routes; auth via extension (Flask-Login / JWT), not hand-rolled sessions.
 
 ## Testing
 

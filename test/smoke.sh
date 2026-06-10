@@ -93,6 +93,14 @@ ACTUAL_HASH="$(sha_of "$ARCH_FILE")"
 MANIFEST_HASH="$(grep '^agents/architect\.md' "$MANIFEST" | cut -f2)"
 assert_eq "6. architect.md hash" "$ACTUAL_HASH" "$MANIFEST_HASH"
 
+# 6b. multi-file skills: every skill ships references/*.md alongside SKILL.md
+for d in "${SCOPE_A}/.claude/skills"/*/; do
+  s="$(basename "$d")"
+  REF_COUNT="$(find "$d" -type f -path '*/references/*.md' | wc -l | tr -d ' ')"
+  [ "$REF_COUNT" -ge 1 ] || fail "6b. skill '$s' has no references/*.md installed"
+done
+pass "6b. all skills installed with references/*.md"
+
 # 7. security — refuse uninstall without manifest
 SCOPE_B="$(mktemp -d)"
 trap 'rm -rf "$TMP_SRC" "$SCOPE_A" "$SCOPE_B"' EXIT

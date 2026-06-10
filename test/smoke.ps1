@@ -125,6 +125,13 @@ try {
   $ManifestHash = ($ManifestLines | Where-Object { $_ -match 'architect\.md\t' }) -replace '^[^\t]+\t', ''
   Assert-Eq "6. architect.md hash" $ActualHash $ManifestHash
 
+  # 6b. multi-file skills: every skill ships references/*.md alongside SKILL.md
+  foreach ($skillDir in Get-ChildItem $SkillsDir -Directory) {
+    $RefCount = @(Get-ChildItem (Join-Path $skillDir.FullName 'references') -Filter '*.md' -File -ErrorAction SilentlyContinue).Count
+    if ($RefCount -lt 1) { Fail "6b. skill '$($skillDir.Name)' has no references/*.md installed" }
+  }
+  Pass "6b. all skills installed with references/*.md"
+
   # 7. security -- refuse uninstall without manifest
   $ScopeB = Join-Path $TmpBase ("cda_b_" + [System.IO.Path]::GetRandomFileName())
   New-Item -ItemType Directory -Force -Path $ScopeB | Out-Null

@@ -236,7 +236,7 @@ When in doubt, match the rest of the codebase.
 
 ## Reference
 
-For detailed PHP patterns, security examples, and framework-specific code samples, see skill: `php-patterns`.
+For detailed PHP patterns, security examples, and framework-specific code samples, read the `php-patterns` skill directly: locate it via Glob (`**/skills/php-patterns/SKILL.md` under `~/.claude/` or the project's `.claude/`), read `SKILL.md` for the routing table, then open only the `references/*.md` files the review needs.
 
 ---
 

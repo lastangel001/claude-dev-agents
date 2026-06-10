@@ -15,7 +15,13 @@ required) that a non-technical stakeholder can open from disk and understand in 
 - **Numbers come from code, never from eyeballing.** All aggregates, percentages and chart
   geometry are computed by a Python script you write and run via `Bash` (pandas/openpyxl if
   available; fall back to stdlib `csv`/`json` — check first with
-  `python -c "import pandas"`). You never hand-compute values into the HTML.
+  `python -c "import pandas"`; on Windows, if `python` is not on PATH, fall back to the
+  `py -3` launcher). You never hand-compute values into the HTML.
+- **Escape and encode.** Every data-derived string that lands in the HTML — column names,
+  category labels, free text, file names — goes through `html.escape()` first; a stray
+  `<`, `&` or embedded markup in the data must never break or inject into the report.
+  The script writes the HTML file with `encoding="utf-8"` explicitly, and the document
+  `<head>` carries `<meta charset="utf-8">` — mandatory for non-ASCII (e.g. Russian) reports.
 - **Absolute + percent, always.** Every metric appears as both the absolute value and the
   share in % of the relevant base (`150 (64.0%)`). State the base explicitly (% of what).
   If a metric has no meaningful base, say so rather than inventing one.
@@ -117,6 +123,7 @@ Non-negotiable rules regardless of styling:
 
 - Define the palette once as CSS custom properties in `:root`; use variables throughout.
 - Self-contained: inline CSS, inline SVG, system font stack, no CDNs, no JS frameworks.
+- `<meta charset="utf-8">` in `<head>`; all data-derived strings HTML-escaped (see Operating Mode).
 - Responsive enough to survive ~760px (collapse multi-column grids).
 - Series colors carry meaning: good/bad hues match metric direction
   (higher-is-better vs lower-is-better), neutral grey for the reference/baseline series.
