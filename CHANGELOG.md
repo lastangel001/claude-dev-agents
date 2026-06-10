@@ -5,6 +5,8 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.3.0] — 2026-06-10
+
 ### Changed
 - `python-reviewer` rewritten to parity with `php-reviewer`: confidence-based filtering,
   pre-report gate, HIGH/CRITICAL proof requirement, Python-specific false-positives list,
