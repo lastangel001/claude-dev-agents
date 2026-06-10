@@ -125,7 +125,7 @@ jobs:
   # bash smoke runs on ubuntu + macos; PS smoke runs on windows under 5.1 AND pwsh 7
   # ---------------------------------------------------------------------------
   smoke:
-    name: "smoke (${{ matrix.os }}${{ matrix.ps-version && format(' {0}', matrix.ps-version) || '' }})"
+    name: "smoke (${{ matrix.os }}, ${{ matrix.shell }})"
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
