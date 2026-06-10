@@ -145,7 +145,9 @@ cd "$SCOPE_D"
 bash "$INSTALLER" --project
 # Patch manifest: replace architect.md hash with nohash
 NOHASH_MANIFEST="${SCOPE_D}/.claude/.cda-manifest"
-sed -i 's/^agents\/architect\.md\t[0-9a-f]*/agents\/architect.md\tnohash/' "$NOHASH_MANIFEST"
+# sed -i is not portable (BSD sed on macOS needs `-i ''`); rewrite via temp file
+sed 's/^agents\/architect\.md\t[0-9a-f]*/agents\/architect.md\tnohash/' "$NOHASH_MANIFEST" \
+  > "${NOHASH_MANIFEST}.tmp" && mv "${NOHASH_MANIFEST}.tmp" "$NOHASH_MANIFEST"
 grep -q $'^agents/architect.md\tnohash' "$NOHASH_MANIFEST" || fail "10. sed nohash patch failed"
 NOHASH_OUT="$(bash "$INSTALLER" --project --uninstall 2>&1)"
 cd "$REPO_ROOT"
