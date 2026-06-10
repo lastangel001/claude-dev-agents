@@ -5,6 +5,20 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+### Fixed
+- **CI never ran**: every workflow run since BL-003 failed at startup (0s, no jobs) because
+  GitHub rejects a workflow file whose step-level `shell:` contains an expression
+  (`shell: ${{ matrix.shell }}` in the smoke matrix). Replaced with a literal `shell: bash`
+  (the matrix commands invoke `powershell`/`pwsh` as executables) and a `label` matrix key
+  for job names. First green run: all 9 jobs. ([.github/workflows/ci.yml](.github/workflows/ci.yml))
+- Real failures the first live CI run then exposed:
+  `install.sh` and `test/*.sh` had no executable bit (repo authored on Windows; smoke failed
+  with exit 126 on Linux/macOS — and `./install.sh` from the README would too);
+  GNU-only `sed -i` in smoke test 10 broke BSD sed on macOS (rewritten via temp file);
+  shellcheck findings SC2015/SC2016/SC2295 in `install.sh`, `test/version-check.sh`,
+  `test/parity.sh`; PSScriptAnalyzer `PSUseSingularNouns` on the private `Backup-IfExists`
+  helper (excluded in settings).
+
 ## [1.3.0] — 2026-06-10
 
 ### Changed
