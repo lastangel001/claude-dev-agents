@@ -99,8 +99,8 @@ pass "agents/architect.md byte-for-byte identical"
 SKILL_BASH="$(find "${SCOPE_BASH}/.claude/skills" -name 'SKILL.md' | head -1 || true)"
 SKILL_PWSH="$(find "${SCOPE_PWSH}/.claude/skills" -name 'SKILL.md' | head -1 || true)"
 if [ -n "$SKILL_BASH" ] && [ -n "$SKILL_PWSH" ]; then
-  SKILL_REL="${SKILL_BASH#${SCOPE_BASH}/.claude/skills/}"
-  SKILL_REL_PWSH="${SKILL_PWSH#${SCOPE_PWSH}/.claude/skills/}"
+  SKILL_REL="${SKILL_BASH#"${SCOPE_BASH}"/.claude/skills/}"
+  SKILL_REL_PWSH="${SKILL_PWSH#"${SCOPE_PWSH}"/.claude/skills/}"
   if [ "$SKILL_REL" = "$SKILL_REL_PWSH" ]; then
     cmp -s "$SKILL_BASH" "$SKILL_PWSH" || fail "skills/${SKILL_REL} differs between bash and pwsh installs"
     pass "skills/${SKILL_REL} byte-for-byte identical"

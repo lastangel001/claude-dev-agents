@@ -85,7 +85,9 @@ if [ "$ACTION" = "uninstall" ]; then
     rm -f "$target" && echo "  removed      ${rel}"
   done < "$MANIFEST"
   # Drop skill dirs left empty after their files were removed.
-  [ -d "$SKILLS_DIR" ] && find "$SKILLS_DIR" -mindepth 1 -type d -empty -delete 2>/dev/null || true
+  if [ -d "$SKILLS_DIR" ]; then
+    find "$SKILLS_DIR" -mindepth 1 -type d -empty -delete 2>/dev/null || true
+  fi
   rm -f "$MANIFEST"
   echo "Done."
   exit 0
@@ -122,7 +124,7 @@ fi
 BACKUP_ROOT="${BASE}/.cda-backups/$(date +%Y%m%d-%H%M%S)"
 backup() {
   [ -e "$1" ] || return 0
-  local rel="${1#${BASE}/}" dest
+  local rel="${1#"${BASE}"/}" dest
   dest="${BACKUP_ROOT}/${rel}"
   mkdir -p "$(dirname "$dest")"
   mv "$1" "$dest" && echo "  backed up -> $dest"
@@ -130,7 +132,7 @@ backup() {
 
 # Build the install receipt in a temp file, swap into place at the end.
 MANIFEST_TMP="$(mktemp)"
-record() { local p="$1"; printf '%s\t%s\n' "${p#${BASE}/}" "$(sha_of "$p")" >> "$MANIFEST_TMP"; }
+record() { local p="$1"; printf '%s\t%s\n' "${p#"${BASE}"/}" "$(sha_of "$p")" >> "$MANIFEST_TMP"; }
 
 echo "Installing claude-dev-agents v${VERSION} -> ${BASE} (${SCOPE} scope)"
 mkdir -p "$AGENTS_DIR" "$SKILLS_DIR"
