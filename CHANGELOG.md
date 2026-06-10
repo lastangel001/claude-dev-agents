@@ -5,6 +5,14 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+### Agents
+- `data-analyst` — turns a raw dataset (xlsx/csv/tsv/json/parquet) into a single
+  self-contained one-page HTML analytics report: dark-theme dashboard with KPI cards,
+  inline-SVG bar charts, full metrics table and key findings. Profiles the data, proposes
+  slices, always reports absolute values + %; all numbers and chart geometry computed by
+  script, verified two ways. Visual system adapted per report; default base palette from
+  Brand Analytics brand colors.
+
 ### Fixed
 - **BL-004** (security): `nohash` manifest entries were deleted during uninstall without any
   edit check, re-opening the silent data-loss path ADR-0001 was written to close. Uninstall
