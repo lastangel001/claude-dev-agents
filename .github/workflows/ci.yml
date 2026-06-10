@@ -125,30 +125,31 @@ jobs:
   # bash smoke runs on ubuntu + macos; PS smoke runs on windows under 5.1 AND pwsh 7
   # ---------------------------------------------------------------------------
   smoke:
-    name: "smoke (${{ matrix.os }}${{ matrix.ps-version && format(' {0}', matrix.ps-version) || '' }})"
+    name: "smoke (${{ matrix.label }})"
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         include:
           - os: ubuntu-latest
-            shell: bash
+            label: ubuntu
             run-smoke: bash test/smoke.sh
           - os: macos-latest
-            shell: bash
+            label: macos
             run-smoke: bash test/smoke.sh
           - os: windows-latest
-            shell: powershell
-            ps-version: "PS 5.1"
-            run-smoke: powershell -NoProfile -File test\smoke.ps1
+            label: "windows PS 5.1"
+            run-smoke: powershell -NoProfile -File test/smoke.ps1
           - os: windows-latest
-            shell: pwsh
-            ps-version: "pwsh 7"
+            label: "windows pwsh 7"
             run-smoke: pwsh -NoProfile -File test/smoke.ps1
     steps:
       - uses: actions/checkout@v4
       - name: smoke
-        shell: ${{ matrix.shell }}
+        # NOTE: step-level `shell` must be a literal — GitHub rejects the whole
+        # workflow file if `shell` contains an expression. bash exists on all
+        # three runner OSes and merely launches the real interpreter.
+        shell: bash
         run: ${{ matrix.run-smoke }}
 
   # ---------------------------------------------------------------------------

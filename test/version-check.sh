@@ -53,6 +53,7 @@ assert_eq "install.ps1 embedded fallback" "$VERSION" "$PS_EMBEDDED"
 # 5. BL-005 add-on: REPO slug identical in both installers
 # ---------------------------------------------------------------------------
 SH_REPO="$(grep -m1 '^REPO=' "${REPO_ROOT}/install.sh" | sed 's/REPO="\(.*\)"/\1/')"
+# shellcheck disable=SC2016  # single quotes are intentional: matching literal $Repo
 PS_REPO="$(grep -m1 '^\$Repo = ' "${REPO_ROOT}/install.ps1" | sed "s/.*Repo = '\\([^']*\\)'.*/\\1/")"
 assert_eq "BL-005 repo slug parity (sh vs ps1)" "$SH_REPO" "$PS_REPO"
 pass "BL-005 slug parity: $SH_REPO"
@@ -80,7 +81,9 @@ assert_eq "install.sh --version output" "claude-dev-agents ${VERSION}" "$SH_OUT"
 #    Pass if tag v<VERSION> exists OR the newest versioned CHANGELOG entry == VERSION.
 # ---------------------------------------------------------------------------
 TAG_EXISTS=0
-git -C "$REPO_ROOT" tag --list "v${VERSION}" | grep -q "v${VERSION}" && TAG_EXISTS=1 || true
+if git -C "$REPO_ROOT" tag --list "v${VERSION}" | grep -q "v${VERSION}"; then
+  TAG_EXISTS=1
+fi
 
 CHANGELOG_VER="$(grep -m1 '^## \[[0-9]' "${REPO_ROOT}/CHANGELOG.md" | sed 's/## \[\([^]]*\)\].*/\1/')"
 
