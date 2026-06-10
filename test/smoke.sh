@@ -129,12 +129,7 @@ echo "$KEPT_OUT" | grep -q "modified, KEPT" || fail "9. output missing 'modified
 pass "9. modified file KEPT; output contains 'modified, KEPT'"
 
 # ---------------------------------------------------------------------------
-# 10. security — nohash entry: file must NOT be deleted
-# TODO(BL-004): current code deletes nohash entries (see install.sh:76-83).
-# This assertion documents the REQUIRED fix: nohash entries must be KEPT on uninstall,
-# mirroring the "modified, KEPT" branch — deletion without an edit check re-opens
-# the silent data-loss path ADR-0001 was written to close.
-# CI will be red here until BL-004 is implemented.
+# 10. security — nohash entry: file must NOT be deleted (BL-004 fix)
 # ---------------------------------------------------------------------------
 SCOPE_D="$(mktemp -d)"
 trap 'rm -rf "$TMP_SRC" "$SCOPE_B" "$SCOPE_C" "$SCOPE_D"' EXIT
@@ -147,8 +142,8 @@ grep -q $'^agents/architect.md\tnohash' "$NOHASH_MANIFEST" || fail "10. sed noha
 NOHASH_OUT="$(bash "$INSTALLER" --project --uninstall 2>&1)"
 cd "$REPO_ROOT"
 [ -f "${SCOPE_D}/.claude/agents/architect.md" ] || \
-  fail "10. TODO(BL-004): nohash entry was deleted — must be KEPT (same safety as 'modified, KEPT')"
-echo "$NOHASH_OUT" | grep -q "(unverified)" || fail "10. output missing '(unverified)'"
-pass "10. nohash: file KEPT, output contains '(unverified)'"
+  fail "10. nohash entry was deleted — must be KEPT (same safety as 'modified, KEPT')"
+echo "$NOHASH_OUT" | grep -q "nohash, KEPT" || fail "10. output missing 'nohash, KEPT'"
+pass "10. nohash: file KEPT, output contains 'nohash, KEPT'"
 
 echo "=== smoke.sh: all assertions passed ==="

@@ -5,6 +5,17 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+### Fixed
+- **BL-004** (security): `nohash` manifest entries were deleted during uninstall without any
+  edit check, re-opening the silent data-loss path ADR-0001 was written to close. Uninstall
+  now treats `nohash` as fail-safe: the file is kept and reported as `nohash, KEPT`,
+  mirroring the existing `modified, KEPT` branch. ADR-0001 addendum added.
+  ([install.sh](install.sh), [install.ps1](install.ps1),
+  [docs/adr/0001-...](docs/adr/0001-name-keyed-install-set-as-uninstall-manifest.md))
+- **BL-005** (debt): CI now verifies that all GitHub URL slugs in README.md match the
+  authoritative `REPO`/`$Repo` constant in both installers, catching README drift at
+  push time. ([test/version-check.sh](test/version-check.sh))
+
 ### Added
 - **BL-003** (testing): GitHub Actions CI (`ci.yml`) with 5 independent jobs + `ci-pass` aggregator:
   `static-bash` (shellcheck + version-check); `static-pwsh-windows` (PS 5.1 AST parse + `-File` smoke + PSScriptAnalyzer);

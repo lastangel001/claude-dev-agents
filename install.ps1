@@ -55,7 +55,8 @@ if ($Uninstall) {
     if ($hash -ne 'nohash') {
       if ((Get-Sha $target) -ne $hash) { Write-Host "  modified, KEPT $rel"; continue }
     } else {
-      Write-Host "  (unverified) $rel"
+      # No hash available at install time; cannot verify ownership -- keep, do not delete.
+      Write-Host "  nohash, KEPT  $rel"; continue
     }
     Remove-Item $target -Force; Write-Host "  removed      $rel"
   }

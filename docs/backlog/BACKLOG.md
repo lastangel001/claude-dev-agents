@@ -5,51 +5,29 @@
 
 ## Summary
 
-- **Items:** 5 open — P0: 2 · P1: 2 · P2: 0 · P3: 1  (6 resolved — see `## Resolved`)
-- **By type:** bug 0 · security 1 · perf 0 · reliability 0 · debt 2 · testing 0 · DX 2 · feature 0
-- **Top 3 to do now:** BL-004, BL-005, BL-009 (BL-003 CI now live — test 10 red until BL-004 fixed)
+- **Items:** 3 open — P0: 0 · P1: 2 · P2: 0 · P3: 1  (8 resolved — see `## Resolved`)
+- **By type:** bug 0 · security 0 · perf 0 · reliability 0 · debt 1 · testing 0 · DX 2 · feature 0
+- **Top 3 to do now:** BL-009, BL-010, BL-011
 - **One-line health read:** Small, well-documented distribution package in good shape; the real risk surface is the two hand-duplicated installers and the remote-install path, neither of which has any automated verification.
 
 ## Priority Matrix (Impact × Effort)
 
 |              | Effort S/M (low) | Effort L/XL (high) |
 |--------------|------------------|--------------------|
-| **Impact high (4–5)** | **Quick wins** — BL-004 | **Big bets** — (none open) |
-| **Impact low (1–3)**  | **Fill-ins** — BL-005, BL-009, BL-010 | **Money pit** — BL-011 |
+| **Impact high (4–5)** | **Quick wins** — (none open) | **Big bets** — (none open) |
+| **Impact low (1–3)**  | **Fill-ins** — BL-009, BL-010, BL-011 | **Money pit** — (none open) |
 
 ## Backlog (sorted by ICE score)
 
 | ID | Type | Title | Impact | Conf | Effort | ICE | Priority |
 |----|------|-------|:------:|:----:|:------:|:---:|:--------:|
-| BL-004 | security | `nohash` fallback lets uninstall delete files without the edit check | 4 | 4 | S | 16.0 | P0 |
-| BL-005 | debt | Hardcoded `lastangel001/...` repo slug across files | 3 | 5 | S | 15.0 | P0 |
 | BL-009 | DX | No CONTRIBUTING / installer-parity guide for two-impl maintenance | 2 | 4 | S | 8.0 | P1 |
 | BL-010 | debt | PowerShell `-Version` short-circuits before arg validation | 2 | 4 | S | 8.0 | P1 |
 | BL-011 | DX | No agent/skill schema-lint to catch frontmatter drift | 2 | 3 | M | 2.0 | P3 |
 
-> Note: BL-004/005 clear the P0 threshold (ICE ≥ 12); the rest sit in P1–P3. BL-004 is a security item rated Impact 4 (not 5), so the "Impact-5 security → always ≥P1" override is moot — it already lands P0 on its own ICE.
+> Note: No P0 items remain. BL-009/010 are P1 fill-ins; BL-011 is P3.
 
 ## Item Details
-
-### BL-004 — `nohash` fallback lets uninstall delete files without the edit check
-- **Type:** security
-- **Priority:** P0 (ICE 16.0 = Impact 4 × Conf 4 / Effort 1)
-- **Pain / problem:** On a system with neither `sha256sum` nor `shasum`, `sha_of` records the literal `nohash`. At uninstall, a `nohash` record skips the content-comparison guard and deletes the file by ownership alone, printing only `(unverified)`. This re-opens the exact silent-data-loss path ADR-0001 was written to close — a user-edited, same-named file gets removed without the edit check.
-- **Evidence:** `install.sh:46` (`else echo "nohash"`); `install.sh:61-68` (`if [ "$hash" != "nohash" ]` … else `(unverified)` … then `rm -f`). The Windows side always has `Get-FileHash` so this is bash-only, but the manifest format is shared.
-- **Impact on system:** Data loss on minimal/container Linux images lacking coreutils hashing tools. Lower likelihood than a normal install, but the outcome is deletion of unverified user files — the same severity class ADR-0001 rated a one-way door.
-- **Effort:** S, 1 pt — when no hashing tool is available, either refuse to install (fail fast) or mark the receipt so uninstall *skips* `nohash` entries instead of deleting them.
-- **Suggested fix:** Treat absence of a hash tool as fail-safe: on uninstall, *keep and report* `nohash` entries rather than delete, mirroring the "modified, KEPT" branch. Document the choice in ADR-0001 status.
-- **Dependencies / risk:** Touches the shared manifest contract — coordinate with BL-003 parity test.
-
-### BL-005 — Hardcoded `lastangel001/...` repo slug across files
-- **Type:** debt
-- **Priority:** P0 (ICE 15.0 = Impact 3 × Conf 5 / Effort 1)
-- **Pain / problem:** The GitHub owner/repo slug `lastangel001/claude-dev-agents` is hardcoded in both installers and four README locations. A fork or owner rename silently breaks every remote install and the README one-liners with a 404, with no single place to fix.
-- **Evidence:** `install.sh:16` (`REPO="lastangel001/claude-dev-agents"`); `install.ps1:27` (`$Repo = 'lastangel001/...'`); `README.md:14`, `README.md:33`, `README.md:38`, `README.md:49`, `README.md:54`, `README.md:61`.
-- **Impact on system:** Maintainability friction and broken remote install on any fork/rename. Not a runtime hazard for the canonical repo, but high duplication.
-- **Effort:** S, 1 pt — centralize as documented and accept that README mirrors it; or template the README from a single variable at release time.
-- **Suggested fix:** Keep one authoritative constant per installer (already there) and add a release-time check (BL-003) that the README slugs match. No code-path change strictly required.
-- **Dependencies / risk:** None.
 
 ### BL-009 — No CONTRIBUTING / installer-parity guide for two-impl maintenance
 - **Type:** DX
@@ -89,6 +67,8 @@ Retired items — one line each; IDs are not reused. Full detail in [CHANGELOG.m
 - **BL-002** (reliability) — Version string duplicated 4× and installers ignored the `VERSION` file. Resolved 2026-06-09 — both installers read the sibling `VERSION` at runtime, embedded constant only as piped-remote fallback.
 - **BL-006** (reliability) — bash uninstall could drop the manifest's final line if it lacked a trailing newline. Resolved 2026-06-09 — read loop guarded with `|| [ -n "$rel" ]`.
 - **BL-007** (reliability) — PowerShell manifest written in shell-default encoding. Resolved 2026-06-09 — pinned `-Encoding utf8` on both write and read-back.
+- **BL-005** (debt) — Hardcoded repo slug with no consistency check. Resolved 2026-06-09 — CI now verifies README slugs match installer constant on every push (`test/version-check.sh`).
+- **BL-004** (security) — `nohash` entries deleted without edit check on uninstall. Resolved 2026-06-09 — uninstall now keeps `nohash` entries (`nohash, KEPT`), mirroring `modified, KEPT`. ADR-0001 addendum added.
 - **BL-003** (testing) — No CI keeping the two installers in lock-step. Resolved 2026-06-09, commit `e91833f` — 5-job GitHub Actions workflow + `test/` scripts (shellcheck, PS 5.1 AST gate, smoke matrix, parity diff). Smoke test 10 intentionally red until BL-004 fixed.
 - **BL-001** (security) — Remote one-liner installed `main` HEAD with no integrity check. Resolved 2026-06-09, commit `344bdd7` — installers pin download to `refs/tags/v$VERSION`.
 - **BL-008** (bug) — `*.md text` EOL normalization could mismatch recorded hashes. Resolved 2026-06-09, commit `344bdd7` — `.gitattributes` pins `*.md text eol=lf`.

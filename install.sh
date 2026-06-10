@@ -78,7 +78,9 @@ if [ "$ACTION" = "uninstall" ]; then
         echo "  modified, KEPT ${rel}"; continue
       fi
     else
-      echo "  (unverified) ${rel}"
+      # No hash tool was available at install time; cannot verify ownership.
+      # Treat as fail-safe: keep the file rather than delete it unverified.
+      echo "  nohash, KEPT  ${rel}"; continue
     fi
     rm -f "$target" && echo "  removed      ${rel}"
   done < "$MANIFEST"

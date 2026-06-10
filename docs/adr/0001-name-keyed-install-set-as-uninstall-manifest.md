@@ -104,5 +104,13 @@ receipt format is a zero-dependency `<relpath>\t<sha256>` text file rather than 
 neither installer needs a JSON parser; this is an implementation refinement of the format
 named in the Decision, not a change to the decision itself.
 
+**Addendum (BL-004):** When no SHA-256 tool is available at install time the receipt
+records `nohash` as the hash. The original uninstall code deleted `nohash` entries
+without any edit check, re-opening the exact silent-data-loss path this ADR was written
+to close. Fixed: uninstall now treats `nohash` as fail-safe — the file is kept and
+reported as `nohash, KEPT`, mirroring the `modified, KEPT` branch. A system that cannot
+hash at install time likely cannot hash at uninstall time either; ownership cannot be
+proven in either direction, so the safe choice is to leave the file untouched.
+
 ## Date
 2026-06-06

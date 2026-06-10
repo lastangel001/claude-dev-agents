@@ -166,10 +166,7 @@ try {
   Pass "9. modified file KEPT; output contains 'modified, KEPT'"
 
   # -----------------------------------------------------------------------
-  # 10. security -- nohash entry: file must NOT be deleted
-  # TODO(BL-004): current code deletes nohash entries (install.ps1:55-61).
-  # This assertion documents the REQUIRED fix: nohash entries must be KEPT on uninstall.
-  # CI will be red here until BL-004 is implemented.
+  # 10. security -- nohash entry: file must NOT be deleted (BL-004 fix)
   # -----------------------------------------------------------------------
   $ScopeD = Join-Path $TmpBase ("cda_d_" + [System.IO.Path]::GetRandomFileName())
   New-Item -ItemType Directory -Force -Path $ScopeD | Out-Null
@@ -192,10 +189,10 @@ try {
   Pop-Location
   $ArchD = Join-Path $ScopeD '.claude\agents\architect.md'
   if (-not (Test-Path $ArchD)) {
-    Fail "10. TODO(BL-004): nohash entry was deleted -- must be KEPT (same safety as 'modified, KEPT')"
+    Fail "10. nohash entry was deleted -- must be KEPT (same safety as 'modified, KEPT')"
   }
-  if ("$NohashOut" -notmatch "\(unverified\)") { Fail "10. output missing '(unverified)'" }
-  Pass "10. nohash: file KEPT, output contains '(unverified)'"
+  if ("$NohashOut" -notmatch "nohash, KEPT") { Fail "10. output missing 'nohash, KEPT'" }
+  Pass "10. nohash: file KEPT, output contains 'nohash, KEPT'"
 
 } finally {
   Remove-Item $TmpSrc -Recurse -Force -ErrorAction SilentlyContinue

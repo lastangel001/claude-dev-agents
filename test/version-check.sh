@@ -55,7 +55,19 @@ assert_eq "install.ps1 embedded fallback" "$VERSION" "$PS_EMBEDDED"
 SH_REPO="$(grep -m1 '^REPO=' "${REPO_ROOT}/install.sh" | sed 's/REPO="\(.*\)"/\1/')"
 PS_REPO="$(grep -m1 '^\$Repo = ' "${REPO_ROOT}/install.ps1" | sed "s/.*Repo = '\\([^']*\\)'.*/\\1/")"
 assert_eq "BL-005 repo slug parity (sh vs ps1)" "$SH_REPO" "$PS_REPO"
-pass "BL-005 repo slug: $SH_REPO"
+pass "BL-005 slug parity: $SH_REPO"
+
+# BL-005 README add-on: every github.com / raw.githubusercontent.com URL in README.md
+# must use the same owner/repo slug as the installers.
+# Extract "owner/repo" from all GitHub URL occurrences; each must equal $SH_REPO.
+BAD_README_SLUGS=""
+while IFS= read -r slug; do
+  [ "$slug" = "$SH_REPO" ] || BAD_README_SLUGS="${BAD_README_SLUGS}\n  unexpected: '${slug}'"
+done < <(grep -oE '(github\.com|raw\.githubusercontent\.com)/[^/]+/[^/ )]+' \
+           "${REPO_ROOT}/README.md" \
+         | sed 's|[^/]*/||' | sort -u)
+[ -z "$BAD_README_SLUGS" ] || fail "BL-005 README slugs mismatch:${BAD_README_SLUGS}"
+pass "BL-005 README slugs all match: $SH_REPO"
 
 # ---------------------------------------------------------------------------
 # 6. Runtime: bash install.sh --version
