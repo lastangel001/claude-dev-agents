@@ -5,6 +5,8 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.2.0] — 2026-06-10
+
 ### Agents
 - `data-analyst` — turns a raw dataset (xlsx/csv/tsv/json/parquet) into a single
   self-contained one-page HTML analytics report: dark-theme dashboard with KPI cards,
