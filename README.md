@@ -12,7 +12,7 @@ Curated [Claude Code](https://claude.com/claude-code) **subagents** and **skills
 | Agent | Purpose |
 |-------|---------|
 | `architect` | Language-agnostic systems architect — designs, trade-offs, ADRs grounded in the real codebase; writes docs/ADRs, never code |
-| `backlog-planner` | Scans the codebase and produces a consistently-structured, ICE-prioritized development backlog (pain · impact · effort) at `docs/backlog/BACKLOG.md`; docs only, never code |
+| `backlog-planner` | Scans the codebase and produces a consistently-structured, ICE-prioritized development backlog (pain · impact · effort) at `docs/backlog/BACKLOG.md`; docs only, never code (read-only git for dates/hashes) |
 | `data-analyst` | Turns a raw dataset (xlsx/csv/json) into a self-contained one-page HTML report — KPI cards, inline-SVG charts, full metrics table; every metric as absolute + % |
 | `php-developer` | PHP 8.3+ builder — Laravel/Symfony APIs, services, CLI, queues, packages |
 | `php-reviewer` | PHP reviewer — PSR-12, strict types, security (SQLi/XSS/CSRF), framework patterns |
@@ -22,8 +22,12 @@ Curated [Claude Code](https://claude.com/claude-code) **subagents** and **skills
 ### Skills (`skills/`)
 | Skill | Purpose |
 |-------|---------|
-| `php-patterns` | Idiomatic PHP 8.3+ patterns — enums, readonly DTOs, repository/service layers, testing |
-| `python-patterns` | Idiomatic Python 3.11+ patterns — type hints, async, FastAPI essentials |
+| `php-patterns` | Idiomatic PHP 8.3+ patterns — enums, readonly DTOs, repository/service layers, Laravel/Symfony, security, testing |
+| `python-patterns` | Idiomatic Python 3.11+ patterns — type hints, idioms, async/TaskGroup, FastAPI, tooling |
+
+Each skill is a thin `SKILL.md` entry point (principles digest + routing table) plus
+`references/*.md` read on demand — agents load only the sections the task needs instead
+of the whole skill.
 
 ## Install
 
