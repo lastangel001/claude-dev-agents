@@ -5,6 +5,13 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.3.1] — 2026-06-10
+
+### Added
+- `CLAUDE.md` — repo entry point for Claude Code agents: commands, release discipline
+  (every change ships as a release: md docs + badge + VERSION/fallbacks + tag + GitHub release),
+  boundaries (LF/exec bits, installer parity, workflow `shell:` gotcha).
+
 ### Fixed
 - **CI never ran**: every workflow run since BL-003 failed at startup (0s, no jobs) because
   GitHub rejects a workflow file whose step-level `shell:` contains an expression
