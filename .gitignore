@@ -1,6 +1,10 @@
 # Claude Code local project settings — not for distribution
 .claude/settings.local.json
 
+# Private learning materials — not for distribution (facilitator agent carries the
+# expertise inline; the source PDFs/xlsx are reference-only and stay local)
+examples/
+
 # OS / editor cruft
 .DS_Store
 Thumbs.db

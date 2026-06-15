@@ -1,6 +1,6 @@
 # claude-dev-agents
 
-![version](https://img.shields.io/badge/version-1.3.1-blue)
+![version](https://img.shields.io/badge/version-1.4.0-blue)
 
 Curated [Claude Code](https://claude.com/claude-code) **subagents** and **skills** for software development — a language-agnostic systems architect plus strictly-typed, tested, idiomatic PHP and Python builders with built-in reviewers.
 
@@ -14,6 +14,7 @@ Curated [Claude Code](https://claude.com/claude-code) **subagents** and **skills
 | `architect` | Language-agnostic systems architect — designs, trade-offs, ADRs grounded in the real codebase; writes docs/ADRs, never code |
 | `backlog-planner` | Scans the codebase and produces a consistently-structured, ICE-prioritized development backlog (pain · impact · effort) at `docs/backlog/BACKLOG.md`; docs only, never code (read-only git for dates/hashes) |
 | `data-analyst` | Turns a raw dataset (xlsx/csv/json) into a self-contained one-page HTML report — KPI cards, inline-SVG charts, full metrics table; every metric as absolute + % |
+| `facilitator` | Designs facilitation sessions, workshops and brainstorms — classifies the meeting (base / strategic / global), sets rational + existential goals and pyramid level, drafts the main question, a timed scenario grid, a question bank, run-time lifehacks and risk profiling; outputs one Markdown meeting plan in the request's language |
 | `php-developer` | PHP 8.3+ builder — Laravel/Symfony APIs, services, CLI, queues, packages |
 | `php-reviewer` | PHP reviewer — PSR-12, strict types, security (SQLi/XSS/CSRF), framework patterns |
 | `python-developer` | Python 3.11+ builder — FastAPI/Flask/Django, async, CLI, data pipelines |
@@ -24,6 +25,7 @@ Curated [Claude Code](https://claude.com/claude-code) **subagents** and **skills
 |-------|---------|
 | `php-patterns` | Idiomatic PHP 8.3+ patterns — enums, readonly DTOs, repository/service layers, Laravel/Symfony, security, testing |
 | `python-patterns` | Idiomatic Python 3.11+ patterns — type hints, idioms, async/TaskGroup, FastAPI, tooling |
+| `facilitation-patterns` | Facilitation craft — goals pyramid, the main question, Strachan's questioning principles, method catalog (brainstorm, 6-3-5, 1-2-4-All, World Café, Liberating Structures, SWOT/SOAR, dot-voting…), preparation & the after-phase, online facilitation |
 
 Each skill is a thin `SKILL.md` entry point (principles digest + routing table) plus
 `references/*.md` read on demand — agents load only the sections the task needs instead

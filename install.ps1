@@ -24,7 +24,7 @@ $ErrorActionPreference = 'Stop'
 # Single source of truth for the version: read the sibling VERSION file when
 # running from a local checkout; fall back to the embedded constant only for the
 # piped-remote case (irm | iex) where $PSScriptRoot is empty / no file is present.
-$AppVersion = '1.3.1'
+$AppVersion = '1.4.0'
 $verFile = if ($PSScriptRoot) { Join-Path $PSScriptRoot 'VERSION' } else { $null }
 if ($verFile -and (Test-Path $verFile)) { $AppVersion = (Get-Content $verFile -Raw).Trim() }
 if ($Version) { Write-Host "claude-dev-agents $AppVersion"; return }

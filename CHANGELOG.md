@@ -5,6 +5,30 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.4.0] — 2026-06-15
+
+### Added
+- **`facilitator` agent** — a facilitation expert that prepares and designs sessions,
+  workshops and brainstorms. It classifies the meeting by complexity level
+  (base meeting / strategic session / global dialogue), sets the rational and existential
+  goals and the target pyramid level (Global Dialog: shared field → alternatives → decision →
+  roadmap), drafts the **main question** (`основная часть + «чтобы что…»`), a timed scenario
+  grid (`Этап | Время | Содержание/Вопросы | Механика | Визуализация`), a stage-by-stage
+  question bank (Strachan's 6 principles), run-time lifehacks and in-the-moment interventions,
+  a risk forecast (Голова/Руки/Сердце), and an after-phase plan. Outputs one Markdown meeting
+  plan in the request's language. Docs-only — never edits source code.
+  ([agents/facilitator.md](agents/facilitator.md))
+- **`facilitation-patterns` skill** — thin `SKILL.md` entry + routing table over
+  `references/`: `facilitation-101.md` (process-vs-content, IAF competencies, three
+  complexity levels & role aspects, goals pyramid, client roles A/B/C, Path to Action),
+  `questions.md` (Strachan principles, main-question constructor, question bank),
+  `methods.md` (method catalog with when-to-use: brainstorm, metaphor, SWOT/SOAR, problem
+  tree, Ishikawa, moderation, voting, 6-3-5 brainwriting, 1-2-4-All, World Café, Liberating
+  Structures + Troika), `preparation.md` (5 prep steps, difficulty forecast, the after-phase),
+  `extended.md` (ORID, retro formats, online facilitation, international ↔ local synthesis).
+- `.gitignore`: `examples/` — private learning materials (the agent carries the expertise
+  inline; source PDFs/xlsx stay local, not distributed).
+
 ## [1.3.1] — 2026-06-10
 
 ### Added
