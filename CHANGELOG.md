@@ -5,6 +5,23 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.5.0] — 2026-07-06
+
+### Added
+- **`devops-engineer` agent** — DevOps builder for delivery infrastructure: CI/CD pipelines
+  (GitHub Actions, GitLab CI, Jenkins), container images (multi-stage, non-root, layer-cache
+  ordering), Kubernetes/Helm (probes, resources, securityContext, PDB), IaC (Terraform remote
+  state + plan-on-PR/apply-on-merge, Ansible idempotency), deployment strategies
+  (rolling/blue-green/canary, expand–contract migrations, automated rollback), observability
+  (symptoms-not-causes alerting, SLOs) and build/pipeline performance (lockfile-keyed caches,
+  affected-only monorepo builds). Hard rules: no secrets in code/logs, pin everything,
+  least privilege, idempotent re-runnable steps, every deploy has a rollback path, no
+  snowflake state, blocking quality gates. Self-checks with available validators
+  (actionlint, hadolint, helm lint, kubeconform, terraform validate, shellcheck) and
+  reports what could not be verified. Synthesized from three community subagent drafts
+  (build-engineer, devops-engineer, devops-maestro) into the repo's agent style.
+  ([agents/devops-engineer.md](agents/devops-engineer.md))
+
 ## [1.4.0] — 2026-06-15
 
 ### Added
