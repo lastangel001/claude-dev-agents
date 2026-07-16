@@ -1,6 +1,6 @@
 # claude-dev-agents
 
-![version](https://img.shields.io/badge/version-1.5.0-blue)
+![version](https://img.shields.io/badge/version-1.6.0-blue)
 
 Curated [Claude Code](https://claude.com/claude-code) **subagents** and **skills** for software development — a language-agnostic systems architect plus strictly-typed, tested, idiomatic PHP and Python builders with built-in reviewers.
 
@@ -77,6 +77,39 @@ The installer auto-discovers and copies **every** agent and skill in the repo (n
 - `skills/*/`    →  `<scope>/.claude/skills/`
 
 Existing files with the same name are backed up to a timestamped dir under `<scope>/.claude/.cda-backups/` before overwrite — kept outside `agents/` and `skills/` so Claude Code never loads a backup as a duplicate.
+
+### Installing a single agent (atomic)
+
+Use `--agent NAME` (repeatable) to install just one or a few agents instead of the whole set. Skills are left untouched, and the operation is atomic — an unknown name aborts before anything is copied, and the manifest is merged (not overwritten), so it never orphans agents/skills from a prior full install.
+
+```bash
+# macOS / Linux — one agent, user scope
+./install.sh --agent architect
+
+# multiple agents, project scope
+./install.sh --agent architect --agent python-developer --project
+
+# via the one-liner
+curl -fsSL https://raw.githubusercontent.com/lastangel001/claude-dev-agents/main/install.sh | bash -s -- --agent devops-engineer
+```
+
+```powershell
+# Windows — one agent
+.\install.ps1 -Agent architect
+
+# multiple agents (comma-separated array), project scope
+.\install.ps1 -Agent architect,python-developer -Project
+```
+
+Remove a single agent the same way, leaving the rest of the install intact:
+
+```bash
+./install.sh --uninstall --agent architect
+```
+
+```powershell
+.\install.ps1 -Uninstall -Agent architect
+```
 
 ## Use
 

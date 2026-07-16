@@ -5,6 +5,18 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.6.0] — 2026-07-16
+
+### Added
+- **`--agent NAME` install/uninstall flag** (`--agent` on `install.sh`, repeatable;
+  `-Agent` on `install.ps1`, array) — install or remove a single agent (or a few) instead
+  of the whole set, atomically: an unknown name aborts before anything is copied, and the
+  manifest is merged rather than overwritten so a selective run never orphans the tracking
+  of agents/skills placed by an earlier full install. Skills are left untouched by a
+  selective agent install. Uninstall with `--agent`/`-Agent` removes only the named
+  agent's manifest entry and file, leaving the rest of the install intact.
+  ([install.sh](install.sh), [install.ps1](install.ps1))
+
 ## [1.5.0] — 2026-07-06
 
 ### Added

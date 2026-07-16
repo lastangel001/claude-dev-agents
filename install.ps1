@@ -7,24 +7,32 @@
   exact files it placed plus a content hash for each. Uninstall removes only files it
   can prove it owns and that the user has not modified. No manifest -> refuse to delete.
 .EXAMPLE
-  .\install.ps1                  # user scope   (~\.claude)
-  .\install.ps1 -Project         # project scope (.\.claude)
+  .\install.ps1                        # user scope   (~\.claude)
+  .\install.ps1 -Project               # project scope (.\.claude)
+  .\install.ps1 -Agent architect       # install only one agent (repeatable via array), skills untouched
+  .\install.ps1 -Agent architect,python-developer
   .\install.ps1 -Uninstall
   .\install.ps1 -Uninstall -Project
+  .\install.ps1 -Uninstall -Agent architect   # remove only one agent, leave rest installed
   irm https://raw.githubusercontent.com/lastangel001/claude-dev-agents/main/install.ps1 | iex
+.NOTES
+  -Agent installs/uninstalls are atomic per invocation: either every requested
+  agent is applied and the manifest updated in one write, or (on an unknown
+  name) nothing changes and the script errors out.
 #>
 [CmdletBinding()]
 param(
   [switch]$Project,
   [switch]$Uninstall,
-  [switch]$Version
+  [switch]$Version,
+  [string[]]$Agent = @()
 )
 $ErrorActionPreference = 'Stop'
 
 # Single source of truth for the version: read the sibling VERSION file when
 # running from a local checkout; fall back to the embedded constant only for the
 # piped-remote case (irm | iex) where $PSScriptRoot is empty / no file is present.
-$AppVersion = '1.5.0'
+$AppVersion = '1.6.0'
 $verFile = if ($PSScriptRoot) { Join-Path $PSScriptRoot 'VERSION' } else { $null }
 if ($verFile -and (Test-Path $verFile)) { $AppVersion = (Get-Content $verFile -Raw).Trim() }
 if ($Version) { Write-Host "claude-dev-agents $AppVersion"; return }
@@ -46,19 +54,37 @@ if ($Uninstall) {
     Write-Error "no install manifest at $Manifest`n  refusing to delete -- cannot prove which files belong to claude-dev-agents.`n  remove unwanted files manually from $AgentsDir and $SkillsDir."
     return
   }
+  # With -Agent, only manifest lines for agents\<name>.md are candidates for
+  # removal; every other line (other agents, all skills) is kept untouched so a
+  # single-agent uninstall can't disturb the rest of the install.
+  $remain = New-Object System.Collections.Generic.List[string]
+  $seen = @{}
   foreach ($line in Get-Content $Manifest -Encoding utf8) {
     if (-not $line.Trim()) { continue }
     $parts = $line -split "`t", 2
     $rel = $parts[0]; $hash = if ($parts.Count -gt 1) { $parts[1] } else { 'nohash' }
+    $targetMe = $true
+    if ($Agent.Count -gt 0) {
+      $targetMe = $false
+      foreach ($name in $Agent) {
+        if ($rel -eq "agents\$name.md" -or $rel -eq "agents/$name.md") { $targetMe = $true; $seen[$name] = $true; break }
+      }
+    }
+    if (-not $targetMe) { $remain.Add($line); continue }
     $target = Join-Path $Base $rel
     if (-not (Test-Path $target)) { Write-Host "  gone, skip   $rel"; continue }
     if ($hash -ne 'nohash') {
-      if ((Get-Sha $target) -ne $hash) { Write-Host "  modified, KEPT $rel"; continue }
+      if ((Get-Sha $target) -ne $hash) { Write-Host "  modified, KEPT $rel"; $remain.Add($line); continue }
     } else {
       # No hash available at install time; cannot verify ownership -- keep, do not delete.
-      Write-Host "  nohash, KEPT  $rel"; continue
+      Write-Host "  nohash, KEPT  $rel"; $remain.Add($line); continue
     }
     Remove-Item $target -Force; Write-Host "  removed      $rel"
+  }
+  if ($Agent.Count -gt 0) {
+    foreach ($name in $Agent) {
+      if (-not $seen.ContainsKey($name)) { Write-Host "  not installed (no manifest entry): $name" }
+    }
   }
   # Drop skill dirs left empty after their files were removed.
   if (Test-Path $SkillsDir) {
@@ -67,7 +93,11 @@ if ($Uninstall) {
       Where-Object { -not (Get-ChildItem $_.FullName -Force) } |
       ForEach-Object { Remove-Item $_.FullName -Force }
   }
-  Remove-Item $Manifest -Force
+  if ($remain.Count -gt 0) {
+    Set-Content -Path $Manifest -Value $remain -Encoding utf8
+  } else {
+    Remove-Item $Manifest -Force
+  }
   Write-Host "Done."
   return
 }
@@ -101,6 +131,19 @@ if (Test-Path $skillsSrc) {
   $Skills = @(Get-ChildItem -Path $skillsSrc -Directory | ForEach-Object { $_.Name })
 }
 
+# -Agent restricts the install to the named agent(s) only; skills are left
+# untouched. Validate every requested name up front so a typo fails before
+# anything is copied, not partway through.
+if ($Agent.Count -gt 0) {
+  $missing = @($Agent | Where-Object { $Agents -notcontains $_ })
+  if ($missing.Count -gt 0) {
+    Write-Error "unknown agent(s): $($missing -join ', ')`navailable: $($Agents -join ', ')"
+    return
+  }
+  $Agents = $Agent
+  $Skills = @()
+}
+
 # Backups go OUTSIDE agents/ and skills/ so Claude Code never loads a .bak as a
 # duplicate agent/skill. One timestamped dir per run under $Base\.cda-backups.
 $BackupRoot = Join-Path $Base (Join-Path '.cda-backups' (Get-Date -Format 'yyyyMMdd-HHmmss'))
@@ -128,7 +171,11 @@ foreach ($a in $Agents) {
   Record $dst
   Write-Host "  installed agent $a"
 }
-Write-Host "Skills:"
+if ($Agent.Count -gt 0) {
+  Write-Host "Skills: (skipped -- -Agent installs only the named agent)"
+} else {
+  Write-Host "Skills:"
+}
 foreach ($s in $Skills) {
   $dst = Join-Path $SkillsDir $s
   Backup-IfExists $dst
@@ -137,9 +184,23 @@ foreach ($s in $Skills) {
   Write-Host "  installed skill $s"
 }
 
+# Merge into any existing manifest instead of overwriting it, so a selective
+# -Agent install doesn't orphan the tracking of agents/skills installed by an
+# earlier full run. Last write per relpath wins.
+$finalMap = [ordered]@{}
+if (Test-Path $Manifest) {
+  foreach ($line in Get-Content $Manifest -Encoding utf8) {
+    if (-not $line.Trim()) { continue }
+    $finalMap[($line -split "`t", 2)[0]] = $line
+  }
+}
+foreach ($line in $manifestLines) {
+  $finalMap[($line -split "`t", 2)[0]] = $line
+}
+$sortedLines = $finalMap.Keys | Sort-Object | ForEach-Object { $finalMap[$_] }
 # Pin UTF-8 so the manifest is byte-stable; read it back with the same encoding
 # (Get-Content -Encoding utf8 strips the BOM, so the first relpath stays intact).
-Set-Content -Path $Manifest -Value $manifestLines -NoNewline:$false -Encoding utf8
+Set-Content -Path $Manifest -Value $sortedLines -NoNewline:$false -Encoding utf8
 
 if ($tmp) { Remove-Item $tmp -Recurse -Force }
 Write-Host ""
