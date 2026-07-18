@@ -5,6 +5,16 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.7.0] — 2026-07-18
+
+### Changed
+- **`devops-engineer` now runs on `opus`** (was `sonnet`). Its responsibility zone —
+  CI/CD pipelines, IaC, and deployment automation — is high-blast-radius and, unlike the
+  `python`/`php-developer` builders, its output passes through no reviewer agent. Aligning it
+  with the repo's other critical-zone agents (architect, reviewers, backlog-planner,
+  data-analyst) raises quality where mistakes are most costly.
+  ([agents/devops-engineer.md](agents/devops-engineer.md))
+
 ## [1.6.0] — 2026-07-16
 
 ### Added

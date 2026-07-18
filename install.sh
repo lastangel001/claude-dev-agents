@@ -29,7 +29,7 @@ fi
 if [ -n "$SCRIPT_DIR" ] && [ -f "${SCRIPT_DIR}/VERSION" ]; then
   VERSION="$(tr -d '[:space:]' < "${SCRIPT_DIR}/VERSION")"
 else
-  VERSION="1.6.0"
+  VERSION="1.7.0"
 fi
 REPO="lastangel001/claude-dev-agents"
 

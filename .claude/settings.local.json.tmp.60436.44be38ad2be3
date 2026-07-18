@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git fetch *)",
+      "Bash(git pull *)",
+      "Skill(claude-api)",
+      "Bash(git ls-remote *)",
+      "Bash(git checkout *)",
+      "Bash(git merge *)",
+      "Bash(bash test/version-check.sh)",
+      "Bash(bash test/smoke.sh)",
+      "Bash(command -v pwsh)",
+      "Bash(bash test/parity.sh)",
+      "Bash(git --no-pager diff --stat)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git tag *)",
+      "Bash(git push *)"
+    ]
+  }
+}
