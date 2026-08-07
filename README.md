@@ -1,8 +1,8 @@
 # claude-dev-agents
 
-![version](https://img.shields.io/badge/version-1.8.0-blue)
+![version](https://img.shields.io/badge/version-1.9.0-blue)
 
-Curated [Claude Code](https://claude.com/claude-code) **subagents** and **skills** for software development — a language-agnostic systems architect plus strictly-typed, tested, idiomatic PHP and Python builders with built-in reviewers, and a front-end reviewer for JavaScript/TypeScript and Vue.
+Curated [Claude Code](https://claude.com/claude-code) **subagents** and **skills** for software development — a language-agnostic systems architect plus strictly-typed, tested, idiomatic PHP and Python builders with built-in reviewers, a front-end reviewer for JavaScript/TypeScript and Vue, and language-agnostic review roles for cross-service contracts and for verifying findings before they reach the author.
 
 > Check installed version: `./install.sh --version` (or `.\install.ps1 -Version`).
 
@@ -13,6 +13,7 @@ Curated [Claude Code](https://claude.com/claude-code) **subagents** and **skills
 |-------|---------|
 | `architect` | Language-agnostic systems architect — designs, trade-offs, ADRs grounded in the real codebase; writes docs/ADRs, never code |
 | `backlog-planner` | Scans the codebase and produces a consistently-structured, ICE-prioritized development backlog (pain · impact · effort) at `docs/backlog/BACKLOG.md`; docs only, never code (read-only git for dates/hashes) |
+| `contract-reviewer` | Cross-boundary contract reviewer — for every changed call leaving the module (service, SDK, HTTP/RPC API, queue) opens the callee's real implementation and proves four gates: parameter accepted, value honoured, format interpreted identically, response shape as read; language-agnostic |
 | `data-analyst` | Turns a raw dataset (xlsx/csv/json) into a self-contained one-page HTML report — KPI cards, inline-SVG charts, full metrics table; every metric as absolute + % |
 | `devops-engineer` | DevOps builder — CI/CD pipelines (GitHub Actions/GitLab CI/Jenkins), Dockerfiles, Kubernetes/Helm, IaC (Terraform/Ansible), deployment strategies with rollback, observability, build/pipeline performance; pinned, least-privilege, idempotent automation |
 | `facilitator` | Designs facilitation sessions, workshops and brainstorms — classifies the meeting (base / strategic / global), sets rational + existential goals and pyramid level, drafts the main question, a timed scenario grid, a question bank, run-time lifehacks and risk profiling; outputs one Markdown meeting plan in the request's language |
@@ -21,6 +22,7 @@ Curated [Claude Code](https://claude.com/claude-code) **subagents** and **skills
 | `php-reviewer` | PHP reviewer — PSR-12, strict types, security (SQLi/XSS/CSRF), framework patterns |
 | `python-developer` | Python 3.11+ builder — FastAPI/Flask/Django, async, CLI, data pipelines |
 | `python-reviewer` | Python reviewer — PEP 8, type hints, security, performance |
+| `review-verifier` | Adversarial verifier for review findings — tries to refute each claim against the code and returns CONFIRMED / REFUTED / OVERSTATED / UNPROVEN with cited evidence; burden of proof on the finding, so unproven claims never reach the author |
 
 ### Skills (`skills/`)
 | Skill | Purpose |
@@ -119,7 +121,14 @@ After install, restart Claude Code (or start a new session). Agents are invoked 
 ```
 > use the architect agent to design the data sync between service A and B
 > use the php-developer agent to build a Laravel webhook controller
+> use the contract-reviewer agent on this diff — it calls the billing service
+> use the review-verifier agent on the findings above before I post them
 ```
+
+The two review roles compose with the language reviewers rather than replacing them: run
+`php-reviewer`/`python-reviewer`/`js-reviewer` for the code, `contract-reviewer` for what the code says to the
+other side of a boundary, then `review-verifier` over the combined findings before anything is
+published to the author.
 
 Skills activate automatically based on their description, or via the `Skill` tool.
 
