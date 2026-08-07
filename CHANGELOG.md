@@ -5,6 +5,36 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.10.0] — 2026-08-07
+
+### Added
+- **`ru-output-style` skill** — style guard for Russian prose written for humans: findings,
+  verdicts, summaries, meeting-plan narratives, final chat replies. Thin `SKILL.md` (hard-ban
+  list, forbidden synonym swaps, quick rules for findings) + `references/patterns.md` — a
+  distilled catalog of 37 AI-slop patterns by family (канцелярит, AI-словарь, structural hard
+  bans, communication register, grammatical calques, rhythm) with markers, cures and до/после
+  examples. Cluster rule: one marker means nothing, three from different families reads as
+  machine output; hard bans (negative parallelisms «не просто X, а Y», long dash «—», math
+  signs in prose, chopped drama, «подводя итог» closings) fail even alone. Explicit
+  non-targets: numbers/terms, quotes, questions addressed to people, tables/axis labels/code,
+  legal/academic register. Distilled from [smixs/humanizer-ru](https://github.com/smixs/humanizer-ru)
+  (MIT) — install that skill separately for *editing* existing text (3-phase pipeline,
+  deterministic linter, detect mode); this is the write-time prevention subset.
+  ([skills/ru-output-style/](skills/ru-output-style/))
+
+### Changed
+- **`data-analyst` and `facilitator` guard their Russian prose** — hybrid wiring, same
+  architecture as the language agents and `php`/`python-patterns`: an inline ~10-line
+  hard-ban block in each agent (guaranteed — lives in the agent's system prompt, applies
+  even when the skill is not installed) plus a mandatory step to read the `ru-output-style`
+  skill (Glob + Read — subagents have no Skill tool) for the full catalog before writing
+  Russian prose. `data-analyst`: verdict, key findings, caveats, final chat reply; a finding
+  is a number, not an assessment («41% ошибок (127 из 310) приходит из канала X», not
+  «канал X демонстрирует ключевую роль»). `facilitator`: plan narrative, lifehacks, risks,
+  after-phase, chat reply — with an explicit exemption for the question bank (questions
+  addressed to the group are the deliverable, not rhetoric).
+  ([agents/data-analyst.md](agents/data-analyst.md), [agents/facilitator.md](agents/facilitator.md))
+
 ## [1.9.0] — 2026-08-07
 
 ### Added

@@ -59,10 +59,12 @@ assert_eq "BL-005 repo slug parity (sh vs ps1)" "$SH_REPO" "$PS_REPO"
 pass "BL-005 slug parity: $SH_REPO"
 
 # BL-005 README add-on: every github.com / raw.githubusercontent.com URL in README.md
-# must use the same owner/repo slug as the installers.
-# Extract "owner/repo" from all GitHub URL occurrences; each must equal $SH_REPO.
+# must use the same owner/repo slug as the installers — except attribution links to
+# external projects, listed explicitly below (space-separated).
+README_SLUG_ALLOWLIST="smixs/humanizer-ru"
 BAD_README_SLUGS=""
 while IFS= read -r slug; do
+  case " ${README_SLUG_ALLOWLIST} " in *" ${slug} "*) continue ;; esac
   [ "$slug" = "$SH_REPO" ] || BAD_README_SLUGS="${BAD_README_SLUGS}\n  unexpected: '${slug}'"
 done < <(grep -oE '(github\.com|raw\.githubusercontent\.com)/[^/]+/[^/ )]+' \
            "${REPO_ROOT}/README.md" \
