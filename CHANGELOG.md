@@ -5,6 +5,38 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.9.0] — 2026-08-07
+
+### Added
+- **`contract-reviewer` agent** — language-agnostic reviewer for the one defect class the language
+  reviewers structurally cannot see: the agreement between a call and the code on the other side of
+  a boundary (service, cross-repo sync API, SDK, HTTP/RPC/GraphQL, queue). For every changed
+  boundary call it locates the callee's real source and proves four gates — the parameter is
+  **accepted** (the callee reads that name at all), the value is **honoured** (it is in the set the
+  callee acts on, not silently defaulted), the format is **interpreted** identically on both sides
+  (timezone of a naive datetime, seconds vs milliseconds, inclusive vs exclusive bound, 0- vs
+  1-based offset), and the response shape is what the caller **reads** (map vs list, error channel,
+  conditionally present fields). Includes a defect catalog (silent no-op parameter, decorative
+  validation, dropped scoping argument, unbounded cost amplified downstream, error-channel
+  mismatch, default drift), a reference-caller comparison step, recipes for finding the callee
+  (vendor dirs, sibling checkouts, proto/OpenAPI/GraphQL schemas), and a hard rule that a claim
+  without a callee quote goes to `Unverified assumptions` rather than into the findings. These
+  defects survive linters, type checkers, and mocked tests — the mock encodes the caller's
+  assumption, which is exactly what is under review.
+  ([agents/contract-reviewer.md](agents/contract-reviewer.md))
+- **`review-verifier` agent** — adversarial second pass over a finding list from any source
+  (reviewer agent, static analyser, colleague, earlier session). It tries to **refute** each claim
+  against the code and returns `CONFIRMED` / `REFUTED` / `OVERSTATED` / `UNPROVEN` with cited
+  evidence, on the principle that the burden of proof sits on the finding: what cannot be proven is
+  not published as a defect. Refutation checklist (guard one frame up, real types, the callee's
+  actual behaviour, framework defaults, reachability, tests that use the real dependency, revision
+  drift, documented-as-intentional), symmetric evidence bar for refutation and confirmation,
+  severity budget with explicit `not attempted` instead of silent truncation, and an output split
+  into *publish* / *retracted* / *open questions*. Deliberately narrow: it verifies, it does not
+  discover, so a second pair of eyes cannot add a second layer of unverified claims. Findings it
+  receives are treated as untrusted data, not instructions.
+  ([agents/review-verifier.md](agents/review-verifier.md))
+
 ## [1.8.0] — 2026-08-07
 
 ### Added
