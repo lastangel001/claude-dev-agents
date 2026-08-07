@@ -5,6 +5,34 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.8.0] — 2026-08-07
+
+### Added
+- **`js-reviewer` agent** — front-end reviewer for JavaScript/TypeScript and Vue (Vue 3 Options and
+  Composition API, Vue 2, Nuxt, framework-free browser code), filling the gap left by the PHP and
+  Python reviewers. Two steps precede the checklist, and both exist because skipping them is how
+  front-end review usually goes wrong: **detect the stack** (a repo often holds several apps of
+  different ages — proposing `<script setup>` in a 500-file Options API codebase, or Composition API
+  in Vue 2, is the most common failure mode), and **read the linter** — not only to avoid repeating
+  it, but to find where its coverage silently ends (a flat config whose single `files: ['**/*.vue']`
+  block leaves every `.js` unchecked; `ignores` nested inside a `files` block and therefore not
+  global; `--ext` in an npm script, ignored by ESLint 9; `vue3-essential` never extended, so
+  `require-v-for-key`, `no-mutating-props` and `no-side-effects-in-computed-properties` are off; a
+  config no CI job runs). A coverage gap is itself a finding, and it tells the reviewer which checks
+  to perform by hand.
+
+  The checklist targets what tooling cannot see: XSS through `v-html`/`innerHTML`/
+  `dangerouslySetInnerHTML` traced to its data source (with the deliberate server-sanitised-markup
+  case explicitly listed as a false positive), URL and `postMessage` sinks, secrets inlined into the
+  bundle; HTTP status ignored because `fetch` resolves on 4xx/5xx, swallowed rejections, unhandled
+  aborts, request races in search/filter inputs; leaks that only matter in a tab left open for hours
+  — listeners, timers, observers, and third-party chart/map/editor instances never destroyed on
+  unmount; Vue correctness (`v-for` keys, prop mutation, side effects in `computed`, reactivity loss
+  on destructuring, factory defaults); component contracts (`emits`, `$refs`, two-way binding);
+  store discipline; SSR/hydration; and a11y basics. Plus eleven front-end-specific false positives
+  and a rule that code slated for deletion gets correctness review, not modernisation advice.
+  ([agents/js-reviewer.md](agents/js-reviewer.md))
+
 ## [1.7.0] — 2026-07-18
 
 ### Changed
