@@ -1,5 +1,8 @@
-# Claude Code local project settings — not for distribution
+# Claude Code local project settings — not for distribution.
+# The .tmp.<pid>.<hash> siblings are atomic-write leftovers; without this glob
+# a `git add -A` sweeps them into a commit (happened once, see 2631a8e).
 .claude/settings.local.json
+.claude/settings.local.json.tmp.*
 
 # Private learning materials — not for distribution (facilitator agent carries the
 # expertise inline; the source PDFs/xlsx are reference-only and stay local)
