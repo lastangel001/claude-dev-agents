@@ -1,6 +1,6 @@
 # claude-dev-agents
 
-![version](https://img.shields.io/badge/version-1.10.0-blue)
+![version](https://img.shields.io/badge/version-1.10.1-blue)
 
 Curated [Claude Code](https://claude.com/claude-code) **subagents** and **skills** for software development — a language-agnostic systems architect plus strictly-typed, tested, idiomatic PHP and Python builders with built-in reviewers, a front-end reviewer for JavaScript/TypeScript and Vue, and language-agnostic review roles for cross-service contracts and for verifying findings before they reach the author.
 

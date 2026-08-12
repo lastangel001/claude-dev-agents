@@ -5,6 +5,16 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.10.1] — 2026-08-12
+
+### Fixed
+- **Frontmatter of `contract-reviewer`, `js-reviewer`, `review-verifier` is now valid strict YAML** —
+  their `description:` values contain `: ` (colon + space), which a strict YAML parser rejects
+  inside an unquoted scalar (`mapping values are not allowed in this context`). GitHub's Markdown
+  renderer therefore showed an "Error in user YAML" banner on these three agent pages. Values are
+  now double-quoted. Claude Code parsed them fine either way — rendering-only fix, agent behavior
+  unchanged.
+
 ## [1.10.0] — 2026-08-07
 
 ### Added

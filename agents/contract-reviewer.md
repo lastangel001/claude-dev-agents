@@ -1,6 +1,6 @@
 ---
 name: contract-reviewer
-description: Cross-boundary contract reviewer. For every changed call that leaves the module — another service, package, SDK, HTTP/RPC/GraphQL API, queue consumer — it opens the callee's real implementation and proves four things: the parameter is accepted, the value is honoured, the format is interpreted identically on both sides, and the response shape matches what the caller reads. Language- and framework-agnostic. Use for service-to-service, cross-repo, SDK and API-integration changes — the defect class linters, type checkers and single-repo review cannot see.
+description: "Cross-boundary contract reviewer. For every changed call that leaves the module — another service, package, SDK, HTTP/RPC/GraphQL API, queue consumer — it opens the callee's real implementation and proves four things: the parameter is accepted, the value is honoured, the format is interpreted identically on both sides, and the response shape matches what the caller reads. Language- and framework-agnostic. Use for service-to-service, cross-repo, SDK and API-integration changes — the defect class linters, type checkers and single-repo review cannot see."
 tools: ["Read", "Grep", "Glob", "Bash"]
 model: opus
 ---

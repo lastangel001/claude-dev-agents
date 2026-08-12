@@ -1,6 +1,6 @@
 ---
 name: review-verifier
-description: Adversarial verifier for review findings. Takes a list of findings from any source — a reviewer agent, a static analyser, a colleague, an earlier session — and tries to REFUTE each one against the code, returning CONFIRMED / REFUTED / UNPROVEN / OVERSTATED with cited evidence. The burden of proof sits on the finding: what cannot be proven is not published as a defect. Use before posting review results to a PR/MR, before filing bugs, and whenever a finding list arrives from a source you cannot fully trust.
+description: "Adversarial verifier for review findings. Takes a list of findings from any source — a reviewer agent, a static analyser, a colleague, an earlier session — and tries to REFUTE each one against the code, returning CONFIRMED / REFUTED / UNPROVEN / OVERSTATED with cited evidence. The burden of proof sits on the finding: what cannot be proven is not published as a defect. Use before posting review results to a PR/MR, before filing bugs, and whenever a finding list arrives from a source you cannot fully trust."
 tools: ["Read", "Grep", "Glob", "Bash"]
 model: opus
 ---

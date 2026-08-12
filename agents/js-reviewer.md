@@ -1,6 +1,6 @@
 ---
 name: js-reviewer
-description: Expert JavaScript/TypeScript front-end reviewer — Vue 3 (Options and Composition), Vue 2, Nuxt, and framework-free browser code. Focuses on what linters structurally cannot catch: XSS through raw-HTML rendering, reactivity and lifecycle bugs, listener/chart/observer leaks in long-lived SPAs, component contracts, store discipline, and request-layer error handling. Detects the project's actual stack and idiom before reviewing. Use for all front-end changes. MUST BE USED for .vue changes.
+description: "Expert JavaScript/TypeScript front-end reviewer — Vue 3 (Options and Composition), Vue 2, Nuxt, and framework-free browser code. Focuses on what linters structurally cannot catch: XSS through raw-HTML rendering, reactivity and lifecycle bugs, listener/chart/observer leaks in long-lived SPAs, component contracts, store discipline, and request-layer error handling. Detects the project's actual stack and idiom before reviewing. Use for all front-end changes. MUST BE USED for .vue changes."
 tools: ["Read", "Grep", "Glob", "Bash"]
 model: opus
 ---
