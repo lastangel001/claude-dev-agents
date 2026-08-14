@@ -1,6 +1,6 @@
 # claude-dev-agents
 
-![version](https://img.shields.io/badge/version-1.10.1-blue)
+![version](https://img.shields.io/badge/version-1.11.0-blue)
 
 Curated [Claude Code](https://claude.com/claude-code) **subagents** and **skills** for software development — a language-agnostic systems architect plus strictly-typed, tested, idiomatic PHP and Python builders with built-in reviewers, a front-end reviewer for JavaScript/TypeScript and Vue, and language-agnostic review roles for cross-service contracts and for verifying findings before they reach the author.
 
@@ -11,6 +11,7 @@ Curated [Claude Code](https://claude.com/claude-code) **subagents** and **skills
 ### Agents (`agents/`)
 | Agent | Purpose |
 |-------|---------|
+| `analyst-writer` | Business + systems analyst with a technical writer's craft — turns research results, task breakdowns and incident post-mortems into business-readable narratives (business layer first, technical appendix after), runs requirements analysis with fact/assumption separation and prioritized clarifying questions, drafts tracker-ready tasks (created only after user approval); deliverables: Markdown or self-contained interactive HTML (inline JS controls, MathML/SVG formulas) |
 | `architect` | Language-agnostic systems architect — designs, trade-offs, ADRs grounded in the real codebase; writes docs/ADRs, never code |
 | `backlog-planner` | Scans the codebase and produces a consistently-structured, ICE-prioritized development backlog (pain · impact · effort) at `docs/backlog/BACKLOG.md`; docs only, never code (read-only git for dates/hashes) |
 | `contract-reviewer` | Cross-boundary contract reviewer — for every changed call leaving the module (service, SDK, HTTP/RPC API, queue) opens the callee's real implementation and proves four gates: parameter accepted, value honoured, format interpreted identically, response shape as read; language-agnostic |

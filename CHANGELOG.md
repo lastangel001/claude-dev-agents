@@ -5,6 +5,26 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.11.0] — 2026-08-14
+
+### Added
+- **`analyst-writer` agent** — business + systems analyst with a technical writer's craft.
+  Three modes: **Explain** (research results, task breakdowns, incident post-mortems as
+  business-readable narratives — business layer first with impact in business units,
+  technical appendix after, trigger/root-cause/contributing factors separated), **Analyze**
+  (requirements analysis: facts vs assumptions vs open questions labeled explicitly,
+  completeness checklist, contradictions named, prioritized clarifying questions grouped by
+  addressee and ordered by blocking power), **Draft-task** (learns the project's tracker
+  rules first, drafts title/context/scope/acceptance criteria, creates issues **only after
+  the user approves the shown text**, never modifies existing issues). Deliverables:
+  Markdown or self-contained interactive HTML — inline CSS/vanilla JS, MathML/inline-SVG
+  formulas (no CDN renderers), tabs/collapsibles/what-if controls that degrade gracefully.
+  Guards its Russian prose the same hybrid way as `data-analyst`/`facilitator`: inline
+  hard-ban block + mandatory `ru-output-style` skill read. Intentionally declares no
+  `tools:` list — inherits all session tools, including tracker MCPs (Jira/GitLab) when
+  present. Model: opus (prose quality is the product).
+  ([agents/analyst-writer.md](agents/analyst-writer.md))
+
 ## [1.10.1] — 2026-08-12
 
 ### Fixed
