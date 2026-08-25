@@ -8,6 +8,10 @@
 # expertise inline; the source PDFs/xlsx are reference-only and stay local)
 examples/
 
+# Per-session working outputs (meeting plans, drafts) — personal, stay local;
+# a `git add -A` almost swept one into a release commit (v1.12.0, caught pre-push)
+docs/sessions/
+
 # OS / editor cruft
 .DS_Store
 Thumbs.db
