@@ -5,6 +5,37 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.12.0] — 2026-08-25
+
+### Added
+- **`ru-output-style`: deterministic linter** ([skills/ru-output-style/scripts/lint-ru.sh](skills/ru-output-style/scripts/lint-ru.sh)) —
+  regex/awk pass over saved Russian prose: exit 1 on any hard ban (negative parallelisms
+  incl. «как X, так и Y», em/en dash + HTML entities, arrows/`vs` in prose, «подводя итог»
+  closings, colon reveals, chatbot artifacts, emoji/dingbats, `---` separators), warnings
+  on AI-lexicon («является», «ключевой», «данный», pseudo-depth…), a rule-of-three
+  heuristic, and rhythm metrics (no short sentence ≤8 words, ≥4 same-length sentences in a
+  row). Skips YAML frontmatter, fenced code, inline code, Markdown tables; `--html` mode
+  (auto for `*.html`) also skips tags, `<script>`/`<style>` and `<table>` content.
+  `--strict` makes warnings fail. POSIX awk + bash, no GNU-only flags.
+- **`ru-output-style`: gold examples** ([skills/ru-output-style/references/gold.md](skills/ru-output-style/references/gold.md)) —
+  positive corpus: one exemplary paragraph per genre (data finding, review verdict,
+  business research summary, meeting-plan fragment, final chat reply) with a short "why it
+  works" note each; models imitate examples better than they obey ban lists. The file
+  passes its own linter.
+- **`ru-output-style`: mandatory final check** (adapted from
+  [blader/humanizer](https://github.com/blader/humanizer)'s verification phase) — two
+  questions before delivering: "what still reads as AI-generated" and "did the style pass
+  add or lose any fact, number, name, date, quote, or claim"; plus a
+  **preserve-human-details list** (odd concrete details, mixed judgments, dated slang,
+  uneven rhythm, self-corrections, deliberate first person) that a style pass must not
+  sterilize.
+
+### Changed
+- **`data-analyst`, `facilitator`, `analyst-writer`** — their Russian-prose guard now also
+  mandates the two-question final check and running `lint-ru.sh` on the saved deliverable
+  (fix every BAN before delivering; warnings are a judgment call), and routes to
+  `references/gold.md` for the genre's gold example.
+
 ## [1.11.0] — 2026-08-14
 
 ### Added

@@ -61,7 +61,7 @@ pass "BL-005 slug parity: $SH_REPO"
 # BL-005 README add-on: every github.com / raw.githubusercontent.com URL in README.md
 # must use the same owner/repo slug as the installers — except attribution links to
 # external projects, listed explicitly below (space-separated).
-README_SLUG_ALLOWLIST="smixs/humanizer-ru"
+README_SLUG_ALLOWLIST="smixs/humanizer-ru blader/humanizer"
 BAD_README_SLUGS=""
 while IFS= read -r slug; do
   case " ${README_SLUG_ALLOWLIST} " in *" ${slug} "*) continue ;; esac

@@ -67,8 +67,15 @@ the group are the deliverable, not rhetoric. The bans govern the narrative prose
 
 Before writing the Russian prose, read the `ru-output-style` skill for the full catalog:
 locate via Glob (`**/skills/ru-output-style/SKILL.md` under `~/.claude/` or the project's
-`.claude/`), read `SKILL.md`, open `references/patterns.md` for long plans. If the skill is
-not installed, the ban list above still applies in full.
+`.claude/`), read `SKILL.md`, open `references/patterns.md` for long plans and
+`references/gold.md` for the meeting-plan gold example. If the skill is not installed, the
+ban list above still applies in full.
+
+After writing, the skill's final check is mandatory: (1) what still reads as AI-generated —
+rewrite it, don't synonymize; (2) the style pass must not have added or lost a single fact,
+name, number, timing, or quote. When the plan is saved to a file, run the skill's
+deterministic linter (`bash <skill-dir>/scripts/lint-ru.sh <plan.md>`) and fix every BAN
+before delivering. Skill not installed — skip the linter, keep the two-question check.
 
 ## Core model of facilitation
 

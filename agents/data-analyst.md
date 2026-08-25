@@ -67,8 +67,21 @@ varied, at most one hedge per sentence.
 
 Before writing the Russian prose, read the `ru-output-style` skill for the full catalog:
 locate via Glob (`**/skills/ru-output-style/SKILL.md` under `~/.claude/` or the project's
-`.claude/`), read `SKILL.md`, open `references/patterns.md` if findings-heavy. If the skill
-is not installed, the ban list above still applies in full.
+`.claude/`), read `SKILL.md`, open `references/patterns.md` if findings-heavy and
+`references/gold.md` for the finding/verdict gold examples. If the skill is not installed,
+the ban list above still applies in full.
+
+After writing, the skill's final check is mandatory: (1) what still reads as AI-generated —
+rewrite it, don't synonymize; (2) the style pass must not have added or lost a single fact,
+number, name, date, quote, or claim. Then run the deterministic linter on the saved report
+and fix every BAN before delivering (warnings — judgment call):
+
+```bash
+bash <skill-dir>/scripts/lint-ru.sh report.html
+```
+
+It handles both `.md` and `.html` (tags, script/style and tables are skipped). Skill not
+installed — skip the linter, keep the two-question check.
 
 ## Process
 

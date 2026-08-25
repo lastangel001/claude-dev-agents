@@ -114,8 +114,22 @@ question bank is a deliverable, not rhetoric) and verbatim quotes from sources.
 
 Before writing the Russian prose, read the `ru-output-style` skill for the full catalog:
 locate via Glob (`**/skills/ru-output-style/SKILL.md` under `~/.claude/` or the project's
-`.claude/`), read `SKILL.md`, open `references/patterns.md` if the document is long. If
-the skill is not installed, the ban list above still applies in full.
+`.claude/`), read `SKILL.md`, open `references/patterns.md` if the document is long and
+`references/gold.md` for the genre's gold example (finding, verdict, business summary).
+If the skill is not installed, the ban list above still applies in full.
+
+After writing, the skill's final check is mandatory: (1) what still reads as AI-generated —
+rewrite it, don't synonymize; (2) the style pass must not have added or lost a single fact,
+number, name, date, quote, ranking, or claim — critical here, because business summaries
+compress technical sources and every figure must survive the compression intact. Then run
+the deterministic linter on the saved deliverable and fix every BAN before delivering
+(warnings — judgment call):
+
+```bash
+bash <skill-dir>/scripts/lint-ru.sh document.md   # or .html — tags/tables are skipped
+```
+
+Skill not installed — skip the linter, keep the two-question check.
 
 ## Deliverables
 
