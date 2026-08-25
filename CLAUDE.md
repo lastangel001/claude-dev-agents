@@ -11,6 +11,14 @@ Entry point for Claude Code agents working on this repo.
 - `bash test/lint-ru-test.sh` — fixture regression for the ru-output-style linter (in CI)
 - `bash eval/ru-output-style/run-model-eval.sh` — model eval of the skill via `claude -p`
   (COSTS TOKENS, manual only, never CI; needs authenticated `claude` CLI)
+  - **Preferred way to run the model eval: subagents from an interactive session, NOT the
+    script.** Nested `claude -p` cannot refresh OAuth ("OAuth session expired and could
+    not be refreshed") and Andrey rejected the re-login flow. Pattern (validated
+    2026-08-25, skill 5/5 clean vs baseline 2/5 with bans): spawn 2 agents per prompt in
+    `eval/ru-output-style/prompts/` — one reads SKILL.md + references/patterns.md +
+    references/gold.md then answers, one answers bare — each Writes only the final
+    Russian text to `eval/out/<prompt>.{skill,baseline}.md`; then lint every file with
+    `bash skills/ru-output-style/scripts/lint-ru.sh` and report bans/warnings per pair.
 - `.\install.ps1` — reinstall into `~/.claude` (user scope)
 
 ## Release discipline (MUST)

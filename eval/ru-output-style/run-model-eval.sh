@@ -9,6 +9,11 @@
 # COSTS TOKENS — run manually, not in CI. The deterministic regression suite for
 # the linter itself is test/lint-ru-test.sh (free, runs in CI).
 #
+# NOTE: inside a Claude Code session prefer the subagent pattern over this script
+# (see CLAUDE.md, "run-model-eval" entry) — nested `claude -p` cannot refresh
+# OAuth and dies with "OAuth session expired and could not be refreshed". This
+# script remains for environments with a freshly authenticated CLI.
+#
 # Usage:
 #   bash eval/ru-output-style/run-model-eval.sh [--model NAME] [--baseline] [--strict]
 #     --model NAME   pass through to claude -p (default: CLI default model)
