@@ -128,6 +128,10 @@ for f in "${FILES[@]}"; do
         has("если копнуть")) warn("psevdoglubina")
     if (has("давайте разберёмся") || has("давайте разберемся") || has("погрузимся") || \
         has("Давайте разберёмся")) warn("anons vmesto dela")
+    if (has("может возразить") || has("вопреки распространённому") || has("вопреки распространенному") || \
+        has("может показаться, что") || has("Может показаться, что")) warn("zashchita ot nevydvinutykh vozrazhenij")
+    if (has("на момент написания") || has("На момент написания") || has("насколько известно") || \
+        has("Насколько известно") || has("по состоянию на сегодня")) warn("disklejmer o granitsakh znanij")
     if (match(line, /, [^ ,.:;!?()]+ и [^ .,!?]/) || \
         match(line, /, [^ ,.:;!?()]+ [^ ,.:;!?()]+ и [^ .,!?]/)) warn("pravilo tryokh (evristika: X, Y i Z)")
 
@@ -138,16 +142,24 @@ for f in "${FILES[@]}"; do
     # --- rhythm metrics on the accumulated prose ---------------------------
     n = split(buf, sents, /[.!?]+/)
     total = 0; minw = 100000; run = 1; maxrun = 1; prev = -100
+    afirst = ""; arun = 1; amaxrun = 1; aword = ""
     for (i = 1; i <= n; i++) {
-      w = 0
+      w = 0; first = ""
       m = split(sents[i], words, /[ \t]+/)
-      for (j = 1; j <= m; j++) if (words[j] != "") w++
+      for (j = 1; j <= m; j++) if (words[j] != "") { w++; if (first == "") first = words[j] }
       if (w < 3) continue                    # headers, list stubs, noise
       total++
       if (w < minw) minw = w
       d = w - prev; if (d < 0) d = -d
       if (d <= 2) { run++; if (run > maxrun) maxrun = run } else run = 1
       prev = w
+      # anaphora: 3+ consecutive sentences opening with the same word (pattern 39);
+      # skip list markers, digits and one-letter tokens
+      if (length(first) >= 3 && first !~ /^[-*0-9#>]/) {
+        if (first == afirst) { arun++; if (arun > amaxrun) { amaxrun = arun; aword = first } }
+        else arun = 1
+        afirst = first
+      } else { afirst = ""; arun = 1 }
     }
     if (total >= 6 && minw > 8) {
       warns++
@@ -156,6 +168,10 @@ for f in "${FILES[@]}"; do
     if (maxrun >= 4) {
       warns++
       printf "%s: WARN ritm: %d predlozhenij podryad odnoj dliny (+-2 slova) - monotonnost\n", fname, maxrun
+    }
+    if (amaxrun >= 3) {
+      warns++
+      printf "%s: WARN anafora: %d predlozhenij podryad nachinayutsya s \"%s\"\n", fname, amaxrun, aword
     }
 
     printf "lint-ru: %s - %d ban(s), %d warning(s)\n", fname, bans, warns

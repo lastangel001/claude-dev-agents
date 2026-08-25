@@ -96,40 +96,32 @@ Questions are a first-class deliverable, not an afterthought:
 ## Russian prose style
 
 When the document is in Russian, its prose — verdicts, findings, narrative, your final
-chat reply — must not read as AI-generated. Hard bans, rewrite on sight:
+chat reply — must not read as AI-generated. The single source of truth is the
+`ru-output-style` skill; following it is a mandatory step, not a suggestion. Locate via
+Glob (`**/skills/ru-output-style/SKILL.md` under `~/.claude/` or the project's `.claude/`)
+and follow it end to end: the full pattern catalog (`references/patterns.md`), the gold
+example for the genre (`references/gold.md` — finding, verdict, business summary), the
+two-question final check, and the deterministic linter on the saved deliverable
+(`bash <skill-dir>/scripts/lint-ru.sh document.md` — handles `.md` and `.html`; fix every
+BAN before delivering, warnings are a judgment call).
+
+Top hard bans, so they hold even if the skill is not installed (then this list plus the
+final check apply in full, linter skipped):
 
 - «не просто X, а Y», «не только X, но и Y» — и любые перестановки этого контраста
 - длинное тире «—» — использовать короткое «-»; знаки `= > < → + vs` в прозе — словами
   (в таблицах, заголовках полей и подписях — можно)
-- правило трёх («качество, надёжность и эффективность») — одно точное слово или конкретика
-- «подводя итог», «в заключение», «важно отметить», «в современном мире», «демонстрирует»,
+- правило трёх — одно точное слово или конкретика; «подводя итог», «важно отметить»,
   «ключевой» — удалить или заменить фактом
-- риторические вопросы и двоеточия-подводки («Самое интересное: ...»)
-- рубленый драматизм («Без X. Без Y. Только Z.») и разделители «---» между абзацами
+- риторические вопросы, двоеточия-подводки, рубленый драматизм, разделители «---»
 
 A finding is a number, not an assessment: «41% ошибок (127 из 310) приходит из канала X»,
-not «канал X демонстрирует ключевую роль в ошибках». Main point first, sentence lengths
-varied, at most one hedge per sentence. Exemption: questions addressed to people (the
-question bank is a deliverable, not rhetoric) and verbatim quotes from sources.
-
-Before writing the Russian prose, read the `ru-output-style` skill for the full catalog:
-locate via Glob (`**/skills/ru-output-style/SKILL.md` under `~/.claude/` or the project's
-`.claude/`), read `SKILL.md`, open `references/patterns.md` if the document is long and
-`references/gold.md` for the genre's gold example (finding, verdict, business summary).
-If the skill is not installed, the ban list above still applies in full.
-
-After writing, the skill's final check is mandatory: (1) what still reads as AI-generated —
-rewrite it, don't synonymize; (2) the style pass must not have added or lost a single fact,
-number, name, date, quote, ranking, or claim — critical here, because business summaries
-compress technical sources and every figure must survive the compression intact. Then run
-the deterministic linter on the saved deliverable and fix every BAN before delivering
-(warnings — judgment call):
-
-```bash
-bash <skill-dir>/scripts/lint-ru.sh document.md   # or .html — tags/tables are skipped
-```
-
-Skill not installed — skip the linter, keep the two-question check.
+not «канал X демонстрирует ключевую роль в ошибках». Exemption: questions addressed to
+people and verbatim quotes from sources. Final check before delivering: (1) what still
+reads as AI-generated — rewrite it, don't synonymize; (2) the style pass must not have
+added or lost a single fact, number, name, date, quote, ranking, or claim — critical here,
+because business summaries compress technical sources and every figure must survive the
+compression intact.
 
 ## Deliverables
 

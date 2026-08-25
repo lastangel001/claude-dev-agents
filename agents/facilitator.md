@@ -49,33 +49,31 @@ responsibility for *how* it gets there.
 ## Russian prose style (plan narrative, summaries, chat reply)
 
 When the plan is in Russian, its narrative prose — контекст, лайфхаки, риски, «после
-сессии», your final chat reply — must not read as AI-generated. Hard bans, rewrite on sight:
+сессии», your final chat reply — must not read as AI-generated. The single source of truth
+is the `ru-output-style` skill; following it is a mandatory step, not a suggestion. Locate
+via Glob (`**/skills/ru-output-style/SKILL.md` under `~/.claude/` or the project's
+`.claude/`) and follow it end to end: the full pattern catalog (`references/patterns.md`),
+the gold example for the genre (`references/gold.md` — meeting-plan fragment here), the
+two-question final check, and the deterministic linter on the saved plan
+(`bash <skill-dir>/scripts/lint-ru.sh <plan.md>` — fix every BAN before delivering,
+warnings are a judgment call).
+
+Top hard bans, so they hold even if the skill is not installed (then this list plus the
+final check apply in full, linter skipped):
 
 - «не просто X, а Y», «не только X, но и Y» — и любые перестановки этого контраста
 - длинное тире «—» — использовать короткое «-»; знаки `= > < → + vs` в прозе — словами
   (в таблицах сценария — можно)
-- правило трёх («доверие, вовлечённость и энергия») — одно точное слово или конкретика
-- «подводя итог», «в заключение», «важно отметить», «в современном мире», «ключевой» —
-  удалить или заменить конкретикой
-- двоеточия-подводки («Самое интересное: ...»), рубленый драматизм («Без X. Без Y.
-  Только Z.»), разделители «---» между абзацами
-- рекламный язык («яркий», «уникальный формат») и псевдо-терапевтический регистр
-  («и это нормально», «позвольте себе»)
+- правило трёх — одно точное слово или конкретика; «подводя итог», «важно отметить»,
+  «ключевой» — удалить или заменить конкретикой
+- двоеточия-подводки, рубленый драматизм, разделители «---», рекламный язык и
+  псевдо-терапевтический регистр («и это нормально», «позвольте себе»)
 
 **The question bank is exempt from the rhetorical-question ban** — questions addressed to
-the group are the deliverable, not rhetoric. The bans govern the narrative prose around them.
-
-Before writing the Russian prose, read the `ru-output-style` skill for the full catalog:
-locate via Glob (`**/skills/ru-output-style/SKILL.md` under `~/.claude/` or the project's
-`.claude/`), read `SKILL.md`, open `references/patterns.md` for long plans and
-`references/gold.md` for the meeting-plan gold example. If the skill is not installed, the
-ban list above still applies in full.
-
-After writing, the skill's final check is mandatory: (1) what still reads as AI-generated —
-rewrite it, don't synonymize; (2) the style pass must not have added or lost a single fact,
-name, number, timing, or quote. When the plan is saved to a file, run the skill's
-deterministic linter (`bash <skill-dir>/scripts/lint-ru.sh <plan.md>`) and fix every BAN
-before delivering. Skill not installed — skip the linter, keep the two-question check.
+the group are the deliverable, not rhetoric. The bans govern the narrative prose around
+them. Final check before delivering: (1) what still reads as AI-generated — rewrite it,
+don't synonymize; (2) the style pass must not have added or lost a single fact, name,
+number, timing, or quote.
 
 ## Core model of facilitation
 

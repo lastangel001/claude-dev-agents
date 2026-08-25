@@ -1,6 +1,6 @@
 # claude-dev-agents
 
-![version](https://img.shields.io/badge/version-1.12.0-blue)
+![version](https://img.shields.io/badge/version-1.13.0-blue)
 
 Curated [Claude Code](https://claude.com/claude-code) **subagents** and **skills** for software development — a language-agnostic systems architect plus strictly-typed, tested, idiomatic PHP and Python builders with built-in reviewers, a front-end reviewer for JavaScript/TypeScript and Vue, and language-agnostic review roles for cross-service contracts and for verifying findings before they reach the author.
 
@@ -31,7 +31,7 @@ Curated [Claude Code](https://claude.com/claude-code) **subagents** and **skills
 | `php-patterns` | Idiomatic PHP 8.3+ patterns — enums, readonly DTOs, repository/service layers, Laravel/Symfony, security, testing |
 | `python-patterns` | Idiomatic Python 3.11+ patterns — type hints, idioms, async/TaskGroup, FastAPI, tooling |
 | `facilitation-patterns` | Facilitation craft — goals pyramid, the main question, Strachan's questioning principles, method catalog (brainstorm, 6-3-5, 1-2-4-All, World Café, Liberating Structures, SWOT/SOAR, dot-voting…), preparation & the after-phase, online facilitation |
-| `ru-output-style` | Style guard for Russian prose written for humans (findings, verdicts, plans, summaries) — hard-bans the telltale AI-slop patterns (negative parallelisms, long dash, math signs in prose, rule of three, «подводя итог» closings) + a distilled 37-pattern catalog with cures, gold examples per genre (`references/gold.md`), a deterministic linter (`scripts/lint-ru.sh` — exit 1 on hard bans, rhythm-monotony and AI-lexicon warnings) and a mandatory final check (fact integrity + preserve-human-details, adapted from [blader/humanizer](https://github.com/blader/humanizer)); distilled from [smixs/humanizer-ru](https://github.com/smixs/humanizer-ru) (MIT) |
+| `ru-output-style` | Style guard for Russian prose written for humans (findings, verdicts, plans, summaries) — hard-bans the telltale AI-slop patterns (negative parallelisms, long dash, math signs in prose, rule of three, «подводя итог» closings) + a distilled 42-pattern catalog with cures, gold examples per genre (`references/gold.md`), a deterministic linter (`scripts/lint-ru.sh` — exit 1 on hard bans, rhythm-monotony and AI-lexicon warnings) and a mandatory final check (fact integrity + preserve-human-details, adapted from [blader/humanizer](https://github.com/blader/humanizer)); distilled from [smixs/humanizer-ru](https://github.com/smixs/humanizer-ru) (MIT) |
 
 Each skill is a thin `SKILL.md` entry point (principles digest + routing table) plus
 `references/*.md` read on demand — agents load only the sections the task needs instead

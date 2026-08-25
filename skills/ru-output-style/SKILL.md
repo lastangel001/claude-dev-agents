@@ -1,6 +1,6 @@
 ---
 name: ru-output-style
-description: Style guard for Russian prose written for humans — findings, verdicts, summaries, report text, meeting plans, chat replies. Hard-bans the telltale AI-slop patterns (negative parallelisms «не просто X, а Y», long dash «—», math signs in prose, rule of three, «подводя итог» closings, chopped drama, colon reveals), routes to a distilled catalog of 37 patterns with cures plus gold examples per genre, ships a deterministic linter (scripts/lint-ru.sh), and mandates a final fact-integrity check. Activate when writing Russian выводы, findings, резюме, verdict text, отчёт prose, план встречи, or any Russian text a person will read. Not for code, commit messages, English text, or legal/academic register (канцелярит там — жанр).
+description: Style guard for Russian prose written for humans — findings, verdicts, summaries, report text, meeting plans, chat replies. Hard-bans the telltale AI-slop patterns (negative parallelisms «не просто X, а Y», long dash «—», math signs in prose, rule of three, «подводя итог» closings, chopped drama, colon reveals), routes to a distilled catalog of 42 patterns with cures plus gold examples per genre, ships a deterministic linter (scripts/lint-ru.sh), and mandates a final fact-integrity check. Activate when writing Russian выводы, findings, резюме, verdict text, отчёт prose, план встречи, or any Russian text a person will read. Not for code, commit messages, English text, or legal/academic register (канцелярит там — жанр).
 ---
 
 # Russian Output Style (ru-output-style)
@@ -109,7 +109,7 @@ bash scripts/lint-ru.sh report.html      # HTML: теги, script/style и та�
 
 | Task at hand | Read |
 |---|---|
-| Full catalog: 37 patterns by family (канцелярит, AI-словарь, структура, коммуникация, ритм) with markers and cures | [references/patterns.md](references/patterns.md) |
+| Full catalog: 42 patterns by family (канцелярит, AI-словарь, структура, коммуникация, ритм) with markers and cures | [references/patterns.md](references/patterns.md) |
 | Gold examples: эталонные абзацы по жанрам (finding, вердикт, резюме, план встречи, ответ в чате) — прочитать пример своего жанра перед написанием | [references/gold.md](references/gold.md) |
 | Deterministic post-write check of a saved file | run [scripts/lint-ru.sh](scripts/lint-ru.sh) |
 

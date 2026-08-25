@@ -5,6 +5,29 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.13.0] — 2026-08-25
+
+### Added
+- **`ru-output-style`: 5 new catalog patterns (37 → 42)** in
+  [references/patterns.md](skills/ru-output-style/references/patterns.md):
+  канцелярские указатели и обёртки («данный», «в рамках», «на предмет»), анафора (3+
+  предложений подряд с одного слова), булет-листы вместо связной прозы, защита от
+  невыдвинутых возражений («хотя кто-то может возразить»), дисклеймеры о границах знаний
+  («на момент написания», «насколько известно»). Plus a standing maintenance rule: slop
+  spotted in real output goes into the catalog immediately as a before/after case, and
+  into the linter when it is deterministically catchable.
+- **`lint-ru.sh`: new checks** — WARN groups for unprompted-objection defenses and
+  knowledge-limit disclaimers, and an anaphora rhythm metric (3+ consecutive sentences
+  opening with the same word).
+
+### Changed
+- **Russian-prose guard blocks deduplicated** in `data-analyst`, `facilitator`,
+  `analyst-writer` — v1.12.0 showed the cost of three hand-maintained copies (one skill
+  change = three agent edits, wording already drifting). Each block now leads with "the
+  `ru-output-style` skill is the single source of truth, following it is mandatory" and
+  keeps only the top hard bans + the two-question final check as the not-installed
+  fallback. Future catalog/linter changes no longer require touching the agents.
+
 ## [1.12.0] — 2026-08-25
 
 ### Added
