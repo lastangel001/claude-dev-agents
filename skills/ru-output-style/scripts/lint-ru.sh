@@ -54,7 +54,10 @@ for f in "${FILES[@]}"; do
   case "$f" in *.html|*.htm) html=1 ;; esac
 
   set +e
-  awk -v fname="$f" -v html="$html" -v strict="$STRICT" \
+  # LC_ALL=C forces byte mode: in a UTF-8 locale gawk rejects the raw byte-prefix
+  # vars (emoji4 etc.) as invalid multibyte data and the emoji check never fires
+  # (caught by CI on ubuntu). Byte mode keeps fixed-string matching exact everywhere.
+  LC_ALL=C awk -v fname="$f" -v html="$html" -v strict="$STRICT" \
       -v emdash="$EMDASH" -v endash="$ENDASH" -v arrow="$ARROW" -v darrow="$DARROW" \
       -v emoji4="$EMOJI4" -v dingb1="$DINGB1" -v dingb2="$DINGB2" -v wsign="$WSIGN" \
       -v bom="$BOM" '

@@ -5,6 +5,15 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.14.1] — 2026-08-25
+
+### Fixed
+- **`lint-ru.sh` runs awk under `LC_ALL=C`** — in a UTF-8 locale (ubuntu CI) gawk rejects
+  the raw byte-prefix variables (emoji detection) as "Invalid multibyte data" and the
+  emoji check silently never fires; local Git Bash ran byte-mode and hid it. Byte mode
+  makes every fixed-string match locale-independent. Caught by the v1.14.0 fixture suite
+  on its very first CI run.
+
 ## [1.14.0] — 2026-08-25
 
 ### Added
