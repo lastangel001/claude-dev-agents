@@ -5,6 +5,29 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.14.0] — 2026-08-25
+
+### Added
+- **`ru-output-style` eval suite**, two tiers:
+  - **Deterministic linter regression** ([test/lint-ru-test.sh](test/lint-ru-test.sh) +
+    9 fixtures in [test/fixtures/lint-ru/](test/fixtures/lint-ru/)) — every hard-ban
+    family, warn lexicon, rhythm/anaphora metrics, `--strict`, skip zones (frontmatter,
+    fenced/inline code, tables) and HTML mode each pinned by a fixture with an `.expect`
+    file (`EXIT` / `STRICT_EXIT` / `HAS <substring>` directives, presence-based so new
+    linter checks don't break old fixtures). Wired into CI (static-bash job); the new
+    scripts are also under `bash -n`, shellcheck and the CRLF guard (now recursive over
+    `test/`, `skills/`, `eval/`).
+  - **Model eval** ([eval/ru-output-style/run-model-eval.sh](eval/ru-output-style/run-model-eval.sh) +
+    5 slop-bait prompts) — feeds Russian bait tasks (findings, business summary, incident,
+    meeting plan, chat reply) to `claude -p` with the full skill piped via stdin (a ~30 KB
+    system-prompt argument dies on Windows with "Argument list too long"), lints every
+    answer, reports pass rate; `--baseline` also runs each prompt without the skill for
+    the delta, `--strict` fails on warnings too, `--model` passes through. Guards against
+    empty/short answers so a failed CLI call reads FAIL, not false PASS. Costs tokens —
+    manual only, never CI. Answers land in `eval/out/` (gitignored).
+- **`lint-ru.sh`**: «по сути» / «в конечном счёте» now also caught capitalized
+  (sentence-initial position — found by the fixture suite).
+
 ## [1.13.0] — 2026-08-25
 
 ### Added

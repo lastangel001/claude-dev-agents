@@ -8,6 +8,9 @@ Entry point for Claude Code agents working on this repo.
 - `powershell -NoProfile -File test/smoke.ps1` — same, PS 5.1
 - `bash test/version-check.sh` — VERSION/fallbacks/README-slug/tag consistency
 - `bash test/parity.sh` — bash vs pwsh7 manifest parity (needs pwsh on PATH; CI covers it)
+- `bash test/lint-ru-test.sh` — fixture regression for the ru-output-style linter (in CI)
+- `bash eval/ru-output-style/run-model-eval.sh` — model eval of the skill via `claude -p`
+  (COSTS TOKENS, manual only, never CI; needs authenticated `claude` CLI)
 - `.\install.ps1` — reinstall into `~/.claude` (user scope)
 
 ## Release discipline (MUST)

@@ -12,6 +12,9 @@ examples/
 # a `git add -A` almost swept one into a release commit (v1.12.0, caught pre-push)
 docs/sessions/
 
+# Model-eval answers (eval/ru-output-style/run-model-eval.sh) — regenerated per run
+eval/out/
+
 # OS / editor cruft
 .DS_Store
 Thumbs.db

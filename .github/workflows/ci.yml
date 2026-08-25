@@ -23,22 +23,26 @@ jobs:
       - name: CRLF guard
         # Fail if any .sh/.ps1/.md contains a Windows CR+LF line ending.
         # .gitattributes pins eol=lf for all three types; this defends it at CI time.
+        # skills/ and eval/ are scanned recursively (linter, fixtures, prompts).
         run: |
-          if grep -rlP '\r$' -- *.sh *.ps1 *.md test/*.sh test/*.ps1 2>/dev/null | grep -q .; then
+          if grep -rlP '\r$' -- *.sh *.ps1 *.md test skills eval 2>/dev/null | grep -q .; then
             echo "FAIL: CRLF line endings found in:" >&2
-            grep -rlP '\r$' -- *.sh *.ps1 *.md test/*.sh test/*.ps1 2>/dev/null >&2
+            grep -rlP '\r$' -- *.sh *.ps1 *.md test skills eval 2>/dev/null >&2
             exit 1
           fi
           echo "PASS: no CRLF in .sh/.ps1/.md"
 
       - name: Bash syntax parse
-        run: bash -n install.sh test/version-check.sh test/smoke.sh test/parity.sh
+        run: bash -n install.sh test/version-check.sh test/smoke.sh test/parity.sh test/lint-ru-test.sh skills/ru-output-style/scripts/lint-ru.sh eval/ru-output-style/run-model-eval.sh
 
       - name: shellcheck
-        run: shellcheck install.sh test/version-check.sh test/smoke.sh test/parity.sh
+        run: shellcheck install.sh test/version-check.sh test/smoke.sh test/parity.sh test/lint-ru-test.sh skills/ru-output-style/scripts/lint-ru.sh eval/ru-output-style/run-model-eval.sh
 
       - name: version-check.sh
         run: bash test/version-check.sh
+
+      - name: lint-ru-test.sh
+        run: bash test/lint-ru-test.sh
 
   # ---------------------------------------------------------------------------
   # Job B — BL-012 gate: PS 5.1 AST parse + -File smoke + PSScriptAnalyzer (Windows)

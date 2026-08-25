@@ -1,0 +1,14 @@
+EXIT 0
+STRICT_EXIT 1
+HAS WARN kantselyarit: dannyj (vmesto etot)
+HAS WARN izbeganie svyazki: yavlyaetsya / predstavlyaet soboj
+HAS WARN peregruzhennoe slovo: klyuchevoj
+HAS WARN shablonnyj perekhod: vazhno/sleduet/stoit otmetit
+HAS WARN kantselyarit: v ramkakh
+HAS WARN AI-glagol: demonstriruet/svidetelstvuet/sposobstvuet/podcherkivaet
+HAS WARN psevdoglubina
+HAS WARN stop-slova: v sovremennom mire / na segodnyashnij den / ...
+HAS WARN kantselyarit: osushchestvlyat
+HAS WARN zashchita ot nevydvinutykh vozrazhenij
+HAS WARN disklejmer o granitsakh znanij
+HAS 0 ban(s)

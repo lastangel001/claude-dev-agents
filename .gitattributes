@@ -10,3 +10,9 @@
 *.yml  text eol=lf
 *.yaml text eol=lf
 *.psd1 text eol=lf
+# Linter fixtures, expect files and eval prompts: the lint-ru awk pass matches
+# line-anchored patterns (e.g. ^---$) that a trailing \r silently breaks, so a
+# CRLF checkout would flip fixture results on Windows.
+*.expect text eol=lf
+*.txt    text eol=lf
+*.html   text eol=lf
