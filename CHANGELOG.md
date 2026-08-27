@@ -5,6 +5,40 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.15.0] — 2026-08-27
+
+### Added
+- **`qa-expert` agent** — QA strategist and test-coverage auditor (docs only, never
+  code). Three modes: (1) **strategy** at project/feature start — risk analysis, test-level
+  assignment (unit/integration/e2e) with rationale, testability check of acceptance
+  criteria, owners and exit criteria → `docs/qa/TEST-STRATEGY.md`; (2) **PR audit** —
+  behavioral coverage of the changed code, assertion quality, edge/error paths, flaky
+  patterns, gaps rated critical/important/nice-to-have; (3) **project audit** (designed
+  for scheduling) — coverage actuality: dead/skipped/`fixme` tests, suites stale vs
+  current functionality, coverage-tool runs, matrix refresh. Persists a fixed-skeleton
+  feature × level coverage matrix with stable `QA-NNN` ids to `docs/qa/COVERAGE-MATRIX.md`
+  (same id/retire discipline as backlog-planner) — the diff between runs IS the actuality
+  check. Hands unit gaps to developers, e2e gaps to `test-automator`, environment
+  blockers to `devops-engineer`.
+- **`test-automator` agent** — Playwright E2E builder. Recons the existing test setup
+  first (never builds a parallel suite), bootstraps missing toolchain itself
+  (`@playwright/test`, browsers, config with house defaults), writes stable tests (POM,
+  fixtures, `data-testid`/role locators, auto-waiting API only, `waitForTimeout` banned),
+  stabilizes before declaring done (`--repeat-each` protocol, trace-driven diagnosis,
+  quarantine only with an issue reference), and maintains the environment-requirements
+  spec for devops at `docs/qa/ENVIRONMENT.md` (fixed skeleton: runtime, browsers/OS deps,
+  test data & auth, secret names, CI execution, blockers). Destructive/financial flows
+  guarded from production; honest reporting of real run results only.
+- **`playwright-patterns` skill** — thin `SKILL.md` (7 core principles + quick-reference
+  table) routing to `references/`: `pom.md` (layout, Page Object Model, fixtures,
+  storageState auth, test data), `config.md` (baseline config with pinned
+  locale/timezone/viewport, decision notes, bootstrap commands), `flaky.md`
+  (identify/diagnose/cure by cause, quarantine rules), `ci-artifacts.md` (GitHub
+  Actions + GitLab CI, sharding, traces, report template), `critical-flows.md`
+  (financial/destructive guards, preview-then-confirm asserts, EIP-1193 wallet mocking).
+  Distilled and extended from the `examples/qa/` drafts (qa-expert, test-automator,
+  playwright-pro, e2e-runner, pr-test-analyzer, e2e-testing skill).
+
 ## [1.14.1] — 2026-08-25
 
 ### Fixed

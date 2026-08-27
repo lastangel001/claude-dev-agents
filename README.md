@@ -1,8 +1,8 @@
 # claude-dev-agents
 
-![version](https://img.shields.io/badge/version-1.14.1-blue)
+![version](https://img.shields.io/badge/version-1.15.0-blue)
 
-Curated [Claude Code](https://claude.com/claude-code) **subagents** and **skills** for software development — a language-agnostic systems architect plus strictly-typed, tested, idiomatic PHP and Python builders with built-in reviewers, a front-end reviewer for JavaScript/TypeScript and Vue, and language-agnostic review roles for cross-service contracts and for verifying findings before they reach the author.
+Curated [Claude Code](https://claude.com/claude-code) **subagents** and **skills** for software development — a language-agnostic systems architect plus strictly-typed, tested, idiomatic PHP and Python builders with built-in reviewers, a front-end reviewer for JavaScript/TypeScript and Vue, language-agnostic review roles for cross-service contracts and for verifying findings before they reach the author, and a QA pair: a coverage strategist/auditor and a Playwright E2E builder.
 
 > Check installed version: `./install.sh --version` (or `.\install.ps1 -Version`).
 
@@ -23,7 +23,9 @@ Curated [Claude Code](https://claude.com/claude-code) **subagents** and **skills
 | `php-reviewer` | PHP reviewer — PSR-12, strict types, security (SQLi/XSS/CSRF), framework patterns |
 | `python-developer` | Python 3.11+ builder — FastAPI/Flask/Django, async, CLI, data pipelines |
 | `python-reviewer` | Python reviewer — PEP 8, type hints, security, performance |
+| `qa-expert` | QA strategist and coverage auditor — test strategy at project/feature start (risk analysis, level assignment, testability of acceptance criteria → `docs/qa/TEST-STRATEGY.md`), PR test-coverage audit (behavioral coverage, assertion quality, edge/error paths), and a regular project audit of coverage actuality (dead/skipped tests, stale suites) persisting a stable-ID feature × level matrix to `docs/qa/COVERAGE-MATRIX.md`; docs only, never code |
 | `review-verifier` | Adversarial verifier for review findings — tries to refute each claim against the code and returns CONFIRMED / REFUTED / OVERSTATED / UNPROVEN with cited evidence; burden of proof on the finding, so unproven claims never reach the author |
+| `test-automator` | Playwright E2E builder — bootstraps the toolchain itself (`@playwright/test`, browsers, config), writes stable tests (POM, fixtures, data-testid, auto-waiting, no fixed timeouts), stabilizes flaky tests (`--repeat-each`, trace-driven diagnosis, referenced quarantine), prepares CI integration and writes the environment spec for devops at `docs/qa/ENVIRONMENT.md`; takes e2e gaps from qa-expert's matrix as its backlog |
 
 ### Skills (`skills/`)
 | Skill | Purpose |
@@ -32,6 +34,7 @@ Curated [Claude Code](https://claude.com/claude-code) **subagents** and **skills
 | `python-patterns` | Idiomatic Python 3.11+ patterns — type hints, idioms, async/TaskGroup, FastAPI, tooling |
 | `facilitation-patterns` | Facilitation craft — goals pyramid, the main question, Strachan's questioning principles, method catalog (brainstorm, 6-3-5, 1-2-4-All, World Café, Liberating Structures, SWOT/SOAR, dot-voting…), preparation & the after-phase, online facilitation |
 | `ru-output-style` | Style guard for Russian prose written for humans (findings, verdicts, plans, summaries) — hard-bans the telltale AI-slop patterns (negative parallelisms, long dash, math signs in prose, rule of three, «подводя итог» closings) + a distilled 42-pattern catalog with cures, gold examples per genre (`references/gold.md`), a deterministic linter (`scripts/lint-ru.sh` — exit 1 on hard bans, rhythm-monotony and AI-lexicon warnings) and a mandatory final check (fact integrity + preserve-human-details, adapted from [blader/humanizer](https://github.com/blader/humanizer)); distilled from [smixs/humanizer-ru](https://github.com/smixs/humanizer-ru) (MIT) |
+| `playwright-patterns` | Playwright E2E patterns — Page Object Model & fixtures, config house defaults (pinned locale/timezone/viewport, artifacts on failure), flaky-test diagnosis by cause with cures, CI integration (GitHub Actions/GitLab, sharding), critical-flow testing (financial/destructive guards, wallet/web3 mocking) |
 
 Each skill is a thin `SKILL.md` entry point (principles digest + routing table) plus
 `references/*.md` read on demand — agents load only the sections the task needs instead
@@ -125,6 +128,8 @@ After install, restart Claude Code (or start a new session). Agents are invoked 
 > use the php-developer agent to build a Laravel webhook controller
 > use the contract-reviewer agent on this diff — it calls the billing service
 > use the review-verifier agent on the findings above before I post them
+> use the qa-expert agent to audit test coverage on this PR
+> use the test-automator agent to cover the checkout flow with Playwright tests
 ```
 
 The two review roles compose with the language reviewers rather than replacing them: run
@@ -133,6 +138,12 @@ other side of a boundary, then `review-verifier` over the combined findings befo
 published to the author.
 
 Skills activate automatically based on their description, or via the `Skill` tool.
+
+The QA pair works as a loop: `qa-expert` owns the coverage matrix (`docs/qa/COVERAGE-MATRIX.md`) and
+hands e2e gaps to `test-automator`, which writes the Playwright tests and maintains the environment
+spec for devops (`docs/qa/ENVIRONMENT.md`). For a recurring actuality check, schedule qa-expert's
+project-audit mode in the target project (cron/scheduled task) — each run diffs the matrix against
+the previous one.
 
 ## Uninstall
 
