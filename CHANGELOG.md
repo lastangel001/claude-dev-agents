@@ -5,6 +5,19 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.16.1] — 2026-09-10
+
+### Fixed
+- **The pattern-46 check could never fire on a real `analyst-writer` deliverable.**
+  `lint-ru.sh` finds glossed terms by the exact markup `<a class="term" title="...">`,
+  but nothing told the agent to emit it, so it would pick its own tooltip mechanism
+  (`<abbr>`, `<span data-tip>`, footnotes) and the first-use check would stay silent on
+  every term — a clean run proving nothing. The agent's Interactive HTML spec now fixes
+  the markup (`<a class="term" href="#g-<slug>" title="...">` plus a glossary anchor and
+  the hint styling), and both the agent's pre-delivery step and the skill's linter section
+  say that any other mechanism disables the check.
+
+
 ## [1.16.0] — 2026-09-10
 
 ### Added

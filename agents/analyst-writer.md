@@ -136,7 +136,9 @@ blind to their own jargon. Run it on the finished text.
    either gets a gloss at its first occurrence, or leaves this layer.
 4. For an HTML deliverable, verify that each tooltip sits on the first occurrence of its
    term. `bash <skill-dir>/scripts/lint-ru.sh report.html` checks this deterministically
-   (pattern 46) and reports the line numbers of both occurrences.
+   (pattern 46) and reports the line numbers of both occurrences — but only for terms
+   marked up as `<a class="term" title="...">`, so use that markup and no other. A clean
+   linter run on a document with home-grown tooltips proves nothing.
 5. A stylistically clean text that the reader cannot parse is as defective as slop. Do not
    deliver it and call the style pass done.
 
@@ -203,6 +205,12 @@ its place (formulas the reader tweaks, a business/tech toggle, a long sortable t
   disk. `<meta charset="utf-8">` in `<head>` — mandatory for non-ASCII documents.
 - **Escape everything data-derived** — titles, labels, quoted log lines — so a stray `<`
   or `&` never breaks or injects into the page.
+- **Glossed terms use one fixed markup**: `<a class="term" href="#g-<slug>" title="<gloss
+  in 3–7 words>">термин</a>`, with the full definition under `id="g-<slug>"` in a glossary
+  section. Style it as a hint, not a link (`a.term{text-decoration:none; border-bottom:1px
+  dotted; cursor:help}`). This is not a stylistic preference: `lint-ru.sh` finds glossed
+  terms by exactly this markup and cannot verify first-use placement without it. Any other
+  tooltip mechanism silently disables the check.
 - **Formulas**: MathML (native in modern browsers) or inline SVG. Never external
   renderers (KaTeX/MathJax from CDN violate self-containment).
 - **Controls that earn their place**: tabs for the business/technical registers,
