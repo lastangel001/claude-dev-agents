@@ -1,6 +1,6 @@
 ---
 name: ru-output-style
-description: Style guard for Russian prose written for humans — findings, verdicts, summaries, report text, meeting plans, chat replies. Hard-bans the telltale AI-slop patterns (negative parallelisms «не просто X, а Y», long dash «—», math signs in prose, rule of three, «подводя итог» closings, chopped drama, colon reveals), routes to a distilled catalog of 42 patterns with cures plus gold examples per genre, ships a deterministic linter (scripts/lint-ru.sh), and mandates a final fact-integrity check. Activate when writing Russian выводы, findings, резюме, verdict text, отчёт prose, план встречи, or any Russian text a person will read. Not for code, commit messages, English text, or legal/academic register (канцелярит там — жанр).
+description: Style guard for Russian prose written for humans — findings, verdicts, summaries, report text, meeting plans, chat replies. Hard-bans the telltale AI-slop patterns (negative parallelisms «не просто X, а Y», long dash «—», math signs in prose, rule of three, «подводя итог» closings, chopped drama, colon reveals, deverbal adverb seams like «платя ростом»), guards reader comprehension (a term is glossed at its first use, not a later one), routes to a distilled catalog of 47 patterns with cures plus gold examples per genre, ships a deterministic linter (scripts/lint-ru.sh), and mandates a final check of fact integrity and parseability. Activate when writing Russian выводы, findings, резюме, verdict text, отчёт prose, план встречи, or any Russian text a person will read. Not for code, commit messages, English text, or legal/academic register (канцелярит там — жанр).
 ---
 
 # Russian Output Style (ru-output-style)
@@ -39,6 +39,11 @@ Finding any of these in your own draft is an automatic fail; rewrite before deli
 - **Рубленый драматизм**: «Без X. Без Y. Только Z.»
 - **Разделители «---»** между абзацами — границы задают заголовки
 - **Резюмирующие закрытия**: «подводя итог», «в заключение», «в целом можно сказать»
+- **Неупотребимые деепричастия**: «платя», «пиша», «жгя», «могя», «бежа», «лгя», «ткя»,
+  «пья», «лья», «бья» - форма выводится из парадигмы, но в живом языке её не говорят.
+  Проверка: прочитать вслух; форму, которую не скажешь, не писать
+- **Обобщающий довесок**: «а дальше все варианты ложатся на одну кривую компромисса»,
+  «дальше это уже вопрос приоритетов» - клауза без числа и без проверяемого утверждения
 
 ## Forbidden swaps — a synonym is not a cure
 
@@ -51,6 +56,8 @@ Slop replaced by related slop is still slop. Do not:
 | «ключевой» | «важнейший», «центральный», «критический» | удалить или конкретика: чем именно важен |
 | правило трёх | новая тройка из других слов | одно точное слово |
 | фальшиво-глубокий финал | метафора поизящнее | закончить на последнем конкретном предложении |
+| «платя ростом склеек» | «давая рост», «обеспечивая рост» | «ценой роста склеек» или отдельное предложение |
+| «прогон дал фильтр» | «прогон обеспечил фильтр» | подлежащее - механизм: «редкие имена работают фильтром» |
 
 ## Quick rules for findings and verdicts
 
@@ -82,9 +89,33 @@ Slop replaced by related slop is still slop. Do not:
 - **Осознанное первое лицо** — «я проверил», «мы решили» не заменять безличным
   пассивом.
 
+## Понятность: читатель должен распарсить текст
+
+Стилистическая чистота и понятность - разные проверки, и вторую забывают. Текст бывает
+без единого маркера слопа и при этом непроходимым, потому что термины автор понимает, а
+читатель видит их впервые. Правила, которые это закрывают:
+
+- **Первое вхождение несёт раскрытие.** Термин раскрывается там, где читатель его
+  встретил, в три-семь слов. Раскрытие на втором вхождении не работает, глоссарий в
+  конце документа его не заменяет. В HTML подсказка (`title`, сноска, ссылка на
+  глоссарий) вешается на первое вхождение в тексте, а не на удобное.
+- **Одна форма слова.** Раскрыл «прогретый индекс» - дальше везде «прогретый индекс»,
+  не «разогретый кэш» и не «тёплый индекс». Элегантная вариация (паттерн 15) здесь
+  вредит вдвойне.
+- **Пара оппозитов определяется при вводе, оба члена сразу.** «целевые и посторонние»,
+  «горячие и холодные», «новые и прогретые». «Блокирует 46% посторонних и режет 2%
+  целевых» без определения не читается.
+- **У процента есть база.** «46% посторонних» без ответа на «посторонних чего, из
+  скольких» - не факт, а ощущение. Абсолют рядом с долей.
+- **Результат впереди метода.** «По оффлайн-переигровке на 12 срезах фильтр пропускает
+  6,2%» переставляется в «Фильтр пропускает 6,2%. Считал на 12 размеченных срезах».
+- **Жаргон метода живёт в приложении.** В вердикте и в бизнес-слое - термины предметной
+  области. Названия процедур («холд-аут», «оффлайн-переигровка», «прогретый индекс»)
+  уходят в технический раздел, где у читателя другой контракт.
+
 ## Финальная проверка перед выдачей
 
-Перед выдачей русской прозы — два обязательных вопроса к собственному черновику:
+Перед выдачей русской прозы — три обязательных вопроса к собственному черновику:
 
 1. **Что здесь всё ещё звучит как ИИ?** Пройтись по жёстким запретам и семьям
    каталога; найденное переписать, а не синонимизировать (см. «Forbidden swaps»).
@@ -92,6 +123,11 @@ Slop replaced by related slop is still slop. Do not:
    ни одного факта, имени, числа, даты, цитаты, ранжирования или утверждения.
    Каждая цифра в тексте — из источника; недостающее помечается как неизвестное,
    а не досочиняется.
+3. **Сможет ли читатель это распарсить?** Перечитать глазами того, кто в работе не
+   участвовал, и выписать каждое слово и каждое число, которые он не объяснит, не
+   открывая другие разделы. Каждая выписка либо получает раскрытие на первом
+   вхождении, либо уходит из этого слоя текста. Стилистически чистый непонятный текст
+   считается браком так же, как слоп.
 
 Если файл сохранён на диск — прогнать детерминированный линтер и исправить все
 BAN (WARN — по здравому смыслу, это эвристики):
@@ -101,6 +137,11 @@ bash scripts/lint-ru.sh <файл.md>        # markdown / plain text
 bash scripts/lint-ru.sh report.html      # HTML: теги, script/style и таблицы пропускаются
 ```
 
+В HTML линтер дополнительно проверяет понятность (паттерн 46): для каждого термина,
+раскрытого через `<a class="term" title="...">`, первое голое упоминание в тексте не
+должно стоять раньше раскрытого. Именно так ловится подсказка, навешенная на второе
+вхождение, пока читатель спотыкается на первом.
+
 Линтер лежит рядом со скиллом (`scripts/lint-ru.sh` относительно этого файла),
 выход 1 — есть жёсткие нарушения. Он детерминированный: длинное тире или «не просто»
 ловит со 100% полнотой, чего самопроверка модели не гарантирует.
@@ -109,8 +150,8 @@ bash scripts/lint-ru.sh report.html      # HTML: теги, script/style и та�
 
 | Task at hand | Read |
 |---|---|
-| Full catalog: 42 patterns by family (канцелярит, AI-словарь, структура, коммуникация, ритм) with markers and cures | [references/patterns.md](references/patterns.md) |
-| Gold examples: эталонные абзацы по жанрам (finding, вердикт, резюме, план встречи, ответ в чате) — прочитать пример своего жанра перед написанием | [references/gold.md](references/gold.md) |
+| Full catalog: 47 patterns by family (канцелярит, AI-словарь, структура, коммуникация, грамматика и живая форма, понятность, ритм) with markers and cures | [references/patterns.md](references/patterns.md) |
+| Gold examples: эталонные абзацы по жанрам (finding, вердикт, резюме, план встречи, ответ в чате, вердикт исследования для продакта) — прочитать пример своего жанра перед написанием | [references/gold.md](references/gold.md) |
 | Deterministic post-write check of a saved file | run [scripts/lint-ru.sh](scripts/lint-ru.sh) |
 
 ## Attribution

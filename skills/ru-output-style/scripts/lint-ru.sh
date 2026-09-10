@@ -6,6 +6,11 @@
 # sentence rhythm). Deterministic on purpose: a regex catches a long dash with
 # 100% recall where model self-review does not.
 #
+# In HTML mode it also runs a comprehension check (pattern 46): for every term
+# glossed with <a class="term" ...>TEXT</a>, the first bare occurrence of TEXT in
+# the prose must not precede the glossed one. The file is read twice for that -
+# pass 1 collects the glossed terms, pass 2 does all the reporting.
+#
 # Usage:
 #   lint-ru.sh [--strict] [--html] FILE...
 #     --strict   warnings also fail (exit 1)
@@ -46,6 +51,8 @@ DINGB1="$(printf '\342\234')"       # ✀..✿ block (✅ ✨ ✔)
 DINGB2="$(printf '\342\235')"       # ❀..➿ block (❌ ❗)
 WSIGN="$(printf '\342\232')"        # ⚠ and misc symbols block
 BOM="$(printf '\357\273\277')"
+LAQUO="$(printf '\302\253')"        # open guillemet
+RAQUO="$(printf '\302\273')"        # close guillemet
 
 FAIL=0
 for f in "${FILES[@]}"; do
@@ -60,13 +67,34 @@ for f in "${FILES[@]}"; do
   LC_ALL=C awk -v fname="$f" -v html="$html" -v strict="$STRICT" \
       -v emdash="$EMDASH" -v endash="$ENDASH" -v arrow="$ARROW" -v darrow="$DARROW" \
       -v emoji4="$EMOJI4" -v dingb1="$DINGB1" -v dingb2="$DINGB2" -v wsign="$WSIGN" \
-      -v bom="$BOM" '
+      -v bom="$BOM" -v laquo="$LAQUO" -v raquo="$RAQUO" '
   function ban(code)  { bans++;  printf "%s:%d: BAN  %s\n", fname, FNR, code }
   function warn(code) { warns++; printf "%s:%d: WARN %s\n", fname, FNR, code }
   # Both case variants checked where a sentence can start with the marker.
   function has(s) { return index(line, s) }
+  # Word-boundary match against nline, the punctuation-normalised copy of the
+  # line: " slovo " then matches at line start, after a comma, inside quotes.
+  # Needed because index(line, " bezha") also fires inside " bezhat".
+  function wb(s) { return index(nline, " " s " ") }
 
   BEGIN { bans = 0; warns = 0; buf = "" }
+
+  # --- pass 1 (HTML only): collect terms glossed with <a class="term"> ------
+  NR == FNR {
+    if (!html) next
+    tmp = $0
+    while (match(tmp, /<a[^>]*class="term"[^>]*>/)) {
+      rest = substr(tmp, RSTART + RLENGTH)
+      cut = index(rest, "</a>")
+      if (cut <= 0) { tmp = rest; continue }
+      tt = substr(rest, 1, cut - 1)
+      gsub(/<[^>]*>/, "", tt)
+      gsub(/^[ \t]+/, "", tt); gsub(/[ \t]+$/, "", tt)
+      if (length(tt) >= 4 && !(tt in glossline)) glossline[tt] = FNR
+      tmp = substr(rest, cut + 4)
+    }
+    next
+  }
 
   {
     line = $0
@@ -92,6 +120,17 @@ for f in "${FILES[@]}"; do
 
     gsub(/`[^`]*`/, " ", line)                      # inline code spans
 
+    # punctuation-normalised copy for the word-boundary checks (see function wb)
+    nline = " " line " "
+    gsub(/[.,;:!?()\[\]"]/, " ", nline)
+    gsub(laquo, " ", nline); gsub(raquo, " ", nline)
+
+    # pattern 46: remember where each glossed term is first used in the prose
+    if (html) {
+      for (t in glossline)
+        if (!(t in firstuse) && index(line, t)) firstuse[t] = FNR
+    }
+
     # separator line between paragraphs (frontmatter already consumed above)
     t = line; gsub(/[ \t]/, "", t)
     if (t ~ /^-+$/ && length(t) >= 3) { ban("razdelitel \"---\""); next }
@@ -112,6 +151,10 @@ for f in "${FILES[@]}"; do
     if (has("дайте знать") || has("Дайте знать")) ban("artefakt chat-bota")
     if (has("отличный вопрос") || has("Отличный вопрос")) ban("podobostrastie")
     if (has(emoji4) || has(dingb1) || has(dingb2) || has(wsign)) ban("emoji/dingbat v proze")
+    # pattern 45: gerund forms the paradigm allows and living Russian never says
+    if (wb("платя") || wb("Платя") || wb("пиша") || wb("Пиша") || wb("жгя") || wb("могя") || \
+        wb("бежа") || wb("лгя") || wb("ткя") || wb("пья") || wb("лья") || wb("бья")) \
+      ban("neupotrebimoe deeprichastie: platya/pisha/zhgya/... (pattern 45)")
 
     # --- soft warnings (AI-lexicon) ----------------------------------------
     if (has("является") || has("представляет собой")) warn("izbeganie svyazki: yavlyaetsya / predstavlyaet soboj")
@@ -135,8 +178,38 @@ for f in "${FILES[@]}"; do
         has("может показаться, что") || has("Может показаться, что")) warn("zashchita ot nevydvinutykh vozrazhenij")
     if (has("на момент написания") || has("На момент написания") || has("насколько известно") || \
         has("Насколько известно") || has("по состоянию на сегодня")) warn("disklejmer o granitsakh znanij")
-    if (match(line, /, [^ ,.:;!?()]+ и [^ .,!?]/) || \
-        match(line, /, [^ ,.:;!?()]+ [^ ,.:;!?()]+ и [^ .,!?]/)) warn("pravilo tryokh (evristika: X, Y i Z)")
+    # pattern 45 (soft half): a second independent fact bolted on with a gerund
+    if (line ~ /[0-9]/ && (wb("платя") || wb("давая") || wb("обеспечивая") || wb("показывая") || \
+        wb("демонстрируя") || wb("снижая") || wb("повышая") || wb("увеличивая") || \
+        wb("сокращая") || wb("принося") || wb("теряя") || wb("выигрывая"))) \
+      warn("deeprichastie kak nositel fakta (pattern 45)")
+
+    # pattern 44: a work stage sitting in the subject slot ("progon dal filtr")
+    if ((wb("прогон") || wb("Прогон") || wb("разбор") || wb("Разбор") || wb("обход") || \
+         wb("Обход") || wb("срез") || wb("Срез") || \
+         wb("замер") || wb("Замер") || wb("расчёт") || wb("Расчёт")) && \
+        (wb("дал") || wb("дала") || wb("показал") || wb("показала") || wb("выявил") || \
+         wb("восстановил") || wb("подтвердил") || wb("обнаружил"))) \
+      warn("protsess kak subjekt (pattern 44)")
+
+    # pattern 43: closing clause with no number and nothing to check
+    if (has("кривую компромисса") || has("кривой компромисса") || has("ложатся на одну") || \
+        has("это уже вопрос") || has("дальше всё сводится") || has("дальше все сводится") || \
+        has("сводится к балансу")) \
+      warn("obobshchayushchij dovesok (pattern 43)")
+
+    # pattern 47: the method opens the sentence instead of the result
+    if (has("По прогону") || has("По замеру") || has("По расчёту") || has("По выгрузке") || \
+        has("По итогам прогона") || has("По результатам замера") || has("В прогоне") || \
+        has("В замере")) \
+      warn("metod vperedi rezultata (pattern 47)")
+
+    # Rule of three is a rhythmic crutch only when the three items are words, not
+    # data: an enumeration carrying digits (model names, thresholds, ids) is a fact
+    # list, and firing there taught authors to ignore every warning - 21 hits, all
+    # false, on one long analytical report.
+    if (line !~ /[0-9]/ && (match(line, /, [^ ,.:;!?()]+ и [^ .,!?]/) || \
+        match(line, /, [^ ,.:;!?()]+ [^ ,.:;!?()]+ и [^ .,!?]/))) warn("pravilo tryokh (evristika: X, Y i Z)")
 
     buf = buf " " line
   }
@@ -172,6 +245,14 @@ for f in "${FILES[@]}"; do
       warns++
       printf "%s: WARN ritm: %d predlozhenij podryad odnoj dliny (+-2 slova) - monotonnost\n", fname, maxrun
     }
+    # pattern 46: gloss attached to a later occurrence than the first bare use
+    for (t in glossline) {
+      if ((t in firstuse) && firstuse[t] < glossline[t]) {
+        warns++
+        printf "%s:%d: WARN termin \"%s\" raskryt pozzhe pervogo upotrebleniya (gloss na stroke %d) (pattern 46)\n", \
+          fname, firstuse[t], t, glossline[t]
+      }
+    }
     if (amaxrun >= 3) {
       warns++
       printf "%s: WARN anafora: %d predlozhenij podryad nachinayutsya s \"%s\"\n", fname, amaxrun, aword
@@ -181,7 +262,7 @@ for f in "${FILES[@]}"; do
     if (bans > 0) exit 1
     if (strict && warns > 0) exit 1
     exit 0
-  }' "$f"
+  }' "$f" "$f"
   rc=$?
   set -e
   [ "$rc" -eq 0 ] || FAIL=1

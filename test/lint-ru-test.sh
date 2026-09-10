@@ -8,8 +8,11 @@
 #   EXIT <n>          required — linter exit code on the fixture
 #   STRICT_EXIT <n>   optional — exit code with --strict
 #   HAS <substring>   output must contain the substring (fixed string, not regex)
-# Assertions are presence-based on purpose: new linter checks may add lines to the
-# output without breaking existing fixtures.
+#   NOT <substring>   output must NOT contain the substring (negative control:
+#                     locks in false-positive fixes, e.g. " бежа" inside "бежать")
+# HAS assertions are presence-based on purpose: new linter checks may add lines to
+# the output without breaking existing fixtures. NOT assertions are the exception -
+# they are the only way to prove a check stays silent where it should.
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -53,6 +56,12 @@ for exp in "${FIXDIR}"/*.expect; do
         needle="${line#HAS }"
         printf '%s' "$OUT" | grep -qF -- "$needle" \
           || { echo "$OUT" >&2; fail "${name}: output missing '${needle}'"; }
+        ;;
+      NOT\ *)
+        needle="${line#NOT }"
+        if printf '%s' "$OUT" | grep -qF -- "$needle"; then
+          echo "$OUT" >&2; fail "${name}: output must not contain '${needle}'"
+        fi
         ;;
       *) fail "${name}: unknown directive in expect file: $line" ;;
     esac

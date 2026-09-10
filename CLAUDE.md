@@ -45,6 +45,15 @@ Entry point for Claude Code agents working on this repo.
 - `install.sh`/`install.ps1` stay behaviorally identical — `test/parity.sh` enforces it.
 
 ### MUST NOT
+- **Put real work material into this repo. It is PUBLIC.** No customer or internal
+  project data in examples, patterns, gold samples, fixtures, eval prompts, CHANGELOG
+  entries or commit messages: no domain terms from a live task, no metric names, no real
+  figures, no corpus sizes, no ticket-specific vocabulary. Changing the domain while
+  keeping the real numbers is NOT anonymisation - the figures identify the case.
+  Every example is invented end to end: made-up domain, made-up numbers that appear in no
+  real report. Source material for a change may be read locally; only the linguistic or
+  structural lesson travels into the repo. Same rule for git history - a leak has to be
+  rewritten and force-pushed, and a public repo cannot fully take it back.
 - Expressions in step-level `shell:` in workflows — GitHub rejects the whole file at parse
   time (CI ran 0s with no jobs for 4 days because of this).
 - GNU-only flags in test scripts (`sed -i` w/o suffix breaks BSD sed on macOS CI).

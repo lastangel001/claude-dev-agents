@@ -1,0 +1,7 @@
+EXIT 0
+STRICT_EXIT 1
+HAS raskryt pozzhe pervogo upotrebleniya
+HAS (pattern 46)
+HAS прогретый индекс
+NOT termin "эталон записи"
+HAS 0 ban(s)

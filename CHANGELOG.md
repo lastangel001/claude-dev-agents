@@ -5,6 +5,67 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.16.0] — 2026-09-10
+
+### Added
+- **`ru-output-style`: patterns 43-47 and a second axis — reader comprehension.** The
+  skill used to answer one question, «does this read as AI». Feedback from a
+  non-technical reader on a long analytical report showed the other half: text can be
+  free of every slop marker and still be unparseable, because the author owns the terms
+  and the reader meets them for the first time. New patterns: **43** обобщающий
+  довесок (a closing clause with no number and nothing to check, «а дальше все
+  варианты ложатся на одну кривую компромисса»); **44** процесс как субъект
+  («замер дал порог», «разбор восстановил механизм»); **45** деепричастие на
+  стыке двух фактов, with a hard ban on gerund forms the paradigm allows and
+  living Russian never says («платя», «пиша», «жгя», «могя», «бежа», «лгя»,
+  «ткя», «пья», «лья», «бья»); **46** термин без раскрытия при первом
+  употреблении, plus the opposite-pair sub-case («целевые и посторонние» defined
+  when introduced); **47** метод впереди результата. New family «Понятность для
+  читателя», new `SKILL.md` section with the first-use rule, one-wording rule,
+  base-with-percentage rule and layered vocabulary, and a **third mandatory final-check
+  question**: can a reader who did not take part in the work parse this without opening
+  another section.
+- **`ru-output-style`: gold genre «вердикт исследования для продакта»** in
+  `references/gold.md` — the genre where comprehension breaks most often. The worked
+  example and every figure in it are invented; the toy domain is duplicate records in a
+  delivery-address directory.
+- **`lint-ru.sh`: HTML first-use gloss check (pattern 46).** For every term glossed with
+  `<a class="term" title="...">`, the first bare occurrence in the prose must not precede
+  the glossed one; the warning reports both line numbers. The file is now read twice
+  (pass 1 collects the glossed terms, pass 2 reports). This is the check that catches a
+  tooltip hung on the second occurrence while the reader stumbles on the first.
+- **`lint-ru.sh`: deterministic rules for patterns 43-45 and 47** — one hard ban
+  (unusable gerund forms, matched with word boundaries against a punctuation-normalised
+  copy of the line, so «бежать» and «платяной» do not fire) and four warnings.
+- **`analyst-writer`: «объясни нетехническому специалисту» direction inside Explain** —
+  build the term list before writing (gloss, plain replacement, or appendix; nothing left
+  unhandled), explain mechanism through observable behaviour, give internal metrics a
+  scale, one analogy per document and only after the fact, no procedure or formula names
+  outside the appendix, readiness check by retelling.
+- **`analyst-writer`: read-with-someone-else's-eyes pass** as a separate pre-delivery step,
+  including running the linter on an HTML deliverable to verify tooltip placement.
+- **`test/lint-ru-test.sh`: `NOT <substring>` directive** — negative controls, the only way
+  to prove a check stays silent where it should. Four new fixtures
+  (`ban-deeprichastie.md`, `clean-lookalikes.md`, `warn-newpatterns.md`,
+  `html-firstuse.html`), 13 total.
+
+### Changed
+- **`analyst-writer`: comprehension mechanics given teeth.** «No unglossed jargon» was
+  already in the agent and still failed in practice, so it now names the mechanism: the
+  gloss hangs on the first occurrence and a trailing glossary does not replace it; a term
+  keeps one wording; opposite pairs are defined at introduction; a percentage carries its
+  base; the verdict runs one fact per sentence; procedure jargon lives in the appendix.
+- **`lint-ru.sh`: rule-of-three heuristic no longer fires on lines carrying digits.** An
+  enumeration with model names, thresholds or ids is a fact list, not a rhythmic crutch.
+  On one long real report the check produced 21 hits, every sampled one false, which
+  taught the author to ignore every warning; the same report now yields 2.
+- **`references/patterns.md`: em dashes normalised to «-»** (58 occurrences). The catalog
+  that hard-bans the long dash was using it throughout; the one remaining «—» is the
+  character named in the formatting rule.
+- **All examples in this release use invented domains and invented figures.** Every
+  pattern, gold example and linter fixture is written on a toy case, never on real work
+  material — see the MUST NOT in `CLAUDE.md`.
+
 ## [1.15.0] — 2026-08-27
 
 ### Added
