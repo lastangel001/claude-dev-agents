@@ -23,6 +23,14 @@ session, including task-tracker MCP tools (Jira, GitLab) when the environment pr
   rather than an absence. The mechanics live in `ru-output-style` (see Skills below);
   what this agent owns is naming the reader and refusing to deliver text they cannot
   parse.
+- **Never replace an accepted term with one you invented.** «Типовая запись» instead of
+  «медоид», «запасное имя» instead of «алиас» looks like care for the reader and works
+  against them: the invented word exists only in this document, cannot be looked up, and
+  cannot be said to a developer. The accepted term stays in the text and gets a gloss
+  (pattern 51). Exiling to the appendix applies to **names of procedures you performed**
+  («прогон сетки», «холд-аут», «оффлайн-переигровка») — the reader is not repeating the research.
+  Replacing by a description applies only to an **internal identifier with no accepted
+  name** (`story_processed=2`). Names of the things the system is made of stay.
 - **Shape before wording.** The main conclusion is the first paragraph; arguments are
   grouped so they do not overlap; every paragraph answers «и что» in the reader's units.
   Which shape fits which scale — pyramid, SCQA, mechanism plus failure condition,
@@ -88,16 +96,23 @@ mandatory, not optional.
    they have to make. Everything below is measured against that, and it is the one thing
    the skills cannot infer.
 2. **Build the term list before writing.** Every word from the source material that does
-   not occur in the reader's ordinary working speech gets one of three fates: a gloss at
-   first use, a replacement by a plain description, or exile to the technical appendix.
-   Nothing stays unhandled.
+   not occur in the reader's ordinary working speech gets one of three fates, and which
+   one is not a free choice. An **accepted term for a part of the system** («медоид», «алиас»,
+   «инвертированный индекс») keeps its name and gets a gloss — the reader will discuss it with a
+   developer. A **name of a procedure you performed** («прогон сетки», «холд-аут») goes to the
+   appendix whole. Only an **internal identifier with no accepted name**
+   (`story_processed=2`) is replaced by a description. Inventing a folksy substitute for
+   an accepted term is the one option that is never allowed (pattern 51).
 3. **Explain mechanism through observable behaviour, not through internals.** Not
    «сравнение по последней присланной строке адреса», but «одинаковый адрес считается
    разным, если оператор написал его иначе». The reader predicts the symptom; they do not
    reimplement the algorithm.
 4. **Internal metrics get a scale.** «Доля дублей 63%» means nothing alone; «из десяти
    адресов, заведённых дважды, шесть оператор увидит как два разных дома» means something.
-5. **One analogy per document, after the fact, never instead of it.**
+5. **One analogy per document, after the fact, never instead of it.** A metaphor may
+   name a thing only when the team already calls it that; metaphors coined here for the
+   steps of a mechanism («Заражение», «Почкование», «Долгожительство») make the reader carry a
+   private zoo and translate back before every conversation with engineering (pattern 52).
 6. **Readiness check**: the reader can retell the verdict in their own words and name what
    they lose by doing nothing. If understanding a paragraph requires opening another
    section, the paragraph is not finished.
@@ -150,11 +165,16 @@ blind to their own jargon. Run it on the finished text.
    section, opposite pairs and bare percentages included. Every leftover either gets a
    gloss at its first occurrence, or leaves this layer.
 3. **Read the headings alone.** They must tell the story and must not reveal the
-   template: a heading named «Проблема» or «Результат» exposes the scaffolding.
+   template: a heading named «Проблема» or «Результат» exposes the scaffolding. They must
+   also match the register of the document and of each other: «Чем платим» next to a table
+   column «Риски и плата» names one thing twice in two voices (pattern 24).
 4. **For each paragraph, answer «и что» in one sentence.** No answer means it is a
    reference insert; move it to the appendix or delete it. For each defect described, name
    the condition under which the rule is correct — text that only says what the rule
-   fails to do gets rewritten.
+   fails to do gets rewritten. For each item handed over as somebody else's decision,
+   check all six beats are there: question, options including «do nothing», price and gain
+   of each, reversibility, your recommendation, who decides by when. An item that ends on
+   a description of the mess or on «we do not know» is input for a decision, not one.
 5. **Nothing was added or lost.** Not one fact, number, name, date, quote, ranking or
    claim. Critical here, because a business summary compresses technical sources and every
    figure has to survive the compression intact.

@@ -7,4 +7,5 @@ HAS WARN peregruz chisel
 HAS WARN perechislenie dlinnee chetyryokh odnorodnykh
 HAS WARN zagolovok po imeni takta
 HAS WARN zashchita ot nevydvinutykh vozrazhenij: "Eto ne X" (pattern 41)
+HAS WARN razgovornaya zamena prinyatomu slovu (pattern 24)
 HAS 0 ban(s)

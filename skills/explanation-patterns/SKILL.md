@@ -47,7 +47,8 @@ bans. If the shape can be reverse-engineered from the headings, rewrite the head
 | Whole document | Minto pyramid, SCQA in the opening | answer first, arguments grouped MECE, data at the bottom | an incident chronicle where order of events is the point |
 | Section «what we did» | Context, Action, Result | retelling your own work, a timeline | explaining someone else's mechanism - there is no «our action» in it |
 | Section «why it happens» | Mechanism, why it was built that way, the condition under which it lies | diagnosing a defect | describing a norm, where nothing fails |
-| Section «what to do» | Need, Solution, Result | a plan item, a proposal, an ADR | diagnosis, where no solution exists yet |
+| Section «what to do» | Need, Solution, Result | a plan item the author will carry out | diagnosis, where no solution exists yet |
+| A decision someone else makes | Question, options, price and gain of each, reversibility, your recommendation, who decides by when | «что решить продукту», an ADR, anything handed over | a decision already taken - then it is a plan item |
 | Paragraph | What, So what, Now what | any fact that should lead to a decision | a reference insert, an appendix entry |
 | A number | Share, base, comparison, consequence | a metric in the business layer | a table, where the consequence goes in the caption |
 
@@ -63,6 +64,12 @@ reason with. See [references/diagnosis.md](references/diagnosis.md).
 **What / So what / Now what** makes the consequence mandatory at paragraph scale. A fact
 with no «so what» is a fact the reader has to justify on the author's behalf, and they
 will not.
+
+**A decision handed to someone else** is the shape most often written as a list of
+situations: the author describes what is unclear and stops. A described situation is not
+a decidable question. All six beats are load-bearing, and the one most often missing is
+«ничего не делать» as an explicit option with its own price. See
+[references/frameworks.md](references/frameworks.md).
 
 ## Every fact carries its consequence
 
@@ -87,6 +94,11 @@ becomes unreadable.
   и отзывов» beats eleven source types in one sentence.
 - **A business-layer sentence stays under about 25 words.** Longer belongs in the
   technical layer, where a reader has signed up for it.
+- **One content, once: a table or prose, never both.** A table followed by the same items
+  retold as paragraphs makes the reader work through it twice, and on the second pass they
+  cannot tell whether it is new material or a repeat. Choose by one question: does the
+  reader need to compare along columns? Yes - table, and the prose around it says only
+  what the table cannot (why these options, which one you recommend). No - prose.
 - **Frame sentences are legal and do not count against a fact budget.** «Само по себе это
   правильно», «проблема в том, что», «здесь всё держится на одном допущении» carry no
   fact and carry the reader. A rule of one fact per sentence must not squeeze them out -

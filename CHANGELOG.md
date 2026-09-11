@@ -5,6 +5,63 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.18.0] — 2026-09-11
+
+Six complaints from a non-technical reader on a real report, plus the first full
+consistency review of the catalogue.
+
+### Fixed
+- **The rules were making the analyst invent words.** «No jargon in the business layer»
+  and «explain through observable behaviour» had no escape hatch saying which replacement
+  is legal, so an accepted term got swapped for a home-made one: a folksy coinage instead
+  of a standard name, with the standard name demoted to a parenthesis in the glossary.
+  That is worse than the jargon it replaced — an invented word exists only in that
+  document, cannot be looked up and cannot be said to a developer. The term list step in
+  `analyst-writer` now says which of the three fates applies to what: an **accepted term
+  for a part of the system** keeps its name and gets a gloss; a **name of a procedure the
+  author performed** goes to the appendix whole; only an **internal identifier with no
+  accepted name** is replaced by a description. Inventing a substitute is never an option.
+- **`ru-output-style/SKILL.md` claimed two different catalogue sizes.** The description
+  said 50, the routing table still said 47 — stale since 1.17.0. Both now 52, and the
+  README row with them.
+- **Catalogue integrity, found by checking it programmatically rather than by reading.**
+  Number **24 was never defined** (a hole inherited from the original distillation, while
+  the header claimed a round count), and **27 was listed in two families at once**. The
+  hole is now filled by a real pattern and the family headers are disjoint: every number
+  1-52 is defined exactly once and belongs to exactly one family.
+
+### Added
+- **Patterns 24, 51, 52.** **24** разговорная замена принятому слову («Чем платим» where a
+  table column already says «Риски и плата» — one thing named twice in two voices, and
+  first person plural in a heading leaves the reader unsure whether these are their risks
+  or the team's promises). **51** придуманный термин вместо принятого, with the tell: a
+  glossary where the coinage leads and the real term sits in brackets. **52** метафора как
+  имя механизма — steps of one algorithm named from four different metaphor families make
+  the reader carry a private zoo and translate back before every conversation with
+  engineering; one metaphor per document, and only for something the team already calls
+  that.
+- **`references/patterns.md`: «Разборы пограничных случаев».** The consistency review
+  found seven pairs of rules that look contradictory at a glance, and each is now ruled on
+  once with the axis they actually measure: 41 against the «зачем так сделано» beat
+  (does the sentence add a fact or only a denial), 27 against the short-sentence rhythm
+  rule (a run of fragments against one short sentence among long ones), 14 against the
+  enumeration ceiling (empty words against too many), 5 against 51 (does the thing have an
+  accepted name), «procedure jargon to the appendix» against 51 (name of a procedure
+  against name of a part), 8 against 45 (is there a fact in the tail worth saving), and 40
+  against the new one-content-once ceiling.
+- **`explanation-patterns`: a shape for a decision somebody else makes.** The most common
+  failure of a «что решить продукту» block is a list of situations: the author describes
+  what is unclear and stops, and a described situation is not a decidable question. Six
+  beats, all load-bearing, the one most often missing being «do nothing» as an explicit
+  option with its own price. The giveaway that the shape is broken: the item ends on a
+  description of the mess or on «we do not know».
+- **`explanation-patterns`: ceiling «one content, once».** A table followed by the same
+  items retold as paragraphs makes the reader work through it twice with no way to tell
+  repeat from new material. Choose by whether the reader needs to compare along columns.
+- **`lint-ru.sh`: a stub check for pattern 24** on the observed phrasings only. Patterns
+  51 and 52 are read-checked, not machine-checked, and the pattern text says so.
+
+
 ## [1.17.1] — 2026-09-11
 
 Four fixes found by running v1.17.0 against a real analytical report: the

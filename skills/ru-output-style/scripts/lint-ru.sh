@@ -264,6 +264,13 @@ for f in "${FILES[@]}"; do
         has("не хватает совсем")) \
       warn("otsenka bez poroga (pattern 49)")
 
+    # pattern 24: a colloquial word standing in for the accepted one. Only the
+    # observed phrasings are listed - the pattern as a whole is read-checked, not
+    # machine-checked, and a wider guess would fire on ordinary prose.
+    if (has("Чем платим") || has("чем платим") || has("впускается") || \
+        has("впускаются") || has("Какой набор берём") || has("Что берём")) \
+      warn("razgovornaya zamena prinyatomu slovu (pattern 24)")
+
     # pattern 50: a raw internal identifier used in prose
     if (match(nline, /(тег|теге|тегу|тега|id|ID|номер|номере) [0-9][0-9][0-9][0-9][0-9]/)) \
       warn("syroj vnutrennij identifikator v proze (pattern 50)")
