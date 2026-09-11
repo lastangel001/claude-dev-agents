@@ -5,6 +5,76 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.17.0] — 2026-09-11
+
+### Added
+- **`explanation-patterns` skill — the shape of an explanation, as a separate axis from
+  wording.** `ru-output-style` answers «does this read as AI» and, since 1.16.0, «can the
+  reader parse this word». Neither catches a document that passes every local check and
+  still exhausts the reader: mechanism reported without consequence, a defect stated as
+  an absence, method before result. Those are shape defects, and sentence-level editing
+  does not repair them. The skill picks a shape **by scale and genre**, each row carrying
+  its own «does not fit»: Minto pyramid with SCQA and MECE for a whole document,
+  Context-Action-Result for a narrative of your own work (explicitly *not* for explaining
+  someone else's mechanism), Need-Solution-Result for a proposal, What/So-what/Now-what
+  for a paragraph, mechanism plus failure condition for a defect, and share-base-
+  comparison-consequence for a number. Language-agnostic; `references/frameworks.md`
+  carries origin, indications and contraindications with a worked before/after per shape,
+  `references/diagnosis.md` covers the genre that fails most often — explaining a broken
+  mechanism, plus an absence-to-condition substitution table and the separate shape for an
+  incident chronicle (trigger apart from cause).
+  - **The rule that outranks the rest: the shape stays invisible.** No heading named after
+    a beat («Проблема», «Результат», «Контекст»), no connective announcing one («итак, что
+    это значит»), no fixed beat count per section. A framework applied visibly produces
+    exactly the formulaic register `ru-output-style` bans, so the catalog ships with the
+    ban that keeps it from becoming a template.
+  - **Density ceilings**, because the local rules only had minimums: one «доля (N из M)»
+    construction per paragraph, enumerations no longer than four homogeneous items,
+    business-layer sentences under about 25 words. And **frame sentences are declared
+    legal** — «само по себе это правильно», «проблема в том, что» carry no fact and carry
+    the reader; a one-fact-per-sentence budget must not squeeze them out.
+- **`ru-output-style`: patterns 48-50.** **48** дефект описан отсутствием («правило не
+  проверяет похожесть» gives the reader a hole; «правило право, пока первая копия легла
+  верно» gives them a condition to reason with — and a check that genuinely was not run is
+  a limit of the research, not a property of the system); **49** оценка без порога («а трёх
+  мало» with no number to compare against); **50** сырой внутренний идентификатор в прозе.
+  Family «Понятность для читателя» is now 46-50.
+- **`ru-output-style`: gold genre «объяснение механизма, который сломался»** — the
+  three-beat shape as an imitable paragraph, with the note on why each beat is there.
+- **`lint-ru.sh`: six new checks.** Patterns 48, 49 and 50, plus the ceilings and the
+  framework-named heading. The number ceiling is accumulated **per paragraph** (flushed on
+  a blank line in Markdown, per line in HTML where one stripped line is already one
+  `<p>`), so a wrapped Markdown paragraph is judged as a paragraph.
+- **`test/lint-ru-test.sh`: fixtures `warn-shape.md` and `clean-shape.md`** — the second is
+  a negative control that locks in the cures (condition instead of absence, threshold
+  given, id glossed, one share per paragraph, four-item enumeration, content-named
+  heading). 15 fixtures total.
+
+### Changed
+- **`analyst-writer` routes to both skills instead of restating their rules.** A `Skills`
+  table names what each one owns and when to read it; the comprehension mechanics and the
+  structural craft now live in the skills, and what the agent keeps is what only it can
+  do — naming the reader, the modes, the deliverable, tracker discipline, and the refusal
+  to hand over text the reader cannot parse. The duplicated skill-location paragraph and
+  the second copy of the final check are gone. The file did not shrink (239 lines against
+  238), but the growth went into routing rather than into more rules, and the new craft
+  went into a skill that five agents can read.
+- **`analyst-writer`: «one fact per sentence» no longer outlaws frame sentences.** As
+  written in 1.16.0 the rule squeezed out exactly the sentences that make facts land.
+- **`analyst-writer`: the pre-delivery pass is one checklist**, with the headings-alone
+  read, the per-paragraph «и что», the failure-condition check and fact integrity folded
+  in.
+- **`CLAUDE.md`: the no-real-material MUST NOT now carries a verification recipe.**
+  Eyeballing the examples in this very release missed lifted figures and a capitalised
+  domain term; the recipe is to intersect every number in the changed files with every
+  number in the source material and to spell both cases out in term scans, because
+  `grep -i` does not fold Cyrillic case in Git Bash here and silently misses anything
+  capitalised.
+- **`data-analyst` and `facilitator` route to `explanation-patterns` too**, and their
+  stale references to the skill's «two-question final check» are corrected to three (it
+  became three in 1.16.0 and these two were missed).
+
+
 ## [1.16.1] — 2026-09-10
 
 ### Fixed

@@ -54,9 +54,13 @@ is the `ru-output-style` skill; following it is a mandatory step, not a suggesti
 via Glob (`**/skills/ru-output-style/SKILL.md` under `~/.claude/` or the project's
 `.claude/`) and follow it end to end: the full pattern catalog (`references/patterns.md`),
 the gold example for the genre (`references/gold.md` — meeting-plan fragment here), the
-two-question final check, and the deterministic linter on the saved plan
+three-question final check, and the deterministic linter on the saved plan
 (`bash <skill-dir>/scripts/lint-ru.sh <plan.md>` — fix every BAN before delivering,
 warnings are a judgment call).
+
+For the shape of the plan's prose — the order of thought in контекст and риски, and the
+ban on headings named after a template beat — read the `explanation-patterns` skill. The
+question bank is exempt: questions to a group are an instrument, not an argument.
 
 Top hard bans, so they hold even if the skill is not installed (then this list plus the
 final check apply in full, linter skipped):

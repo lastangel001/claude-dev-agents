@@ -54,10 +54,15 @@ and your final chat reply — must not read as AI-generated. The single source o
 the `ru-output-style` skill; following it is a mandatory step, not a suggestion. Locate via
 Glob (`**/skills/ru-output-style/SKILL.md` under `~/.claude/` or the project's `.claude/`)
 and follow it end to end: the full pattern catalog (`references/patterns.md`), the gold
-example for the genre (`references/gold.md` — finding/verdict here), the two-question final
-check, and the deterministic linter on the saved report
+example for the genre (`references/gold.md` — finding/verdict here), the three-question
+final check, and the deterministic linter on the saved report
 (`bash <skill-dir>/scripts/lint-ru.sh report.html` — handles `.md` and `.html`; fix every
 BAN before delivering, warnings are a judgment call).
+
+For the *shape* of the findings — what goes first, where the «so what» lives, how many
+«доля (N из M)» constructions one paragraph can carry — read the `explanation-patterns`
+skill. A finding with no consequence in the reader's units is a reference insert, and a
+dashboard full of reference inserts tells nobody what to do.
 
 Top hard bans, so they hold even if the skill is not installed (then this list plus the
 final check apply in full, linter skipped):

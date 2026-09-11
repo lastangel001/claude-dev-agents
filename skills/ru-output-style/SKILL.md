@@ -1,6 +1,6 @@
 ---
 name: ru-output-style
-description: Style guard for Russian prose written for humans — findings, verdicts, summaries, report text, meeting plans, chat replies. Hard-bans the telltale AI-slop patterns (negative parallelisms «не просто X, а Y», long dash «—», math signs in prose, rule of three, «подводя итог» closings, chopped drama, colon reveals, deverbal adverb seams like «платя ростом»), guards reader comprehension (a term is glossed at its first use, not a later one), routes to a distilled catalog of 47 patterns with cures plus gold examples per genre, ships a deterministic linter (scripts/lint-ru.sh), and mandates a final check of fact integrity and parseability. Activate when writing Russian выводы, findings, резюме, verdict text, отчёт prose, план встречи, or any Russian text a person will read. Not for code, commit messages, English text, or legal/academic register (канцелярит там — жанр).
+description: Style guard for Russian prose written for humans — findings, verdicts, summaries, report text, meeting plans, chat replies. Hard-bans the telltale AI-slop patterns (negative parallelisms «не просто X, а Y», long dash «—», math signs in prose, rule of three, «подводя итог» closings, chopped drama, colon reveals, deverbal adverb seams like «платя ростом»), guards reader comprehension (a term is glossed at its first use, not a later one), routes to a distilled catalog of 50 patterns with cures plus gold examples per genre, ships a deterministic linter (scripts/lint-ru.sh), and mandates a final check of fact integrity and parseability. Activate when writing Russian выводы, findings, резюме, verdict text, отчёт prose, план встречи, or any Russian text a person will read. Not for code, commit messages, English text, or legal/academic register (канцелярит там — жанр).
 ---
 
 # Russian Output Style (ru-output-style)
@@ -112,6 +112,18 @@ Slop replaced by related slop is still slop. Do not:
 - **Жаргон метода живёт в приложении.** В вердикте и в бизнес-слое - термины предметной
   области. Названия процедур («холд-аут», «оффлайн-переигровка», «прогретый индекс»)
   уходят в технический раздел, где у читателя другой контракт.
+- **Дефект пишется условием, а не отсутствием.** «правило не проверяет похожесть» даёт
+  читателю дыру; «правило право, пока первая копия легла верно» даёт условие, с которым
+  можно рассуждать. Паттерн 48.
+- **У оценки количества есть порог.** «трёх мало» без числа, с которым сравнивают, не
+  читается. Паттерн 49.
+- **Внутренний идентификатор раскрывается или уходит.** «на теге 40219» в прозе для
+  бизнеса - шум. Паттерн 50.
+
+Потолки плотности (одна конструкция «доля (N из M)» на абзац, перечисление не длиннее
+четырёх однородных, предложение бизнес-слоя примерно до 25 слов) и правило про
+предложения-рамки живут в скилле `explanation-patterns`: это форма подачи, а не
+русская стилистика. Линтер проверяет их здесь, потому что линтер один.
 
 ## Финальная проверка перед выдачей
 
@@ -157,6 +169,7 @@ bash scripts/lint-ru.sh report.html      # HTML: теги, script/style и та�
 | Full catalog: 47 patterns by family (канцелярит, AI-словарь, структура, коммуникация, грамматика и живая форма, понятность, ритм) with markers and cures | [references/patterns.md](references/patterns.md) |
 | Gold examples: эталонные абзацы по жанрам (finding, вердикт, резюме, план встречи, ответ в чате, вердикт исследования для продакта) — прочитать пример своего жанра перед написанием | [references/gold.md](references/gold.md) |
 | Deterministic post-write check of a saved file | run [scripts/lint-ru.sh](scripts/lint-ru.sh) |
+| The *shape* of the explanation: what goes first, where the «so what» lives, which framework fits which scale, density ceilings | the `explanation-patterns` skill |
 
 ## Attribution
 

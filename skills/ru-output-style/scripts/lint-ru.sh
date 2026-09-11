@@ -11,6 +11,12 @@
 # the prose must not precede the glossed one. The file is read twice for that -
 # pass 1 collects the glossed terms, pass 2 does all the reporting.
 #
+# Density and shape checks (patterns 48-50 plus the ceilings documented in the
+# explanation-patterns skill) run as warnings: defect-as-absence, evaluation
+# without a threshold, a raw internal id in prose, three "share (N of M)"
+# constructions in one paragraph, an enumeration longer than four homogeneous
+# items, and a heading named after a framework beat.
+#
 # Usage:
 #   lint-ru.sh [--strict] [--html] FILE...
 #     --strict   warnings also fail (exit 1)
@@ -76,6 +82,23 @@ for f in "${FILES[@]}"; do
   # line: " slovo " then matches at line start, after a comma, inside quotes.
   # Needed because index(line, " bezha") also fires inside " bezhat".
   function wb(s) { return index(nline, " " s " ") }
+  # How many "share (N of M)" constructions the string carries. Locals declared
+  # as extra parameters so they cannot collide with the globals above.
+  function triples(str,   c, pr) {
+    c = 0; pr = str
+    while (match(pr, /\([0-9][0-9 ]* из [0-9][0-9 ]*\)/)) { c++; pr = substr(pr, RSTART + RLENGTH) }
+    return c
+  }
+  # The number ceiling is per paragraph, so it is accumulated and flushed: on a
+  # blank line in Markdown, and every line in HTML, where one stripped line is
+  # already one <p>/<li>.
+  function flushnum() {
+    if (numacc >= 3) {
+      warns++
+      printf "%s:%d: WARN peregruz chisel: 3+ konstruktsii \"dolya (N iz M)\" v odnom abzatse\n", fname, numline
+    }
+    numacc = 0; numline = 0
+  }
 
   BEGIN { bans = 0; warns = 0; buf = "" }
 
@@ -204,6 +227,43 @@ for f in "${FILES[@]}"; do
         has("В замере")) \
       warn("metod vperedi rezultata (pattern 47)")
 
+    # pattern 48: a defect stated as an absence instead of a condition
+    if (has("без проверки") || has("Без проверки") || has("без учёта") || \
+        has("без всякой") || has("без всякого") || has("не проверяет") || \
+        has("не проверяется") || has("не проверялось") || has("не проверялся") || \
+        has("не проверялись") || has("не измерялась") || has("не измерялось")) \
+      warn("defekt opisan otsutstviem, nuzhno uslovie (pattern 48)")
+
+    # pattern 49: an evaluation of quantity with no threshold to compare against
+    if (has("этого мало") || has("этого много") || has("этого не хватает") || \
+        has("слишком долго") || has("слишком мало") || has("слишком много") || \
+        has("слишком часто") || has("а трёх мало") || has("а двух мало") || \
+        has("не хватает совсем")) \
+      warn("otsenka bez poroga (pattern 49)")
+
+    # pattern 50: a raw internal identifier used in prose
+    if (match(nline, /(тег|теге|тегу|тега|id|ID|номер|номере) [0-9][0-9][0-9][0-9][0-9]/)) \
+      warn("syroj vnutrennij identifikator v proze (pattern 50)")
+
+    # ceiling: three or more "share (N of M)" constructions in one paragraph
+    tn = triples(line)
+    if (tn > 0 && numline == 0) numline = FNR
+    numacc += tn
+    if (html || line ~ /^[ \t]*$/) flushnum()
+
+    # ceiling: an enumeration longer than four homogeneous items in one sentence
+    if (match(line, /([^ ,.:;!?()]+, ){3,}[^ ,.:;!?()]+ и /)) \
+      warn("perechislenie dlinnee chetyryokh odnorodnykh - v spisok ili tablitsu")
+
+    # invisible-shape rule: a heading named after a framework beat
+    t2 = line
+    gsub(/^[ \t]*#+[ \t]*/, "", t2)
+    gsub(/^[ \t]+/, "", t2); gsub(/[ \t]+$/, "", t2)
+    if (line ~ /^[ \t]*#+[ \t]/ && (t2 == "Контекст" || t2 == "Ситуация" || \
+        t2 == "Действие" || t2 == "Результат" || t2 == "Проблема" || \
+        t2 == "Решение" || t2 == "Потребность" || t2 == "Осложнение")) \
+      warn("zagolovok po imeni takta - forma dolzhna ostavatsya nevidimoj")
+
     # Rule of three is a rhythmic crutch only when the three items are words, not
     # data: an enumeration carrying digits (model names, thresholds, ids) is a fact
     # list, and firing there taught authors to ignore every warning - 21 hits, all
@@ -245,6 +305,8 @@ for f in "${FILES[@]}"; do
       warns++
       printf "%s: WARN ritm: %d predlozhenij podryad odnoj dliny (+-2 slova) - monotonnost\n", fname, maxrun
     }
+    flushnum()                             # last paragraph, no trailing blank line
+
     # pattern 46: gloss attached to a later occurrence than the first bare use
     for (t in glossline) {
       if ((t in firstuse) && firstuse[t] < glossline[t]) {

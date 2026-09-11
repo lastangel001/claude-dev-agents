@@ -54,6 +54,11 @@ Entry point for Claude Code agents working on this repo.
   real report. Source material for a change may be read locally; only the linguistic or
   structural lesson travels into the repo. Same rule for git history - a leak has to be
   rewritten and force-pushed, and a public repo cannot fully take it back.
+  **How to verify before committing** (eyeballing missed a real leak once): intersect
+  every number in the changed files with every number in the source material, and treat
+  any distinctive multi-digit match as a leak - small ordinary numbers collide by chance.
+  Scan domain terms with both cases spelled out (`[Сс]южет`): **`grep -i` does not fold
+  Cyrillic case in Git Bash here**, so `-i` silently misses anything capitalised.
 - Expressions in step-level `shell:` in workflows — GitHub rejects the whole file at parse
   time (CI ran 0s with no jobs for 4 days because of this).
 - GNU-only flags in test scripts (`sed -i` w/o suffix breaks BSD sed on macOS CI).

@@ -1,0 +1,9 @@
+EXIT 0
+STRICT_EXIT 1
+HAS WARN defekt opisan otsutstviem, nuzhno uslovie (pattern 48)
+HAS WARN otsenka bez poroga (pattern 49)
+HAS WARN syroj vnutrennij identifikator v proze (pattern 50)
+HAS WARN peregruz chisel
+HAS WARN perechislenie dlinnee chetyryokh odnorodnykh
+HAS WARN zagolovok po imeni takta
+HAS 0 ban(s)
