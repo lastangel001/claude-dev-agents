@@ -5,6 +5,21 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.18.1] — 2026-09-11
+
+### Fixed
+- **Pattern 52 tested the wrong thing.** As shipped in 1.18.0 it asked where the metaphor
+  came from — «допустима, если так уже называют вещь в команде» — which would condemn a
+  coined name for a phenomenon the research itself discovered, while leaving a
+  team-blessed metaphor over something already sayable untouched. Provenance is the wrong
+  axis. The test is whether the thing already had a name: renaming what an accepted term
+  or a plain verb phrase already says is a second layer and comes off; naming a phenomenon
+  that had no name saves the reader a paragraph every time it comes up, and is legal under
+  four conditions — one per document, introduced explicitly, obvious on first reading, and
+  used without variation afterwards (pattern 15). This mirrors pattern 51, which turns on
+  the same question. `analyst-writer` and the skill section carry the corrected test.
+
+
 ## [1.18.0] — 2026-09-11
 
 Six complaints from a non-technical reader on a real report, plus the first full

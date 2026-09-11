@@ -109,10 +109,13 @@ mandatory, not optional.
    reimplement the algorithm.
 4. **Internal metrics get a scale.** «Доля дублей 63%» means nothing alone; «из десяти
    адресов, заведённых дважды, шесть оператор увидит как два разных дома» means something.
-5. **One analogy per document, after the fact, never instead of it.** A metaphor may
-   name a thing only when the team already calls it that; metaphors coined here for the
-   steps of a mechanism («Заражение», «Почкование», «Долгожительство») make the reader carry a
-   private zoo and translate back before every conversation with engineering (pattern 52).
+5. **One analogy per document, after the fact, never instead of it.** For a metaphor used
+   as a *name*, the test is whether the thing already had one. Renaming what a plain verb
+   phrase already says («Заражение», «Почкование», «Долгожительство» for steps of a
+   mechanism) makes the reader carry a private zoo and translate back before every
+   conversation with engineering. Naming a phenomenon this research found, which had no
+   name before, earns its place — one per document, introduced explicitly, obvious on first
+   reading, then used without variation (pattern 52).
 6. **Readiness check**: the reader can retell the verdict in their own words and name what
    they lose by doing nothing. If understanding a paragraph requires opening another
    section, the paragraph is not finished.
