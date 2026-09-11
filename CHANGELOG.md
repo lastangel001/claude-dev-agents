@@ -5,6 +5,57 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.17.1] — 2026-09-11
+
+Four fixes found by running v1.17.0 against a real analytical report: the
+deterministic half of the linter plus the reader pass the skill itself prescribes,
+carried out by a fresh agent that had not seen the research.
+
+### Fixed
+- **Pattern 48 was 30% useful on a real document.** Nine hits, of which six were
+  legitimate: four reported a limit of the author's own research («в промпте это не
+  проверялось») - which `diagnosis.md` explicitly asks for - and one sat in a paragraph
+  that already named the condition. An unguarded check that is wrong two thirds of the
+  time teaches the author to ignore every warning, which is how the original 21
+  rule-of-three false positives worked. The check now skips a line that carries the cure
+  («право, пока», «работает, пока», «Проблема в том, что») or a research-limit marker
+  («в исследовании», «для продукта», «в промпте», «не мерилось»). On the same report:
+  9 hits down to 4, of which 2 are actionable. The pattern text now states both
+  legitimate uses and says the warning is to be read, not obeyed blindly.
+- **Pattern 41 missed its most common real form.** Its markers were «может возразить» and
+  «вопреки распространённому», but what a reader actually stumbles on is a short «Это не
+  X.» negating a hypothesis the text never raised: «Признаки считаются один раз и позже
+  не пересчитываются. Это не гонка по времени.» The reader had not been thinking about a
+  race and goes back to look for where it was mentioned. Now matched as a complete short
+  sentence — marker to the next period with no comma between — so «Это не так, потому
+  что...» stays quiet.
+- **Pattern 41 and the number ceiling are now paragraph-scoped, not line-scoped.** A
+  wrapped Markdown paragraph was hiding a marker that straddled a line break. Both flush
+  on a blank line in Markdown and per line in HTML, where one stripped line is already one
+  `<p>`.
+- **Pattern 46 checked placement and claimed sufficiency.** A term glossed only in a
+  `title` tooltip passes the first-use check while the paragraph text still does not
+  define it — and nobody reading a printout or a PDF export sees a tooltip. The pattern,
+  the skill section and the `analyst-writer` HTML contract now say a tooltip adds to the
+  text rather than replacing it: the detail goes in the tooltip, what the paragraph cannot
+  be read without goes in the text.
+
+### Added
+- **`explanation-patterns/references/diagnosis.md`: two section-scoped check questions**
+  that produced the heaviest findings on the real report and that nothing automatic
+  catches. Is it one sample throughout the section, and are switches between samples
+  marked — two data sets side by side without a marker read as a typo and the reader
+  starts reconciling numbers. And is one number sitting under two different claims —
+  «подходят хотя бы к одному ключу» and «проходят внутрь» carrying the same share are
+  different events.
+- **Invented figures re-checked against the source by the recipe from `CLAUDE.md`.** The
+  number intersection caught two of my own examples reusing real values, one added in this
+  patch and one shipped in 1.17.0 (a decimal that also appears in the source table).
+  Eyeballing would have passed both again.
+- **Fixtures extended**: `warn-shape.md` gains the «Это не X» case, `clean-shape.md` gains
+  the two pattern-48 exemptions plus «Это не так, потому что...» as negative controls.
+
+
 ## [1.17.0] — 2026-09-11
 
 ### Added

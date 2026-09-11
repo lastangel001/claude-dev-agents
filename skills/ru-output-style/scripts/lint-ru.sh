@@ -89,15 +89,27 @@ for f in "${FILES[@]}"; do
     while (match(pr, /\([0-9][0-9 ]* из [0-9][0-9 ]*\)/)) { c++; pr = substr(pr, RSTART + RLENGTH) }
     return c
   }
-  # The number ceiling is per paragraph, so it is accumulated and flushed: on a
-  # blank line in Markdown, and every line in HTML, where one stripped line is
-  # already one <p>/<li>.
-  function flushnum() {
+  # Paragraph-scoped checks are accumulated and flushed: on a blank line in
+  # Markdown, and every line in HTML, where one stripped line is already one
+  # <p>/<li>. A wrapped Markdown paragraph would otherwise hide a marker that
+  # straddles a line break.
+  function flushpara(   dt, seg) {
     if (numacc >= 3) {
       warns++
       printf "%s:%d: WARN peregruz chisel: 3+ konstruktsii \"dolya (N iz M)\" v odnom abzatse\n", fname, numline
     }
-    numacc = 0; numline = 0
+    # pattern 41, short form: "Это не X." negating a hypothesis the text never
+    # raised. Required to be a complete short sentence - from the marker to the
+    # next period with no comma between - so "Это не так, потому что..." is quiet.
+    if (index(para, "Это не ") > 0) {
+      seg = substr(para, index(para, "Это не ") + 12, 45)
+      dt = index(seg, ".")
+      if (dt > 0 && index(substr(seg, 1, dt), ",") == 0) {
+        warns++
+        printf "%s:%d: WARN zashchita ot nevydvinutykh vozrazhenij: \"Eto ne X\" (pattern 41)\n", fname, paraline
+      }
+    }
+    numacc = 0; numline = 0; para = ""; paraline = 0
   }
 
   BEGIN { bans = 0; warns = 0; buf = "" }
@@ -227,12 +239,23 @@ for f in "${FILES[@]}"; do
         has("В замере")) \
       warn("metod vperedi rezultata (pattern 47)")
 
-    # pattern 48: a defect stated as an absence instead of a condition
-    if (has("без проверки") || has("Без проверки") || has("без учёта") || \
+    # pattern 48: a defect stated as an absence instead of a condition. Two uses
+    # of the same wording are legitimate and get skipped: the line already names
+    # the condition (the cure is present), or it is reporting a limit of the
+    # research rather than a property of the system. On a real report those were
+    # 6 of 9 hits, and the unguarded check taught the author to ignore it.
+    p48ok = has("право, пока") || has("верно, пока") || has("работает, пока") || \
+            has("Само по себе это правильно") || has("Проблема в том, что") || \
+            has("в исследовании") || has("для продукта") || has("в промпте") || \
+            has("замер не покрывал") || has("не входит в замер") || \
+            has("не мерилось") || has("не мерили")
+    if (!p48ok && (has("без проверки") || has("Без проверки") || has("без учёта") || \
         has("без всякой") || has("без всякого") || has("не проверяет") || \
         has("не проверяется") || has("не проверялось") || has("не проверялся") || \
-        has("не проверялись") || has("не измерялась") || has("не измерялось")) \
+        has("не проверялись") || has("не измерялась") || has("не измерялось"))) \
       warn("defekt opisan otsutstviem, nuzhno uslovie (pattern 48)")
+
+
 
     # pattern 49: an evaluation of quantity with no threshold to compare against
     if (has("этого мало") || has("этого много") || has("этого не хватает") || \
@@ -249,7 +272,9 @@ for f in "${FILES[@]}"; do
     tn = triples(line)
     if (tn > 0 && numline == 0) numline = FNR
     numacc += tn
-    if (html || line ~ /^[ \t]*$/) flushnum()
+    if (paraline == 0 && line !~ /^[ \t]*$/) paraline = FNR
+    para = para " " line
+    if (html || line ~ /^[ \t]*$/) flushpara()
 
     # ceiling: an enumeration longer than four homogeneous items in one sentence
     if (match(line, /([^ ,.:;!?()]+, ){3,}[^ ,.:;!?()]+ и /)) \
@@ -305,7 +330,7 @@ for f in "${FILES[@]}"; do
       warns++
       printf "%s: WARN ritm: %d predlozhenij podryad odnoj dliny (+-2 slova) - monotonnost\n", fname, maxrun
     }
-    flushnum()                             # last paragraph, no trailing blank line
+    flushpara()                            # last paragraph, no trailing blank line
 
     # pattern 46: gloss attached to a later occurrence than the first bare use
     for (t in glossline) {

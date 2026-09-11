@@ -212,6 +212,11 @@ its place (formulas the reader tweaks, a business/tech toggle, a long sortable t
   dotted; cursor:help}`). This is not a stylistic preference: `lint-ru.sh` finds glossed
   terms by exactly this markup and cannot verify first-use placement without it. Any other
   tooltip mechanism silently disables the check.
+- **A tooltip adds to the text, it does not replace it.** A term the paragraph's meaning
+  rests on is explained in the paragraph itself — nobody reading a printout or a PDF export
+  sees a `title`. The tooltip carries the detail; the text carries what the paragraph
+  cannot be read without. The pattern-46 check verifies where the gloss sits, never whether
+  it is enough.
 - **Formulas**: MathML (native in modern browsers) or inline SVG. Never external
   renderers (KaTeX/MathJax from CDN violate self-containment).
 - **Controls that earn their place**: tabs for the business/technical registers,
