@@ -5,6 +5,19 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.19.0] — 2026-09-14
+
+### Added
+- **A proposal whose failure scenario cannot be written is a proposal without an
+  established need.** `explanation-patterns` gains a violation sign for «Потребность,
+  Решение, Результат»: when the concrete scenario in which the need shows itself — who
+  runs into it, when, what exactly they see — does not write itself, the third beat gets
+  invented, and an invented beat reads as a promise. The cure is to report the missing
+  scenario as missing and flag proportionality, never to fill the gap with something
+  plausible. `analyst-writer` runs that check in Analyze mode before it elaborates the
+  solution, so a task nobody needs is caught before the completeness checklist makes it
+  look thorough.
+
 ## [1.18.1] — 2026-09-11
 
 ### Fixed

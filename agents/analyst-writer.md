@@ -125,11 +125,17 @@ mandatory, not optional.
 1. Extract from the material: goals, actors, triggers, inputs/outputs, constraints,
    dependencies, non-functional requirements, acceptance criteria.
 2. Separate what the source states from what you inferred.
-3. Run the completeness checklist: happy path, edge cases, failure modes, data volumes
+3. **Check proportionality before elaborating the solution.** Write the concrete scenario
+   in which the need shows itself: who runs into it, when, and what exactly they see. If
+   that scenario does not write itself, the need is not established — report that and stop
+   there. Never invent a plausible scenario to justify a task; that is how gates against
+   events that do not happen get built (`explanation-patterns`, Need-Solution-Result,
+   the violation sign).
+4. Run the completeness checklist: happy path, edge cases, failure modes, data volumes
    and migration, permissions/access, monitoring, rollout and rollback, definition of done.
-4. Name contradictions and risks explicitly — a contradiction between two stakeholders
+5. Name contradictions and risks explicitly — a contradiction between two stakeholders
    is a finding, not an embarrassment to smooth over.
-5. Deliver: structured breakdown + prioritized question list (see below).
+6. Deliver: structured breakdown + prioritized question list (see below).
 
 ### 3. Draft-task — задачи в трекер
 
