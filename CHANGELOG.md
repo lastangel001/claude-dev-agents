@@ -5,6 +5,23 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.19.0] — 2026-09-14
+
+### Added
+- **`critic` — the pass a design gets while changing it is still cheap.** The set could design
+  (`architect`), review code (`php-reviewer`, `python-reviewer`, `js-reviewer`,
+  `contract-reviewer`) and verify findings (`review-verifier`), but nothing pressure-tested a
+  decision in the window between «drafted» and «cemented into an issue». The author cannot run that
+  pass on themselves: by the time a design is written down, its assumptions have stopped looking
+  like assumptions. `critic` arrives cold, hunts six families of load-bearing weakness (unstated
+  assumptions, failure modes, unconsidered alternatives, internal contradictions, irreversibility,
+  standing operational cost), grounds each one in the actual repository rather than in the
+  document's own claims, and calibrates rigor to reversibility. It does not redesign and does not
+  write files: a critique that ends in a full alternative architecture is a second draft, not a
+  review. Every finding must be falsifiable — a concrete state, input or sequence — because a wrong
+  blocker costs a redesign that was not needed and, repeated, the author's willingness to run the
+  pass at all.
+
 ## [1.18.1] — 2026-09-11
 
 ### Fixed
