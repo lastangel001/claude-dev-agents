@@ -5,6 +5,31 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.20.0] — 2026-09-15
+
+### Added
+- **`critic` — the pass a design gets while changing it is still cheap.** The set could design
+  (`architect`), review code (`php-reviewer`, `python-reviewer`, `js-reviewer`,
+  `contract-reviewer`) and verify findings (`review-verifier`), but nothing pressure-tested a
+  decision in the window between «drafted» and «cemented into an issue». The author cannot run that
+  pass on themselves: by the time a design is written down, its assumptions have stopped looking
+  like assumptions. `critic` arrives cold, hunts six families of load-bearing weakness (unstated
+  assumptions, failure modes, unconsidered alternatives, internal contradictions, irreversibility,
+  standing operational cost), grounds each one in the actual repository rather than in the
+  document's own claims, and calibrates rigor to reversibility. It does not redesign and does not
+  write files: a critique that ends in a full alternative architecture is a second draft, not a
+  review. Every finding must be falsifiable — a concrete state, input or sequence — because a wrong
+  blocker costs a redesign that was not needed and, repeated, the author's willingness to run the
+  pass at all. The agent states what it takes as input (a design in a file, an ADR, an issue or
+  pasted text, plus the documents it references), speaks the severity vocabulary the reviewers
+  and `review-verifier` already share (CRITICAL / HIGH / MEDIUM), and marks each finding by what
+  settles it: a finding grounded in the repository (a mechanism claimed to exist, a contradiction
+  with a recorded decision or a live convention) is the kind `review-verifier` can refute against
+  code, while a finding about the design itself (an assumption about future load, an alternative
+  never compared) has no code to check and goes to the author as a question. The verdict is
+  written in the request's language; a Russian verdict routes to `explanation-patterns` for the
+  shape and `ru-output-style` for the wording. Contributed by Peter Gribanov (#4).
+
 ## [1.19.0] — 2026-09-15
 
 ### Added
