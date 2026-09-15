@@ -5,18 +5,26 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
-## [1.19.0] — 2026-09-14
+## [1.19.0] — 2026-09-15
 
 ### Added
-- **A proposal whose failure scenario cannot be written is a proposal without an
-  established need.** `explanation-patterns` gains a violation sign for «Потребность,
-  Решение, Результат»: when the concrete scenario in which the need shows itself — who
-  runs into it, when, what exactly they see — does not write itself, the third beat gets
-  invented, and an invented beat reads as a promise. The cure is to report the missing
-  scenario as missing and flag proportionality, never to fill the gap with something
-  plausible. `analyst-writer` runs that check in Analyze mode before it elaborates the
-  solution, so a task nobody needs is caught before the completeness checklist makes it
-  look thorough.
+- **A proposal whose need shows itself in no scenario anyone can write is a proposal
+  without an established need.** `explanation-patterns` gains a violation sign for
+  «Потребность, Решение, Результат»: when the concrete scenario in which the need shows
+  itself — who runs into it, when, what exactly they see — does not write itself, the third
+  beat gets invented, and an invented beat reads as a promise. The cure is to report the
+  missing scenario as missing and flag proportionality, never to fill the gap with
+  something plausible. The rule sits in `SKILL.md` too (the «does not fit» column and a
+  new step in «Check before delivering»), so every loader of the skill runs it, not only
+  the reader of `references/frameworks.md`. `analyst-writer` runs the check in Analyze
+  mode before it elaborates the solution, with three outcomes kept apart: the material
+  gives the scenario (proceed); the material is silent, as compliance, contractual and
+  tech-debt tasks usually are (the missing scenario becomes the first blocking question,
+  the breakdown continues as conditional on the answer); the scenario cannot be written
+  even in principle (the need is not established, the solution is not elaborated). So a
+  task nobody needs is caught before the completeness checklist makes it look thorough,
+  and a mandated task without a story in the ticket is not mistaken for one.
+  Contributed by Peter Gribanov (#3).
 
 ## [1.18.1] — 2026-09-11
 

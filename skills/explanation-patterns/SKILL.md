@@ -1,6 +1,6 @@
 ---
 name: explanation-patterns
-description: Shapes for delivering information so the reader can follow the reasoning - Minto pyramid and SCQA for a whole document, Context-Action-Result for a narrative, Need-Solution-Result for a proposal, What/So-what/Now-what for a paragraph, and mechanism plus failure condition for explaining a defect. Picks the shape by scale and genre, forbids visible scaffolding, and makes the «so what» mandatory for every fact. Language-agnostic, pairs with ru-output-style (which governs Russian wording). Activate when writing or restructuring a report, research summary, incident post-mortem, verdict, recommendation, ADR, meeting plan or backlog rationale - anything where a reader has to follow an argument, and especially when a draft reads as correct but heavy.
+description: Shapes for delivering information so the reader can follow the reasoning - Minto pyramid and SCQA for a whole document, Context-Action-Result for a narrative, Need-Solution-Result for a proposal (and refuses to invent the need a proposal cannot show in a concrete scenario), What/So-what/Now-what for a paragraph, and mechanism plus failure condition for explaining a defect. Picks the shape by scale and genre, forbids visible scaffolding, and makes the «so what» mandatory for every fact. Language-agnostic, pairs with ru-output-style (which governs Russian wording). Activate when writing or restructuring a report, research summary, incident post-mortem, verdict, recommendation, ADR, meeting plan or backlog rationale - anything where a reader has to follow an argument, and especially when a draft reads as correct but heavy.
 ---
 
 # Explanation Patterns
@@ -47,7 +47,7 @@ bans. If the shape can be reverse-engineered from the headings, rewrite the head
 | Whole document | Minto pyramid, SCQA in the opening | answer first, arguments grouped MECE, data at the bottom | an incident chronicle where order of events is the point |
 | Section «what we did» | Context, Action, Result | retelling your own work, a timeline | explaining someone else's mechanism - there is no «our action» in it |
 | Section «why it happens» | Mechanism, why it was built that way, the condition under which it lies | diagnosing a defect | describing a norm, where nothing fails |
-| Section «what to do» | Need, Solution, Result | a plan item the author will carry out | diagnosis, where no solution exists yet |
+| Section «what to do» | Need, Solution, Result | a plan item the author will carry out | diagnosis, where no solution exists yet; a need nobody can show in a concrete scenario |
 | A decision someone else makes | Question, options, price and gain of each, reversibility, your recommendation, who decides by when | «что решить продукту», an ADR, anything handed over | a decision already taken - then it is a plan item |
 | Paragraph | What, So what, Now what | any fact that should lead to a decision | a reference insert, an appendix entry |
 | A number | Share, base, comparison, consequence | a metric in the business layer | a table, where the consequence goes in the caption |
@@ -111,9 +111,14 @@ becomes unreadable.
    has no place in this layer.
 3. **For each defect described, find the failure condition.** If the text only says what
    the rule fails to do, rewrite it as the condition under which the rule is correct.
-4. **Count the density**: shares with bases per paragraph, items per enumeration,
+4. **For each plan item, write the scenario in which the need shows itself**: who runs
+   into it, when, what exactly they see. If it does not write itself, the need is not
+   established. Report the gap as a gap with the mark «проверить соразмерность»; never
+   fill it with a plausible scenario, that is how plan items against events that do not
+   happen get built.
+5. **Count the density**: shares with bases per paragraph, items per enumeration,
    words in the longest business-layer sentence.
-5. **Have someone who did not do the work read it** - or a fresh agent with one task:
+6. **Have someone who did not do the work read it** - or a fresh agent with one task:
    for every paragraph in the «why» section, say whether the text states why the rule
    exists and under what condition it breaks. Self-review does not catch this; the author
    knows the answer and reads it into their own text.

@@ -126,11 +126,16 @@ mandatory, not optional.
    dependencies, non-functional requirements, acceptance criteria.
 2. Separate what the source states from what you inferred.
 3. **Check proportionality before elaborating the solution.** Write the concrete scenario
-   in which the need shows itself: who runs into it, when, and what exactly they see. If
-   that scenario does not write itself, the need is not established — report that and stop
-   there. Never invent a plausible scenario to justify a task; that is how gates against
-   events that do not happen get built (`explanation-patterns`, Need-Solution-Result,
-   the violation sign).
+   in which the need shows itself: who runs into it, when, and what exactly they see.
+   Three outcomes, and they are not interchangeable. The material gives the scenario:
+   proceed. The material is silent (a compliance or contractual task, a request from a
+   neighbouring team, tech debt): the missing scenario becomes the first blocking question
+   to business, and steps 4-6 continue with the breakdown marked as conditional on the
+   answer. The scenario cannot be written even in principle (nobody would notice if the
+   task were never done): the need is not established; report that as a finding marked
+   «проверить соразмерность» and do not elaborate the solution. Never invent a plausible
+   scenario to justify a task; that is how gates against events that do not happen get
+   built (`explanation-patterns`, Need-Solution-Result, the violation sign).
 4. Run the completeness checklist: happy path, edge cases, failure modes, data volumes
    and migration, permissions/access, monitoring, rollout and rollback, definition of done.
 5. Name contradictions and risks explicitly — a contradiction between two stakeholders
