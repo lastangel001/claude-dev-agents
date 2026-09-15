@@ -5,6 +5,25 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.21.0] — 2026-09-15
+
+### Changed
+- **`critic` is now `design-reviewer`, and reviews three kinds of input.** The name joins the
+  reviewer family (`contract-reviewer`, `php-reviewer`, `js-reviewer`, `review-verifier`) and says
+  what is reviewed, which a bare «critic» in the agent table did not. With the wider name come two
+  inputs the six-family method fits without change: **the approach behind a PR or diff before
+  merge** (the language reviewers check whether the code is correct, this pass checks whether the
+  code is in the right place, what it couples and what it makes hard to undo; a PR that does not
+  say why this approach over the obvious alternative is itself a finding), and **an existing ADR
+  revisited against the current code** (do the assumptions it rested on still hold; the verdict is
+  about the decision, never a proposal to replace it). The agent says explicitly what it is not:
+  UI/UX design, mockups, visual and interaction design — «design» here is software architecture and
+  technical decisions — and a sweep of the whole architecture, which stays with `architect`. The
+  installer merges manifests and never deletes a file that left the release, so an install of
+  1.20.0 keeps a stale `agents/critic.md` next to the new one: remove it once with
+  `./install.sh --uninstall --agent critic` (or `.\install.ps1 -Uninstall -Agent critic`),
+  then reinstall.
+
 ## [1.20.0] — 2026-09-15
 
 ### Added

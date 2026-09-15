@@ -1,6 +1,6 @@
 # claude-dev-agents
 
-![version](https://img.shields.io/badge/version-1.20.0-blue)
+![version](https://img.shields.io/badge/version-1.21.0-blue)
 
 Curated [Claude Code](https://claude.com/claude-code) **subagents** and **skills** for software development — a language-agnostic systems architect plus strictly-typed, tested, idiomatic PHP and Python builders with built-in reviewers, a front-end reviewer for JavaScript/TypeScript and Vue, language-agnostic review roles for cross-service contracts and for verifying findings before they reach the author, and a QA pair: a coverage strategist/auditor and a Playwright E2E builder.
 
@@ -15,8 +15,8 @@ Curated [Claude Code](https://claude.com/claude-code) **subagents** and **skills
 | `architect` | Language-agnostic systems architect — designs, trade-offs, ADRs grounded in the real codebase; writes docs/ADRs, never code |
 | `backlog-planner` | Scans the codebase and produces a consistently-structured, ICE-prioritized development backlog (pain · impact · effort) at `docs/backlog/BACKLOG.md`; docs only, never code (read-only git for dates/hashes) |
 | `contract-reviewer` | Cross-boundary contract reviewer — for every changed call leaving the module (service, SDK, HTTP/RPC API, queue) opens the callee's real implementation and proves four gates: parameter accepted, value honoured, format interpreted identically, response shape as read; language-agnostic |
-| `critic` | Cold adversarial review of a design before it becomes an issue, an ADR or a PR — arrives without the discussion history, hunts unstated assumptions, failure modes, unconsidered alternatives, internal contradictions, irreversibility and standing operational cost; grounds every assumption in the actual repo, calibrates rigor to reversibility, and hands back falsifiable scenarios instead of a rewritten design |
 | `data-analyst` | Turns a raw dataset (xlsx/csv/json) into a self-contained one-page HTML report — KPI cards, inline-SVG charts, full metrics table; every metric as absolute + % |
+| `design-reviewer` | Cold adversarial review of a technical design decision, three inputs: a design before it becomes an issue, an ADR or a PR; the approach behind a PR or diff before merge (the right place and coupling, not line-level correctness); an existing ADR revisited against the current code (do its assumptions still hold) — arrives without the discussion history, hunts unstated assumptions, failure modes, unconsidered alternatives, internal contradictions, irreversibility and standing operational cost; grounds every assumption in the actual repo, calibrates rigor to reversibility, hands back falsifiable scenarios instead of a rewritten design; not for UI/UX design |
 | `devops-engineer` | DevOps builder — CI/CD pipelines (GitHub Actions/GitLab CI/Jenkins), Dockerfiles, Kubernetes/Helm, IaC (Terraform/Ansible), deployment strategies with rollback, observability, build/pipeline performance; pinned, least-privilege, idempotent automation |
 | `facilitator` | Designs facilitation sessions, workshops and brainstorms — classifies the meeting (base / strategic / global), sets rational + existential goals and pyramid level, drafts the main question, a timed scenario grid, a question bank, run-time lifehacks and risk profiling; outputs one Markdown meeting plan in the request's language |
 | `js-reviewer` | JS/TS front-end reviewer — Vue 3 (Options and Composition), Vue 2, Nuxt, framework-free browser code; detects the project's stack and linter coverage first, then reviews what tooling misses: XSS via raw-HTML rendering, reactivity and lifecycle bugs, listener/chart/observer leaks, component contracts, store discipline, request-layer failure handling |
@@ -127,7 +127,9 @@ After install, restart Claude Code (or start a new session). Agents are invoked 
 
 ```
 > use the architect agent to design the data sync between service A and B
-> use the critic agent on this design before I turn it into an issue
+> use the design-reviewer agent on this design before I turn it into an issue
+> use the design-reviewer agent on this PR — is the approach right, not the code
+> use the design-reviewer agent on docs/adr/0007 — do its assumptions still hold
 > use the php-developer agent to build a Laravel webhook controller
 > use the contract-reviewer agent on this diff — it calls the billing service
 > use the review-verifier agent on the findings above before I post them
@@ -135,8 +137,10 @@ After install, restart Claude Code (or start a new session). Agents are invoked 
 > use the test-automator agent to cover the checkout flow with Playwright tests
 ```
 
-`critic` runs one step earlier than any of the reviewers: it reads a decision that does not exist as
-code yet, so the cheap fix is still a paragraph. `architect` drafts, `critic` pressure-tests. Of the
+`design-reviewer` reads decisions, not code: a design that does not exist as code yet (the cheap fix is
+still a paragraph), the approach a PR embodies before merge (the language reviewers check the code, it
+checks whether the code is in the right place), or an old ADR against today's code. `architect` drafts,
+`design-reviewer` pressure-tests. Of the
 resulting findings, the repo-grounded ones (a mechanism claimed to exist, a contradiction with a
 recorded decision) can go through `review-verifier`; the design-level ones (an untested assumption, an
 alternative never compared) have no code to refute them against and go to the author as questions.
