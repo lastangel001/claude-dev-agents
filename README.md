@@ -1,6 +1,6 @@
 # claude-dev-agents
 
-![version](https://img.shields.io/badge/version-1.19.0-blue)
+![version](https://img.shields.io/badge/version-1.20.0-blue)
 
 Curated [Claude Code](https://claude.com/claude-code) **subagents** and **skills** for software development — a language-agnostic systems architect plus strictly-typed, tested, idiomatic PHP and Python builders with built-in reviewers, a front-end reviewer for JavaScript/TypeScript and Vue, language-agnostic review roles for cross-service contracts and for verifying findings before they reach the author, and a QA pair: a coverage strategist/auditor and a Playwright E2E builder.
 
@@ -136,8 +136,10 @@ After install, restart Claude Code (or start a new session). Agents are invoked 
 ```
 
 `critic` runs one step earlier than any of the reviewers: it reads a decision that does not exist as
-code yet, so the cheap fix is still a paragraph. `architect` drafts, `critic` pressure-tests, and
-`review-verifier` can take the resulting findings before they reach the author.
+code yet, so the cheap fix is still a paragraph. `architect` drafts, `critic` pressure-tests. Of the
+resulting findings, the repo-grounded ones (a mechanism claimed to exist, a contradiction with a
+recorded decision) can go through `review-verifier`; the design-level ones (an untested assumption, an
+alternative never compared) have no code to refute them against and go to the author as questions.
 
 The two review roles compose with the language reviewers rather than replacing them: run
 `php-reviewer`/`python-reviewer`/`js-reviewer` for the code, `contract-reviewer` for what the code says to the
