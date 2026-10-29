@@ -72,8 +72,85 @@ compare_tree() {
   pass "${label}: outputs identical"
 }
 
-compare_tree repo  "$REPO_ROOT"
-compare_tree empty "$EMPTY_DIR"
+# Synthetic fixture: GitLab CI jobs (reserved keys and hidden templates
+# skipped, extends: jobs kept) and pip-compile lockfiles (--hash= outputs).
+FIX_DIR="${TMP}/fixture"
+mkdir -p "$FIX_DIR/.github/workflows"
+cat > "$FIX_DIR/.gitlab-ci.yml" <<'EOF'
+stages:
+  - test
+  - build
+variables:
+  PIP_CACHE_DIR: .cache/pip
+default:
+  image: python:3.12
+include:
+  - local: ci/common.yml
+.pytest-base:
+  stage: test
+  script: pytest
+pytest:
+  extends: .pytest-base
+build-dev:
+  stage: build
+  script: echo build
+pages:
+  stage: build
+  script: mkdocs build
+EOF
+cat > "$FIX_DIR/.github/workflows/ci.yml" <<'EOF'
+name: ci
+on: [push]
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo lint
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo unit
+EOF
+cat > "$FIX_DIR/requirements.lock" <<'EOF'
+example-lib==1.0.0 \
+    --hash=sha256:abc
+EOF
+cat > "$FIX_DIR/requirements.txt" <<'EOF'
+example-lib==1.0.0
+EOF
+cat > "$FIX_DIR/requirements-dev.lock" <<'EOF'
+example-test-lib==2.0.0 \
+    --hash=sha256:def
+EOF
+
+compare_tree repo    "$REPO_ROOT"
+compare_tree empty   "$EMPTY_DIR"
+compare_tree fixture "$FIX_DIR"
+
+# fixture: ci-job lines, exact set and order
+expected_jobs="ci-job: .github/workflows/ci.yml:lint
+ci-job: .github/workflows/ci.yml:unit
+ci-job: .gitlab-ci.yml:pytest
+ci-job: .gitlab-ci.yml:build-dev
+ci-job: .gitlab-ci.yml:pages"
+actual_jobs="$(grep '^ci-job: ' "${TMP}/fixture.sh.norm" || true)"
+if [ "$actual_jobs" != "$expected_jobs" ]; then
+  echo "  FAIL  fixture: ci-job lines differ; expected:" >&2
+  echo "$expected_jobs" >&2
+  echo "  got:" >&2
+  echo "$actual_jobs" >&2
+  exit 1
+fi
+pass "fixture: ci-job lists GitHub jobs then GitLab jobs (reserved keys and .templates skipped)"
+
+# fixture: pip-compile outputs are lockfiles, plain requirements.txt is a manifest
+grep -qx 'lockfile: requirements-dev.lock' "${TMP}/fixture.sh.norm" || fail "fixture: missing lockfile: requirements-dev.lock"
+grep -qx 'lockfile: requirements.lock'     "${TMP}/fixture.sh.norm" || fail "fixture: missing lockfile: requirements.lock"
+grep -qx 'manifest: requirements.txt'      "${TMP}/fixture.sh.norm" || fail "fixture: missing manifest: requirements.txt"
+if grep -qx 'lockfile: requirements.txt' "${TMP}/fixture.sh.norm"; then
+  fail "fixture: requirements.txt without hashes reported as lockfile"
+fi
+pass "fixture: requirements*.lock with --hash= are lockfiles, requirements.txt stays a manifest"
 
 # The empty tree must degrade fully: no path may be reported there.
 if grep -Ev '^(#|repo: |[a-z-]+: (none|absent|0)$)' "${TMP}/empty.sh.norm" | grep -q .; then

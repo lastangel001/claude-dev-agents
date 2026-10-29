@@ -68,7 +68,9 @@ function Add-Line { param([string]$Line) $Out.Add($Line) }
 
 function Sort-Ordinal {
     param([string[]]$Items)
-    $arr = @($Items | Where-Object { $null -ne $_ -and $_ -ne '' })
+    # [string[]] cast is load-bearing: pipeline output is PSObject-wrapped, and
+    # Array.Sort on object[] then falls back to culture compare ('.' before '-').
+    $arr = [string[]]@($Items | Where-Object { $null -ne $_ -and $_ -ne '' })
     if ($arr.Count -gt 1) { [Array]::Sort($arr, [System.StringComparer]::Ordinal) }
     return , $arr
 }
@@ -163,8 +165,23 @@ Write-PresentLine 'pipeline-md' @('docs/PIPELINE.md')
 Add-Line '## stack'
 Write-RootFileLines 'manifest' @('package.json', 'composer.json', 'pyproject.toml', 'requirements.txt', 'go.mod',
     'Cargo.toml', 'pom.xml', 'build.gradle', 'build.gradle.kts', 'Gemfile', 'mix.exs')
-Write-RootFileLines 'lockfile' @('package-lock.json', 'pnpm-lock.yaml', 'yarn.lock', 'bun.lockb', 'composer.lock',
-    'poetry.lock', 'uv.lock', 'Pipfile.lock', 'Cargo.lock', 'go.sum', 'Gemfile.lock')
+# lockfile: known lockfile names, plus pip-compile outputs at the root
+# (requirements*.lock / requirements*.txt containing "--hash="); a plain
+# requirements.txt without hashes stays a manifest.
+$lockfiles = @()
+foreach ($n in @('package-lock.json', 'pnpm-lock.yaml', 'yarn.lock', 'bun.lockb', 'composer.lock',
+    'poetry.lock', 'uv.lock', 'Pipfile.lock', 'Cargo.lock', 'go.sum', 'Gemfile.lock')) {
+    if (Test-RootFile $n) { $lockfiles += $n }
+}
+$latin1 = [System.Text.Encoding]::GetEncoding(28591)
+foreach ($f in $AllFiles) {
+    if ($f.Depth -ne 1) { continue }
+    if ($f.Name -cnotmatch '^requirements.*\.(lock|txt)$') { continue }
+    $text = $null
+    try { $text = $latin1.GetString([System.IO.File]::ReadAllBytes($f.Full)) } catch { $text = $null }
+    if ($null -ne $text -and $text.Contains('--hash=')) { $lockfiles += $f.Rel }
+}
+Write-ListLines 'lockfile' (Sort-Ordinal $lockfiles)
 
 # ---------------------------------------------------------------------------
 Add-Line '## ci'
@@ -195,6 +212,21 @@ foreach ($wf in $ghWorkflows) {
         if ($line -cmatch '^jobs:') { $inJobs = $true; continue }
         if ($inJobs -and $line -cmatch '^[^ \t#]') { $inJobs = $false }
         if ($inJobs -and $line -cmatch '^  ([A-Za-z_][A-Za-z0-9_-]*):') { $ciJobs += "${wf}:$($Matches[1])" }
+    }
+}
+# then every top-level key of .gitlab-ci.yml that is neither a reserved
+# keyword nor a hidden ".template" (jobs declared via extends: included).
+if (Test-RootFile '.gitlab-ci.yml') {
+    $reserved = @('stages', 'variables', 'default', 'include', 'workflow', 'image', 'services', 'cache', 'before_script', 'after_script')
+    $lines = [System.IO.File]::ReadAllLines((Join-Path $Root '.gitlab-ci.yml'))
+    foreach ($line in $lines) {
+        $line = $line -replace '\r$', ''
+        if ($line -cmatch '^([A-Za-z0-9_.-]+):') {
+            $k = $Matches[1]
+            if ($k.StartsWith('.')) { continue }
+            if ($reserved -ccontains $k) { continue }
+            $ciJobs += ".gitlab-ci.yml:$k"
+        }
     }
 }
 Write-ListLines 'ci-job' $ciJobs

@@ -101,8 +101,18 @@ present_file pipeline-md docs/PIPELINE.md
 echo "## stack"
 root_files manifest package.json composer.json pyproject.toml requirements.txt go.mod \
   Cargo.toml pom.xml build.gradle build.gradle.kts Gemfile mix.exs
-root_files lockfile package-lock.json pnpm-lock.yaml yarn.lock bun.lockb composer.lock \
-  poetry.lock uv.lock Pipfile.lock Cargo.lock go.sum Gemfile.lock
+# lockfile: known lockfile names, plus pip-compile outputs at the root
+# (requirements*.lock / requirements*.txt containing "--hash="); a plain
+# requirements.txt without hashes stays a manifest.
+{
+  for f in package-lock.json pnpm-lock.yaml yarn.lock bun.lockb composer.lock \
+           poetry.lock uv.lock Pipfile.lock Cargo.lock go.sum Gemfile.lock; do
+    if [ -f "$f" ]; then echo "$f"; fi
+  done
+  for f in requirements*.lock requirements*.txt; do
+    if [ -f "$f" ] && grep -q -e '--hash=' "$f"; then echo "$f"; fi
+  done
+} | sort | list_or_none lockfile
 
 # ---------------------------------------------------------------------------
 echo "## ci"
@@ -117,7 +127,9 @@ fi
   done
 } | sort | list_or_none ci-file
 
-# ci-job: top-level keys under "jobs:" in each GitHub workflow, in file order
+# ci-job: top-level keys under "jobs:" in each GitHub workflow, in file order;
+# then every top-level key of .gitlab-ci.yml that is neither a reserved
+# keyword nor a hidden ".template" (jobs declared via extends: included).
 {
   if [ -n "$GH_WORKFLOWS" ]; then
     printf '%s\n' "$GH_WORKFLOWS" | while IFS= read -r wf; do
@@ -129,6 +141,19 @@ fi
           k = $1; sub(/:.*/, "", k); print file ":" k
         }' "$wf"
     done
+  fi
+  if [ -f .gitlab-ci.yml ]; then
+    awk -v file=.gitlab-ci.yml '
+      BEGIN {
+        split("stages variables default include workflow image services cache before_script after_script", r, " ")
+        for (i in r) reserved[r[i]] = 1
+      }
+      { sub(/\r$/, "") }
+      /^[A-Za-z0-9_.-]+:/ {
+        k = $0; sub(/:.*/, "", k)
+        if (k ~ /^\./ || (k in reserved)) next
+        print file ":" k
+      }' .gitlab-ci.yml
   fi
 } | list_or_none ci-job
 

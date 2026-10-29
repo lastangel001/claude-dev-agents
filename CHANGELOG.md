@@ -5,6 +5,42 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.31.0] — 2026-10-29
+
+### Added
+- **A routing eval: does a request reach the right agent or skill?** The article this set was
+  reviewed against asks to track routing while an orchestrator exists; after six releases that
+  added, renamed and folded agents and skills, nothing measured whether their descriptions still
+  pull the right requests and not each other's. `eval/routing/cases.yaml` holds 34 golden
+  requests in two tiers: 24 plain ones that cover every agent and skill at least once, and 10 hard
+  ones where the request names no stack, has two plausible owners, or should stay in the main
+  loop with nothing spawned (`expect: none`). Each case carries the expected target, optional
+  accepted alternatives for the borderline ones, and one line on why. `eval/routing/catalog.sh`
+  prints the catalog the way Claude Code sees it (every name and description), so the eval
+  measures the descriptions and nothing else. `test/routing-cases-check.sh` runs in CI for free:
+  every target exists, ids are unique, every case is complete. The model run is manual and costs
+  tokens: `eval/routing/run-routing-eval.sh` through `claude -p`, or, from a session, one
+  general-purpose subagent per case with the catalog and the request (the pattern is in
+  CLAUDE.md; nested `claude -p` cannot refresh OAuth). Pass threshold 87% per tier, the article's
+  «start with ten golden examples» taken as a floor. First run, 2026-10-29, against the 1.30.0
+  descriptions: 34 of 34, one through an accepted alternative (a business explanation routed to
+  the `analyst-writer` agent where the `analyst-patterns` skill was the first choice). The hard
+  tier at 10 of 10 says the descriptions discriminate even when the request does not name the
+  target; the eval now stands as the regression guard to re-run whenever a description changes.
+
+### Fixed
+- **`pipeline-init` signals scan: GitLab CI jobs and pip-compile lockfiles.** Found on the first
+  run of the skill against a real GitLab project (reported by another session): `ci-job` lines
+  came only from GitHub workflow files, so a live `.gitlab-ci.yml` with jobs declared through
+  `extends:` and hidden `.templates` produced `ci-job: none`, and the delivery checklist lost
+  «CI green» while `devops-engineer` was never named the owner of CI changes; and `lockfile`
+  knew `poetry.lock`, `uv.lock` and the npm family but not `requirements*.lock` or a
+  `requirements*.txt` carrying `--hash=` lines, so hash-pinned Python projects lost their lockfile
+  from the security triggers. Both scripts (`.sh` and `.ps1`, still byte-identical) now list every
+  top-level key of a GitLab CI file that is not a reserved keyword and does not start with a dot
+  as a job, and treat pip-compile outputs with hashes as lockfiles; the parity test carries a
+  synthetic fixture for both.
+
 ## [1.30.0] — 2026-10-29
 
 ### Added

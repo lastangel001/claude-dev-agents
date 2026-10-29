@@ -13,6 +13,17 @@ Entry point for Claude Code agents working on this repo.
   `skills/*/SKILL.md` (spec: `docs/AGENT-CONTRACT.md`; in CI)
 - `bash test/pipeline-signals-parity.sh` — bash vs pwsh7 output parity of the pipeline-init
   signals scan (needs pwsh on PATH; locally `PIPELINE_PS=powershell`; CI covers it)
+- `bash test/routing-cases-check.sh` — deterministic check of `eval/routing/cases.yaml` (targets
+  exist, ids unique; in CI)
+- `bash eval/routing/run-routing-eval.sh` — model eval of agent/skill routing via `claude -p`
+  (COSTS TOKENS, manual only, never CI). **Preferred from a session: subagents.** Build the
+  catalog once (`bash eval/routing/catalog.sh > <tmp>/routing-catalog.md`), then for every case
+  spawn one general-purpose subagent with: «You are the routing step of a Claude Code session.
+  Read <catalog path>. The user sent this one request: «<request>». Pick the ONE agent or skill
+  (agent = subagent, skill = main loop); if the main loop should just do it, answer none. Reply
+  with exactly one name.» Compare with `expect`/`accept`; threshold 87% per tier. Re-run whenever
+  a description changes, an agent is added or renamed. Validated 2026-10-29: 34/34 (24 plain +
+  10 hard, one via `accept`).
 - `bash eval/ru-output-style/run-model-eval.sh` — model eval of the skill via `claude -p`
   (COSTS TOKENS, manual only, never CI; needs authenticated `claude` CLI)
   - **Preferred way to run the model eval: subagents from an interactive session, NOT the

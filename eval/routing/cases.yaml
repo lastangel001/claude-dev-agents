@@ -1,0 +1,200 @@
+# Routing eval — golden requests and the agent or skill each one should route to.
+#
+# Fields:
+#   id       stable id, never reused
+#   request  the user's words, verbatim (Russian or English)
+#   expect   the one right target: an agent name (agents/<name>.md), a skill name (skills/<name>/),
+#            or `none` when the main loop should handle the request without spawning or loading anything
+#   accept   optional: other targets that also count as correct (borderline cases)
+#   why      one line on what makes the expected target right
+#
+# Every expected or accepted name must exist in the repo: test/routing-cases-check.sh enforces it
+# in CI. The model run itself (eval/routing/run-routing-eval.sh, or the subagent pattern in
+# CLAUDE.md) is manual and costs tokens. Pass threshold: 87% of cases, counted per tier.
+# Every case is invented end to end; none refers to a real project.
+
+- id: R01
+  request: "Напиши FastAPI-эндпоинт для выгрузки отчёта по заказам в CSV, с тестами"
+  expect: python-developer
+  accept: [python-patterns]
+  why: implementation work in Python; the builder, or the main loop with the pattern skill
+
+- id: R02
+  request: "Сделай ревью этого дифа — Laravel-контроллер и сервис на PHP"
+  expect: php-reviewer
+  why: a PHP diff to review
+
+- id: R03
+  request: "Review this .vue component — I suspect listener leaks and lost reactivity"
+  expect: js-reviewer
+  why: a front-end review; the reviewer owns leaks and reactivity
+
+- id: R04
+  request: "Объясни итоги исследования так, чтобы понял директор по маркетингу, без технических деталей"
+  expect: analyst-patterns
+  accept: [analyst-writer]
+  why: Explain mode for a business reader; the skill in the main loop, the agent for a batch
+
+- id: R05
+  request: "Подготовь план ретро для команды из восьми человек на полтора часа"
+  expect: facilitation-patterns
+  why: a meeting plan is built in dialogue with the skill; the agent no longer exists
+
+- id: R06
+  request: "С чего начать на этом проекте и какие агенты здесь вообще нужны?"
+  expect: pipeline-init
+  why: the question the pipeline skill exists to answer
+
+- id: R07
+  request: "The checkout service now sends a new parameter to the billing API — check that the other side actually honours it"
+  expect: contract-reviewer
+  why: a call crossing a service boundary; the four gates
+
+- id: R08
+  request: "Проверь эти находки ревью, половина выглядит как ложные срабатывания"
+  expect: review-verifier
+  why: findings to refute or confirm
+
+- id: R09
+  request: "Закрой замечания ревью по этой ветке"
+  expect: address-review
+  why: the author's side of the review loop
+
+- id: R10
+  request: "This diff adds a password-reset endpoint and builds an upload path from a request field"
+  expect: security-reviewer
+  why: two security triggers in one diff: auth and a file-system path from input
+
+- id: R11
+  request: "Напиши миграцию: индекс на orders.customer_id, таблица на пятьдесят миллионов строк, без простоя"
+  expect: sql-patterns
+  accept: [python-developer, php-developer]
+  why: a migration on a big table; the skill holds the concurrent-index rule, a builder may carry it
+
+- id: R12
+  request: "Тест падает примерно раз в пять прогонов, причину никто не понимает"
+  expect: root-cause-investigator
+  why: a flaky test with an unknown cause
+
+- id: R13
+  request: "Design the data sync between service A and service B; we need an ADR"
+  expect: architect
+  why: a design with a durable record
+
+- id: R14
+  request: "Собери бэклог технического долга по этому репозиторию"
+  expect: backlog-planner
+  why: the codebase scan with the ICE backlog
+
+- id: R15
+  request: "Нужна стратегия тестирования для новой фичи оплаты"
+  expect: qa-expert
+  why: test strategy at feature start, mode 1
+
+- id: R16
+  request: "Set up GitLab CI for this Python repo with dependency caching"
+  expect: devops-engineer
+  accept: [devops-patterns]
+  why: a CI pipeline to build; the builder, or the main loop with the skill
+
+- id: R17
+  request: "Покрой сценарий оформления заказа e2e-тестами"
+  expect: test-automator
+  why: Playwright E2E for a named flow
+
+- id: R18
+  request: "Вот датасет в xlsx, нужен одностраничный HTML-отчёт с цифрами"
+  expect: data-analyst
+  why: a dataset to a self-contained HTML report
+
+- id: R19
+  request: "Оцени этот дизайн до того, как я заведу задачу, пока правки дешёвые"
+  expect: design-reviewer
+  why: a design before it becomes an issue
+
+- id: R20
+  request: "Write a Vue component for the invoice list with pagination"
+  expect: js-developer
+  accept: [js-patterns]
+  why: front-end implementation; the builder, or the main loop with the skill
+
+- id: R21
+  request: "Сделай Laravel-джобу для пересчёта остатков через очередь"
+  expect: php-developer
+  accept: [php-patterns]
+  why: PHP implementation work
+
+- id: R22
+  request: "Ревью питоновского дифа: асинхронный воркер и обработка ошибок"
+  expect: python-reviewer
+  why: a Python diff to review
+
+- id: R23
+  request: "Перепиши этот отчёт так, чтобы было ясно, что главное и почему; сейчас читается тяжело"
+  expect: explanation-patterns
+  accept: [ru-output-style]
+  why: the shape of the explanation is the problem; wording is secondary
+
+- id: R24
+  request: "Сформулируй выводы по-русски без канцелярита и штампов, текст пойдёт заказчику"
+  expect: ru-output-style
+  why: Russian prose for a human reader
+
+# Hard tier — the request does not name the target: no stack word, two plausible owners, or no
+# agent at all (`expect: none` = the main loop handles it, nothing is spawned or loaded).
+
+- id: H01
+  request: "Поправь опечатку в README, слово «получть» в третьем абзаце"
+  expect: none
+  why: a one-line edit; spawning anything is overhead
+
+- id: H02
+  request: "Начинаем фичу экспорта отчётов, в требованиях много неясного, давай разберёмся"
+  expect: analyst-patterns
+  accept: [analyst-writer]
+  why: Analyze mode in dialogue; the fan-out agent is acceptable but second
+
+- id: H03
+  request: "Посмотри мой диф: три файла и миграция Alembic"
+  expect: python-reviewer
+  accept: [sql-patterns]
+  why: Alembic says Python without the word; the migration pulls in the SQL skill
+
+- id: H04
+  request: "После пятничного деплоя на /orders пошли пятисотые, в логах TimeoutError"
+  expect: root-cause-investigator
+  why: a regression after a deploy with logs in hand
+
+- id: H05
+  request: "Напиши постмортем по вчерашнему инциденту для руководства"
+  expect: analyst-patterns
+  accept: [analyst-writer]
+  why: a business narrative from technical material
+
+- id: H06
+  request: "Добавь в пайплайн шаг с прогоном миграций перед тестами"
+  expect: devops-engineer
+  accept: [devops-patterns]
+  why: CI change; the word «пайплайн» here is CI, not the pipeline skill
+
+- id: H07
+  request: "Надо решить, выносить ли биллинг в отдельный сервис"
+  expect: architect
+  accept: [design-reviewer]
+  why: a decision with a durable record; the reviewer comes after a draft exists
+
+- id: H08
+  request: "Посмотри PR перед мержем: код мне нравится, но правильно ли вообще так делать?"
+  expect: design-reviewer
+  why: the approach behind a diff, not the code line by line
+
+- id: H09
+  request: "Сделай так, чтобы e2e-тесты перестали флакать"
+  expect: test-automator
+  accept: [root-cause-investigator]
+  why: the Playwright builder owns the flaky protocol; the investigator when the cause is unknown
+
+- id: H10
+  request: "Напиши ответ ревьюеру, почему мы это место менять не будем"
+  expect: address-review
+  why: a declined finding with its reply draft
