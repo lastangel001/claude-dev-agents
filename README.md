@@ -1,6 +1,6 @@
 # claude-dev-agents
 
-![version](https://img.shields.io/badge/version-1.21.0-blue)
+![version](https://img.shields.io/badge/version-1.22.0-blue)
 
 Curated [Claude Code](https://claude.com/claude-code) **subagents** and **skills** for software development — a language-agnostic systems architect plus strictly-typed, tested, idiomatic PHP and Python builders with built-in reviewers, a front-end reviewer for JavaScript/TypeScript and Vue, language-agnostic review roles for cross-service contracts and for verifying findings before they reach the author, and a QA pair: a coverage strategist/auditor and a Playwright E2E builder.
 
@@ -157,6 +157,24 @@ hands e2e gaps to `test-automator`, which writes the Playwright tests and mainta
 spec for devops (`docs/qa/ENVIRONMENT.md`). For a recurring actuality check, schedule qa-expert's
 project-audit mode in the target project (cron/scheduled task) — each run diffs the matrix against
 the previous one.
+
+### How agents chain
+
+Every agent ends with the same four sections — `## Input`, `## Output`, `## Handoff`,
+`## Fragile points` — so the main loop can hand work from one to the next without re-explaining
+each link: a builder's report says which behaviours changed and which tests prove them, which is
+what the language reviewer reads; a reviewer's findings carry severity, `file:line`, claim and
+failure scenario, which is what `review-verifier` requires. The spec and the full chain table are
+in [docs/AGENT-CONTRACT.md](docs/AGENT-CONTRACT.md).
+
+A subagent cannot ask a question and wait, so when it cannot deliver the result it ends with one
+of three **terminal states** on the first line: `NEEDS_INPUT` (a fact only you have would change
+the result; the questions follow, each with the result it leads to), `BLOCKED` (a precondition
+outside the brief is unmet: a tool not configured, an ADR still `Proposed`, a callee repository
+not checked out) or `OUT_OF_SCOPE` (not this agent's job; it names whose). Show the state to the
+user as is rather than folding it into a summary; answer it and re-run with the full brief. A
+second `NEEDS_INPUT` from the same agent on the same task means the work belongs in the main
+loop, with the conversation, not in a subagent.
 
 ## Uninstall
 

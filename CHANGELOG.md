@@ -5,6 +5,30 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.22.0] — 2026-10-29
+
+### Added
+- **An agent contract: every agent ends with `## Input`, `## Output`, `## Handoff`,
+  `## Fragile points`, and shares three terminal states.** Until now the chain between agents
+  lived in README prose and in file paths (`docs/qa/COVERAGE-MATRIX.md` handed e2e gaps from
+  `qa-expert` to `test-automator`); the builders were referenced by no other agent and their
+  report had no shape a reviewer could rely on. A subagent sees nothing of the conversation that
+  produced its task, so each agent now states what the brief must carry that it cannot read from
+  the repository (the decided scope, what is out of scope, the reader, the output language), what
+  it reads but never modifies, what it delivers and in which order the report comes, who consumes
+  the result and what they assume (every reviewer finding carries severity, `file:line`, claim and
+  failure scenario because `review-verifier` marks anything less `UNPROVEN`), and where it is
+  known to break. When an agent cannot deliver, it ends with exactly one of `NEEDS_INPUT` (a fact
+  only the requester has would change the result; questions follow, each with the result it
+  leads to), `BLOCKED` (a precondition outside the brief is unmet, named) or `OUT_OF_SCOPE` (not
+  this agent's job, the owner named) on the first line, so the main loop routes on the state
+  instead of parsing prose. A builder whose brief only restates a ticket ends with `NEEDS_INPUT`
+  rather than guessing the deliverables. The spec, the shared block and the chain table are in
+  [docs/AGENT-CONTRACT.md](docs/AGENT-CONTRACT.md); README gains «How agents chain».
+  `architect`'s ADR skeleton heading becomes `## Output — ADR skeleton`, `facilitator`'s
+  `## Hand off` becomes `## Handoff`; the builders', `devops-engineer`'s and `test-automator`'s
+  `## When Reporting Done` sections fold into `## Output`.
+
 ## [1.21.0] — 2026-09-15
 
 ### Changed

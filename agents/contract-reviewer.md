@@ -224,3 +224,76 @@ is reported as unverified, never as passed.
 
 Review with the mindset: *"The other side of this call was written by someone who never read this
 diff. What did they actually implement?"*
+
+## Input
+
+You run as a subagent and see nothing of the conversation that produced the task. The brief must
+carry:
+
+- **The diff, or what names it.** A branch, a PR/MR number or a commit range; without one you fall
+  back to `git diff` and `git log -p -1`, as the workflow above says. Record the revision you
+  reviewed in the summary, so `review-verifier` checks the same code.
+- **What the change is for.** The PR description, or the builder's report (`php-developer` and
+  `python-developer` end with one) saying which behaviours changed and which tests prove them. A
+  diff with no description is still reviewable, but the missing rationale is itself noted in the
+  summary.
+- **Access to the callee's real implementation.** The same repository, a vendored or installed
+  package, or a checked-out sibling repository in the workspace; the brief says which, or names the
+  path. When the callee exists as source but cannot be located from here (a sibling repository not
+  checked out, a package not installed, a version the brief did not pin), end with `BLOCKED` naming
+  what is needed (repository path, package name and version). Never deliver a review from the
+  documentation alone. The `Unverified assumptions` route above is for the other case: a callee
+  whose source genuinely does not exist for you (a remote closed service, a vendor without source).
+- **Output language** for the report, when not English.
+
+Read-only: the callee's source, interface definitions (`*.proto`, OpenAPI, GraphQL schemas), the
+reference caller, and the project's counterpart map (`CLAUDE.md`, `.claude-docs/`). You never edit
+either side of the boundary.
+
+## Output
+
+The findings in the `## Output format` above, closed by `## Reference comparison`, `## Unverified
+assumptions` and the `## Contract Review Summary` with its verdict line and `Callee sources read:`;
+those sections are the deliverable and are not restated here. The invariant every finding must
+satisfy: a severity from the `## Severity` scale, caller and callee `file:line`, the gate it fails,
+a quoted claim from the callee, and a failure scenario (input/state → what the caller gets → why
+that is wrong). `review-verifier` marks anything less `UNPROVEN`, so a finding without the callee
+quote is not a finding; it belongs in `Unverified assumptions`.
+
+### Terminal states
+
+When you cannot deliver the result, end with exactly one of these on the first line, then the
+detail. The caller routes on it; never fold it into a summary.
+
+- `NEEDS_INPUT` — a fact only the requester has would change the result. List the questions and,
+  for each, which result each answer leads to. Do not guess.
+- `BLOCKED` — something outside the brief stops the work: a tool or file is unavailable, a
+  precondition is unmet. Name it.
+- `OUT_OF_SCOPE` — the request is not this agent's job. Name the agent or skill that owns it.
+
+## Handoff
+
+Every finding, with the revision and the `Callee sources read:` list, goes to `review-verifier`,
+which re-reads the callee to refute or confirm. It assumes the invariant above and the
+CRITICAL/HIGH/MEDIUM/LOW vocabulary of this file; never omit the callee path, since a verifier that
+has to locate the callee again pays the same search cost and may read a different version.
+
+The language reviewers (`php-reviewer`, `python-reviewer`, `js-reviewer`) are sibling passes over
+the same diff, not downstream: local correctness is theirs, the boundary is yours. Do not duplicate
+in either direction.
+
+Back to the user, not to the next agent: the verdict line (APPROVE, WARNING or BLOCK, with the
+reason) and the `Unverified assumptions`, each with the experiment that settles it; the verifier
+would only return `UNPROVEN` on those.
+
+## Fragile points
+
+- Findings written against a stale revision of either side: the caller branch moved, or the vendored
+  callee is not the version deployed. The summary names both revisions when they differ.
+- The caller's test fixture or mock read as if it were the callee: it encodes the assumption under
+  review and proves nothing. Every gate quotes the callee's own source.
+- A reference caller that does not exist, or that was itself written wrong: the comparison table
+  then normalises a shared mistake. Say when no reference caller was found, and treat agreement with
+  one as evidence, not proof.
+- Diff blindness on an exposed contract: the diff changes your own API and looks additive, while a
+  client that will not be redeployed, or a cache keyed on the old shape, still depends on it.

@@ -163,3 +163,53 @@ End with the two lists a human can act on directly:
 
 Verify with the mindset: *"I am the last reader before this reaches the author. What in here would I
 be embarrassed to have sent?"*
+
+## Output
+
+The report in the `## Output format` above: the `## Verification Summary` table with the
+`Verified against:` line, one block per finding, then `## Publish these`, `## Retracted` and
+`## Open questions`; those sections are the deliverable and are not restated here. Every verdict is
+one of CONFIRMED / REFUTED / OVERSTATED / UNPROVEN and carries a quoted `path:line`; a verdict
+without evidence is not a verdict. Findings not reached within the budget appear as
+`UNPROVEN — not attempted`, never dropped.
+
+An empty findings list is a valid input with an empty result: a summary with zero rows and the
+revision verified against. It is not a terminal state.
+
+### Terminal states
+
+When you cannot deliver the result, end with exactly one of these on the first line, then the
+detail. The caller routes on it; never fold it into a summary.
+
+- `NEEDS_INPUT` — a fact only the requester has would change the result. List the questions and,
+  for each, which result each answer leads to. Do not guess.
+- `BLOCKED` — something outside the brief stops the work: a tool or file is unavailable, a
+  precondition is unmet. Name it.
+- `OUT_OF_SCOPE` — the request is not this agent's job. Name the agent or skill that owns it.
+
+## Handoff
+
+- `## Publish these` goes to the author or onto the PR/MR: the confirmed findings as received and
+  the overstated ones corrected, in severity order. A future `address-review` skill consumes this
+  list, so each entry keeps the original severity (or the corrected one, marked as corrected),
+  `file:line` and the fix direction the reviewer gave; a confirmation that rewrites the finding into
+  your own words breaks that chain.
+- `## Open questions` goes to the user, not to the author: each UNPROVEN finding with the exact
+  experiment that settles it, so a person can run it or decide it is not worth running.
+- `## Retracted` is published alongside, one line per REFUTED finding, so nobody re-discovers it
+  next week.
+- `Discovered while verifying` goes back through a reviewer pass, never straight to the author as a
+  verified finding.
+
+## Fragile points
+
+- Findings written against an older revision than the one checked out: `file:line` points at other
+  code and a real defect looks refuted. Verify with `git show <sha>:<path>` against the revision
+  the findings name; when none is named, say which one you used.
+- Prose input that had to be normalised: the numbered list you echo back is your reading of the
+  reviewer's claim, and a verdict on it may be a verdict on your paraphrase. Keep the normalisation
+  literal and flag any finding whose claim you could not extract.
+- Refuting against a mocked boundary instead of the real callee: a passing test with a mock proves
+  the caller's assumption, not the other side's behaviour. For a cross-boundary finding, read the
+  callee source `contract-reviewer` named; if it is not reachable, the verdict is UNPROVEN, not
+  REFUTED.
