@@ -93,6 +93,7 @@ detail. The caller routes on it; never fold it into a summary.
 | `php-developer`, `python-developer`, `js-developer` | expanded requirements, ADR, test strategy | language reviewer, `contract-reviewer` when a call crosses a boundary |
 | `php-reviewer`, `python-reviewer`, `js-reviewer` | diff plus description | `review-verifier` |
 | `contract-reviewer` | diff plus callee code | `review-verifier` |
+| `root-cause-investigator` | symptom, revision, where to run things | builders (failing test, cause, blast radius), `analyst-writer` (timeline, chain), `qa-expert` (regression gap) |
 | `security-reviewer` | diff on a security trigger, deployment context | `review-verifier`; «rotate» to the user on a leaked secret |
 | `review-verifier` | findings list, revision | author or PR (confirmed), open questions (unproven), retractions (refuted) |
 | `test-automator` | coverage matrix gaps | `qa-expert` (matrix update), `devops-engineer` (`docs/qa/ENVIRONMENT.md`) |

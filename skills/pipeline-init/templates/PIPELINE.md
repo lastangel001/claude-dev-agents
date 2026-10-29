@@ -35,7 +35,7 @@ Named by the masks but **not active** in this project: {{inactive_agents}}.
 ## Stages by operation and size
 
 Stage numbers refer to the skeleton in the `pipeline-init` skill (`references/stages.md`):
-1 Clarify · 2 Design · 3 Pressure-test · 4 Test strategy · 5 Implement · 6 Code review ·
+0 Investigate · 1 Clarify · 2 Design · 3 Pressure-test · 4 Test strategy · 5 Implement · 6 Code review ·
 7 Contract review · 8 Security · 9 Verify findings · 10 Address review · 11 Coverage · 12 Deliver.
 
 | Operation | trivial | small | standard | large |

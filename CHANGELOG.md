@@ -5,6 +5,28 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.29.0] — 2026-10-29
+
+### Added
+- **`root-cause-investigator` — the stage nobody owned: finding the cause.** `analyst-writer`
+  wrote the post-mortem and the builders fixed what they were told to fix, but between a symptom
+  and a fix there was no role that reproduced, ranked hypotheses and refuted them. The new agent
+  is read-only (Read, Grep, Glob, Bash for running tests, reproduction scripts, `git log`/`diff`/
+  `bisect` on a local checkout, and reading logs at the paths the brief names; never a write, a
+  commit, an install or anything against production unless the brief names a read-only command).
+  Method: reproduce first and state the exact command; localise from the stack or the time window;
+  list every hypothesis with the observation that would kill it and its cost; run the cheapest
+  check first and keep only what survives; bisect when the window is bigger than one can read and
+  a test encodes the symptom; confirm the cause only with a closed chain (input or state, the code
+  at `file:line`, the wrong outcome, why the existing guards do not fire), the same bar
+  `review-verifier` uses. Three verdicts: CAUSE CONFIRMED, BEST HYPOTHESIS with the experiment
+  that would close it, NOT REPRODUCED with everything that was tried; a hypothesis is never
+  reported as a cause. The report hands the builder the smallest failing test as text (the fix
+  starts red, the first move of a `fix` in the pipeline skeleton), the blast radius with the call
+  sites checked, the refuted hypotheses so nobody re-checks them, and every command run.
+  `analyst-writer` names it as the source of a post-mortem's timeline and chain; the pipeline
+  skeleton gains stage 0, Investigate, in the `fix` masks at `standard` and `large`.
+
 ## [1.28.0] — 2026-10-29
 
 ### Added

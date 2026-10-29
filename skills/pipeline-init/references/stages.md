@@ -8,6 +8,7 @@ and when to stop and ask. `pipeline-init` fills the second part; this file is th
 
 | # | Stage | Owner | Input | Output | Mandatory when |
 |---|---|---|---|---|---|
+| 0 | Investigate | `root-cause-investigator` | symptom, revision, where to run things | cause with evidence chain, failing test as text, blast radius, refuted hypotheses | a `fix` whose cause is not obvious; a regression after a deploy; a flaky test |
 | 1 | Clarify | main loop (with `analyst-writer` skill, or the agent for a fan-out) | ticket, conversation | expanded requirements: deliverables, out of scope, decisions taken, open questions | always; open questions stop the pipeline here |
 | 2 | Design | `architect` | requirements, repository | ADR or a short answer | a one-way door: data model, persistence engine, public API contract, service boundary, auth model |
 | 3 | Pressure-test | `design-reviewer` | the design, or the approach in a diff, or an old ADR | falsifiable findings, open questions | same one-way doors; any decision expensive to reverse |
@@ -45,7 +46,7 @@ Default masks (the project file overrides them):
 |---|---|---|---|---|
 | feature | 5 6 9 12 | 1 5 6 9 12 | 1 2 5 6 7 9 11 12 | 1 2 3 4 5 6 7 8 9 10 11 12 |
 | change | 5 6 12 | 1 5 6 9 12 | 1 5 6 7 9 11 12 | 1 2 3 5 6 7 8 9 10 11 12 |
-| fix | 5 6 12 | 5 6 9 12 (first move: a failing test that reproduces the bug) | 1 5 6 9 11 12 | 1 3 5 6 7 8 9 10 11 12 |
+| fix | 5 6 12 | 5 6 9 12 (first move: a failing test that reproduces the bug) | 0 1 5 6 9 11 12 | 0 1 3 5 6 7 8 9 10 11 12 |
 | refactor | 5 6 12 | 5 6 12 | 3 5 6 9 12 | 2 3 5 6 7 9 11 12 |
 | greenfield | — | — | 1 2 3 4 5 6 7 9 11 12 | 1 2 3 4 5 6 7 8 9 10 11 12 |
 | research | 1 | 1 | 1 2 | 1 2 3 |
