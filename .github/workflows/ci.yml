@@ -33,16 +33,21 @@ jobs:
           echo "PASS: no CRLF in .sh/.ps1/.md"
 
       - name: Bash syntax parse
-        run: bash -n install.sh test/version-check.sh test/smoke.sh test/parity.sh test/lint-ru-test.sh skills/ru-output-style/scripts/lint-ru.sh eval/ru-output-style/run-model-eval.sh
+        run: bash -n install.sh test/version-check.sh test/smoke.sh test/parity.sh test/lint-ru-test.sh test/agent-lint.sh skills/ru-output-style/scripts/lint-ru.sh eval/ru-output-style/run-model-eval.sh
 
       - name: shellcheck
-        run: shellcheck install.sh test/version-check.sh test/smoke.sh test/parity.sh test/lint-ru-test.sh skills/ru-output-style/scripts/lint-ru.sh eval/ru-output-style/run-model-eval.sh
+        run: shellcheck install.sh test/version-check.sh test/smoke.sh test/parity.sh test/lint-ru-test.sh test/agent-lint.sh skills/ru-output-style/scripts/lint-ru.sh eval/ru-output-style/run-model-eval.sh
 
       - name: version-check.sh
         run: bash test/version-check.sh
 
       - name: lint-ru-test.sh
         run: bash test/lint-ru-test.sh
+
+      - name: agent-lint.sh
+        # BL-011: frontmatter (name == filename, required keys) and the agent contract
+        # headings / terminal-states block for agents/*.md and skills/*/SKILL.md.
+        run: bash test/agent-lint.sh
 
   # ---------------------------------------------------------------------------
   # Job B — BL-012 gate: PS 5.1 AST parse + -File smoke + PSScriptAnalyzer (Windows)
@@ -170,8 +175,6 @@ jobs:
   # ---------------------------------------------------------------------------
   # Aggregator — required branch protection check
   # Set "ci-pass" as the required status check; all failures surface in one run.
-  # TODO(BL-011): add lint-frontmatter job here (name==filename, required keys,
-  #   tools/model values for agents/*.md and skills/*/SKILL.md).
   # ---------------------------------------------------------------------------
   ci-pass:
     name: "ci-pass"

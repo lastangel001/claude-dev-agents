@@ -5,6 +5,19 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.22.1] — 2026-10-29
+
+### Added
+- **`test/agent-lint.sh` — the contract from 1.22.0 is now enforced, not just documented.**
+  For every `agents/*.md`: frontmatter present with `name` equal to the filename, a non-empty
+  `description`, `model` in `opus|sonnet|haiku|inherit`, `tools` (when present) a JSON-style
+  list; exactly one of each `## Input`, `## Output`, `## Handoff`, `## Fragile points` outside
+  fenced code; the `### Terminal states` block byte-identical to the one in
+  `docs/AGENT-CONTRACT.md`; no CR line endings. For every `skills/*/SKILL.md`: frontmatter,
+  `name` equal to the directory, non-empty `description`. POSIX awk/grep/cmp only, so it runs on
+  the macOS job too. Wired into the `static-bash` CI job and listed in CLAUDE.md. Resolves
+  BL-011 (a typo'd `name:` used to ship silently and fail only in the user's session).
+
 ## [1.22.0] — 2026-10-29
 
 ### Added

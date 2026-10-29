@@ -9,6 +9,8 @@ Entry point for Claude Code agents working on this repo.
 - `bash test/version-check.sh` — VERSION/fallbacks/README-slug/tag consistency
 - `bash test/parity.sh` — bash vs pwsh7 manifest parity (needs pwsh on PATH; CI covers it)
 - `bash test/lint-ru-test.sh` — fixture regression for the ru-output-style linter (in CI)
+- `bash test/agent-lint.sh` — frontmatter + agent-contract lint for `agents/*.md` and
+  `skills/*/SKILL.md` (spec: `docs/AGENT-CONTRACT.md`; in CI)
 - `bash eval/ru-output-style/run-model-eval.sh` — model eval of the skill via `claude -p`
   (COSTS TOKENS, manual only, never CI; needs authenticated `claude` CLI)
   - **Preferred way to run the model eval: subagents from an interactive session, NOT the

@@ -5,9 +5,9 @@
 
 ## Summary
 
-- **Items:** 3 open — P0: 0 · P1: 2 · P2: 0 · P3: 1  (8 resolved — see `## Resolved`)
-- **By type:** bug 0 · security 0 · perf 0 · reliability 0 · debt 1 · testing 0 · DX 2 · feature 0
-- **Top 3 to do now:** BL-009, BL-010, BL-011
+- **Items:** 2 open — P0: 0 · P1: 2 · P2: 0 · P3: 0  (9 resolved — see `## Resolved`)
+- **By type:** bug 0 · security 0 · perf 0 · reliability 0 · debt 1 · testing 0 · DX 1 · feature 0
+- **Top 3 to do now:** BL-009, BL-010
 - **One-line health read:** Small, well-documented distribution package in good shape; the real risk surface is the two hand-duplicated installers and the remote-install path, neither of which has any automated verification.
 
 ## Priority Matrix (Impact × Effort)
@@ -15,7 +15,7 @@
 |              | Effort S/M (low) | Effort L/XL (high) |
 |--------------|------------------|--------------------|
 | **Impact high (4–5)** | **Quick wins** — (none open) | **Big bets** — (none open) |
-| **Impact low (1–3)**  | **Fill-ins** — BL-009, BL-010, BL-011 | **Money pit** — (none open) |
+| **Impact low (1–3)**  | **Fill-ins** — BL-009, BL-010 | **Money pit** — (none open) |
 
 ## Backlog (sorted by ICE score)
 
@@ -23,9 +23,8 @@
 |----|------|-------|:------:|:----:|:------:|:---:|:--------:|
 | BL-009 | DX | No CONTRIBUTING / installer-parity guide for two-impl maintenance | 2 | 4 | S | 8.0 | P1 |
 | BL-010 | debt | PowerShell `-Version` short-circuits before arg validation | 2 | 4 | S | 8.0 | P1 |
-| BL-011 | DX | No agent/skill schema-lint to catch frontmatter drift | 2 | 3 | M | 2.0 | P3 |
 
-> Note: No P0 items remain. BL-009/010 are P1 fill-ins; BL-011 is P3.
+> Note: No P0 items remain. BL-009/010 are P1 fill-ins.
 
 ## Item Details
 
@@ -49,20 +48,11 @@
 - **Suggested fix:** Add `[switch]$Help` echoing usage (or rely on `Get-Help` comment block already present) and document parity.
 - **Dependencies / risk:** Pairs with BL-009/BL-003.
 
-### BL-011 — No agent/skill schema-lint to catch frontmatter drift
-- **Type:** DX
-- **Priority:** P3 (ICE 2.0 = Impact 2 × Conf 3 / Effort 3)
-- **Pain / problem:** Agents and skills depend on well-formed YAML frontmatter (`name`, `description`, `tools`, `model` for agents; `name`, `description` for skills) — the installer auto-discovers by filename and Claude Code loads by frontmatter. Nothing validates that every `agents/*.md` has the required keys and a `name` matching its filename, or that `tools` lists are valid. A typo'd `name:` ships silently and the agent fails to load at the user's end.
-- **Evidence:** Auto-discovery keys off filename only: `install.sh:100`, `install.ps1:89` (`BaseName`); frontmatter is the load contract, e.g. `agents/architect.md:1-6`, `skills/php-patterns/SKILL.md:1-4`. No validator in the tree.
-- **Impact on system:** Broken/duplicate agents only surface in the user's session, not at build time. Localized, low frequency.
-- **Effort:** M, 3 pts — a small lint (any language already implied by the skills) asserting required frontmatter keys, `name == basename`, and known `tools`/`model` values, wired into BL-003 CI.
-- **Suggested fix:** Add a frontmatter linter run in CI; assert name↔filename and required keys.
-- **Dependencies / risk:** Builds on BL-003 CI; otherwise standalone.
-
 ## Resolved
 
 Retired items — one line each; IDs are not reused. Full detail in [CHANGELOG.md](../../CHANGELOG.md).
 
+- **BL-011** (DX) — No agent/skill schema-lint to catch frontmatter drift. Resolved 2026-10-29 (v1.22.1) — `test/agent-lint.sh` in CI: name == filename/directory, required keys, model values, agent-contract headings and the terminal-states block.
 - **BL-012** (bug) — `install.ps1` failed to parse under Windows PowerShell 5.1 `-File` on non-UTF-8 locales (em-dash chars, no BOM). Resolved 2026-06-09 — installer text is ASCII-only. (Found while fixing BL-002/007.)
 - **BL-002** (reliability) — Version string duplicated 4× and installers ignored the `VERSION` file. Resolved 2026-06-09 — both installers read the sibling `VERSION` at runtime, embedded constant only as piped-remote fallback.
 - **BL-006** (reliability) — bash uninstall could drop the manifest's final line if it lacked a trailing newline. Resolved 2026-06-09 — read loop guarded with `|| [ -n "$rel" ]`.
