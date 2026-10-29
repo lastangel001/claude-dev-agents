@@ -5,6 +5,31 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.30.0] — 2026-10-29
+
+### Added
+- **`devops-patterns` — the last builder gets its skill.** `devops-engineer` was the one builder
+  still carrying its knowledge inline, in ninety-five lines that could not grow without bloating
+  every run. The skill holds it once, in six references: `ci.md` (GitLab CI and GitHub Actions
+  shown as equals, GitLab first: DAG stages, caches keyed on the lockfile hash, matrices, minimal
+  permissions per job, actions pinned by SHA and images by digest, OIDC instead of long-lived
+  keys, fork and `pull_request_target` safety, reusable templates, test splitting, the aggregator
+  job; Jenkins in one «what differs» section), `docker.md` (multi-stage builds per stack, digest
+  pinning, non-root, layer ordering, `HEALTHCHECK`, PID 1, BuildKit secrets, image scanning),
+  `kubernetes.md` (requests and limits, the three probes, PodDisruptionBudget, HPA, ConfigMap vs
+  Secret, migrations as a one-runner job, NetworkPolicy, RBAC, Helm chart layout, per-environment
+  values, `helm lint`/`template` in CI, `--atomic`), `iac.md` (Terraform remote state with
+  locking, modules, a reviewed `plan` as a CI artifact, `moved` blocks, drift, provider pinning;
+  Ansible idempotent modules, check mode, vault, inventories, `ansible-lint`), `deploy.md`
+  (rolling, blue-green, canary with metric gates, feature flags, expand → deploy → contract with
+  `sql-patterns`, a rollback runbook template, post-deploy verification, freeze windows) and
+  `observability.md` (structured logs with correlation ids, what never to log, RED/USE, SLOs and
+  error budgets, symptom alerts with runbook links, tracing, retention). `devops-engineer` keeps
+  its workflow, hard rules and contract, points at the skill the way the other builders do, and
+  keeps an «Essentials» list of the rules that must hold even without reading it. Docker,
+  Kubernetes and deployment sections are distilled from [affaan-m/ECC](https://github.com/affaan-m/ECC)
+  (MIT).
+
 ## [1.29.0] — 2026-10-29
 
 ### Added
