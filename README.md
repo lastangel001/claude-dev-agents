@@ -1,6 +1,6 @@
 # claude-dev-agents
 
-![version](https://img.shields.io/badge/version-1.26.0-blue)
+![version](https://img.shields.io/badge/version-1.27.0-blue)
 
 Curated [Claude Code](https://claude.com/claude-code) **subagents** and **skills** for software development — a language-agnostic systems architect plus strictly-typed, tested, idiomatic PHP and Python builders with built-in reviewers, a front-end reviewer for JavaScript/TypeScript and Vue, language-agnostic review roles for cross-service contracts and for verifying findings before they reach the author, and a QA pair: a coverage strategist/auditor and a Playwright E2E builder.
 
@@ -25,6 +25,7 @@ Curated [Claude Code](https://claude.com/claude-code) **subagents** and **skills
 | `python-developer` | Python 3.11+ builder — FastAPI/Flask/Django, async, CLI, data pipelines |
 | `python-reviewer` | Python reviewer — PEP 8, type hints, security, performance |
 | `qa-expert` | QA strategist and coverage auditor — test strategy at project/feature start (risk analysis, level assignment, testability of acceptance criteria → `docs/qa/TEST-STRATEGY.md`), PR test-coverage audit (behavioral coverage, assertion quality, edge/error paths), and a regular project audit of coverage actuality (dead/skipped tests, stale suites) persisting a stable-ID feature × level matrix to `docs/qa/COVERAGE-MATRIX.md`; docs only, never code |
+| `security-reviewer` | Cross-cutting security reviewer, language-agnostic and read-only — runs only when a diff touches a security trigger (auth, user input and uploads, DB queries, file-system paths from input, external calls, crypto/tokens/sessions, secrets and config, dependency manifests or CI workflows) and reviews what the language reviewers structurally cannot: the access model across the change, trust boundaries, secrets in repo and CI, SSRF and open redirects, weak crypto, vulnerable dependencies via the project's own audit tooling (never installs any), workflow permissions; eight families with questions, a pattern → severity → fix catalog, a false-positive list; every finding carries a reachable input or state so `review-verifier` can refute it; not a pentest, never writes exploits |
 | `review-verifier` | Adversarial verifier for review findings — tries to refute each claim against the code and returns CONFIRMED / REFUTED / OVERSTATED / UNPROVEN with cited evidence; burden of proof on the finding, so unproven claims never reach the author |
 | `test-automator` | Playwright E2E builder — bootstraps the toolchain itself (`@playwright/test`, browsers, config), writes stable tests (POM, fixtures, data-testid, auto-waiting, no fixed timeouts), stabilizes flaky tests (`--repeat-each`, trace-driven diagnosis, referenced quarantine), prepares CI integration and writes the environment spec for devops at `docs/qa/ENVIRONMENT.md`; takes e2e gaps from qa-expert's matrix as its backlog |
 

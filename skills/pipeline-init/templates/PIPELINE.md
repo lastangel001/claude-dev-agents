@@ -20,7 +20,7 @@
 | Builder | {{builder}} | |
 | Code reviewer | {{code_reviewer}} | |
 | Contract reviewer | `contract-reviewer` | runs only when a changed call leaves the module |
-| Security pass | {{security_pass}} | runs only on a security trigger |
+| Security pass | `security-reviewer` | runs only on a security trigger |
 | Verifier | `review-verifier` | before anything is published to an author or a PR |
 | Design | `architect`, `design-reviewer` | one-way doors only |
 | QA | `qa-expert`, `test-automator` | rigor `standard` and above |

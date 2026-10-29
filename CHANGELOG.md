@@ -5,6 +5,35 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.27.0] — 2026-10-29
+
+### Added
+- **`security-reviewer` — the cross-cutting pass the language reviewers structurally cannot
+  make.** `php-reviewer`, `python-reviewer` and `js-reviewer` catch injection and XSS inside
+  their language; nobody looked at the access model across a change, trust boundaries, secrets in
+  the repository and CI, SSRF through user-supplied URLs, home-made crypto, vulnerable
+  dependencies or workflow permissions. The new agent is language-agnostic and read-only, runs only
+  when the diff touches a security trigger (the list the pipeline skeleton already carried:
+  authentication or authorization, user input and uploads, database queries, file-system paths
+  built from input, external calls, cryptography and sessions, secrets and configuration,
+  dependency manifests and CI workflows) and otherwise answers APPROVE in one line, because a
+  review that invents a security angle is noise. Method: detect the stack and the trust
+  boundaries; run the project's own audit tooling if present (`composer audit`, `pip-audit`,
+  `npm audit`, `govulncheck`, `cargo audit`, `bundle audit`, `gitleaks`), never installing
+  anything and reporting what could not be checked; walk the diff through eight families with
+  concrete questions; try to refute every candidate before writing it. A pattern → severity → fix
+  catalog (string-built queries, `fetch(userUrl)`, TLS verification off, plaintext or MD5
+  passwords, `pull_request_target` with a checkout of the PR head, actions pinned by tag, `*`
+  CORS with credentials, raw-HTML sinks, JWT `alg` from the token, balance checks without a
+  lock, committed `.env`) and a false-positive list (`.env.example`, marked test credentials,
+  public keys, SHA-256 as a checksum, frameworks that escape by default with the version named).
+  Every finding needs a reachable input or state, so `review-verifier` can refute or confirm it;
+  «could be dangerous» without a path goes to unverified assumptions with the experiment that
+  settles it. A leaked secret is also handed to the user with «rotate», because the fix is
+  operational. When a language reviewer already ran, it reads those findings first and goes
+  beyond them. Stage 8 of the pipeline skeleton and the `Security pass` row of the pipeline
+  template now name the agent.
+
 ## [1.26.0] — 2026-10-29
 
 ### Added
