@@ -5,6 +5,34 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.28.0] — 2026-10-29
+
+### Added
+- **`sql-patterns` — the data-store knowledge the builders and reviewers lacked.** A migration
+  used to be reviewed only as part of the diff: nobody checked what it locks on a production-sized
+  table, whether the index is built inline, whether the backfill sits inside the DDL, or what the
+  forward path back is. The skill holds that once: `schema.md` (types, constraints, composite and
+  partial indexes, FK indexes, soft delete, multi-tenant filters, with per-engine notes for
+  PostgreSQL, MySQL/MariaDB and SQLite), `queries.md` (N+1 and its fix in each ORM, cursor
+  pagination over OFFSET, reading EXPLAIN, isolation levels, lock ordering, `SKIP LOCKED` for
+  queues, short transactions, replication lag), `migrations.md` (the safety checklist,
+  expand-contract renames, adding columns safely per engine version, concurrent index creation,
+  removing a column in two deploys, batched backfills, forward-only rollback, immutable deployed
+  migrations, per-tool workflows for Alembic, Django, Doctrine Migrations and Laravel), `orm.md`
+  (raw-SQL escape hatches of Eloquent, Doctrine, Django ORM and SQLAlchemy and how to keep them
+  parameterised, mass assignment, transactions, unit-of-work pitfalls, model-vs-schema drift
+  checks) and `nosql.md` (MongoDB document modelling and lazy schema migration, Redis and
+  Dragonfly key hygiene, TTLs, correct distributed locks and queues, ClickHouse MergeTree ordering,
+  partitions, batch inserts and the cost of mutations and `FINAL`, Elasticsearch/OpenSearch
+  immutable mappings, alias-swap reindexing, `search_after`). `php-developer`, `python-developer`,
+  `php-reviewer` and `python-reviewer` load it whenever a diff touches a schema, a migration, a
+  backfill, a hot query or a NoSQL store; the reviewers name a migration reviewed without the
+  checklist as a review gap; `design-reviewer` treats a schema change as the commonest one-way
+  door and prices it with `migrations.md`. No `db-reviewer` agent: the skill first, an agent only
+  if migration reviews turn out frequent. Migration and PostgreSQL sections are distilled from
+  [affaan-m/ECC](https://github.com/affaan-m/ECC) `database-migrations` and `postgres-patterns`
+  (MIT).
+
 ## [1.27.0] — 2026-10-29
 
 ### Added

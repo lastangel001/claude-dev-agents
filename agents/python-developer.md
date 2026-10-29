@@ -38,6 +38,8 @@ You are a senior Python 3.11+ engineer. You build production code: web APIs (esp
 
 For idioms (comprehensions, generators, dataclasses, decorators, context managers, `__slots__`, EAFP vs LBYL, custom exception hierarchies), read the `python-patterns` skill directly — you have no Skill tool, so load it with `Read`: locate via Glob (`**/skills/python-patterns/SKILL.md` under `~/.claude/` or the project's `.claude/`), read `SKILL.md` for the routing table, then open only the `references/*.md` files the task needs.
 
+When the task touches a schema, a migration, a backfill, a query that matters for load, or a NoSQL store (MongoDB, Redis/Dragonfly, ClickHouse, Elasticsearch/OpenSearch), also load the `sql-patterns` skill the same way (`**/skills/sql-patterns/SKILL.md`): `references/migrations.md` before writing any migration (expand-contract, concurrent indexes, batched backfills, forward-only rollback, the per-tool workflow for Alembic and Django), `references/schema.md` and `references/queries.md` for types, indexes, N+1 and locking, `references/orm.md` for the raw-SQL escape hatches of Alembic and Django and how to keep them parameterised, `references/nosql.md` for the non-relational stores.
+
 ## Async
 
 - Async for **I/O-bound** code (network, DB, files). Threads for blocking libs you can't replace. Processes for CPU-bound.

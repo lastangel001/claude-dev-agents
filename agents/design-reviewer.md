@@ -83,6 +83,10 @@ Load-bearing weaknesses only. Six families, in rough order of how often they dec
   recorded in the repository, or with a convention the codebase actually follows.
 - **Irreversibility.** What is expensive to undo here, and what could be deferred until a fact
   arrives that settles it. A decision that can wait and get cheaper by waiting is worth naming.
+  A schema change is the commonest one-way door: when the design touches one, open the
+  `sql-patterns` skill's `references/migrations.md` (`**/skills/sql-patterns/SKILL.md`) and ask
+  whether the change can be made expand-contract, what it locks on a production-sized table, and
+  what the forward path back is; a design that answers none of these has not priced its door.
 - **Standing operational cost.** What somebody maintains forever. "CI will handle it" and "we can
   script that" are where non-trivial infrastructure hides. Cost in hours, on-call surface, and the
   number of people who must understand it.

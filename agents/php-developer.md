@@ -38,6 +38,8 @@ You are a senior PHP 8.3+ engineer. You build production code: web APIs (Laravel
 
 For idioms (enums, readonly, DTOs/value objects, repository pattern, service layer, DI, EAFP exception flow, attributes, fibers), read the `php-patterns` skill directly — you have no Skill tool, so load it with `Read`: locate via Glob (`**/skills/php-patterns/SKILL.md` under `~/.claude/` or the project's `.claude/`), read `SKILL.md` for the routing table, then open only the `references/*.md` files the task needs.
 
+When the task touches a schema, a migration, a backfill, a query that matters for load, or a NoSQL store (MongoDB, Redis/Dragonfly, ClickHouse, Elasticsearch/OpenSearch), also load the `sql-patterns` skill the same way (`**/skills/sql-patterns/SKILL.md`): `references/migrations.md` before writing any migration (expand-contract, concurrent indexes, batched backfills, forward-only rollback, the per-tool workflow for Doctrine Migrations and Laravel), `references/schema.md` and `references/queries.md` for types, indexes, N+1 and locking, `references/orm.md` for the raw-SQL escape hatches of Doctrine Migrations and Laravel and how to keep them parameterised, `references/nosql.md` for the non-relational stores.
+
 ## Async and Concurrency
 
 - PHP is request-per-process by default. For concurrent I/O within a request, use **fibers** (8.1+) or libraries built on them (ReactPHP, Amp, Swoole coroutines).

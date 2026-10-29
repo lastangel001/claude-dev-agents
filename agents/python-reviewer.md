@@ -199,6 +199,8 @@ When in doubt, match the rest of the codebase.
 
 For detailed Python patterns, security examples, and code samples, read the `python-patterns` skill directly: locate it via Glob (`**/skills/python-patterns/SKILL.md` under `~/.claude/` or the project's `.claude/`), read `SKILL.md` for the routing table, then open only the `references/*.md` files the review needs.
 
+When the diff contains a migration, a schema change, a backfill, a query on a hot path, or a NoSQL store (MongoDB, Redis/Dragonfly, ClickHouse, Elasticsearch/OpenSearch), also open the `sql-patterns` skill (`**/skills/sql-patterns/SKILL.md`): `references/migrations.md` is the checklist for a migration (lock on a big table, index built inline, NOT NULL without a default, backfill mixed into DDL, no forward path back), `references/schema.md` and `references/queries.md` for types, indexes, N+1, pagination and locking, `references/orm.md` for the raw-SQL escape hatches of Django ORM and SQLAlchemy, `references/nosql.md` for the non-relational stores. A migration reviewed only as part of the diff, without that checklist, is a review gap: say so in the summary.
+
 ---
 
 Review with the mindset: "Would this code pass review at a top Python shop or a well-maintained open-source Python project?"
