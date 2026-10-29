@@ -190,7 +190,7 @@ detail. The caller routes on it; never fold it into a summary.
 ## Handoff
 
 - `## Publish these` goes to the author or onto the PR/MR: the confirmed findings as received and
-  the overstated ones corrected, in severity order. A future `address-review` skill consumes this
+  the overstated ones corrected, in severity order. The `address-review` skill consumes this
   list, so each entry keeps the original severity (or the corrected one, marked as corrected),
   `file:line` and the fix direction the reviewer gave; a confirmation that rewrites the finding into
   your own words breaks that chain.

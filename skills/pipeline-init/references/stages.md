@@ -17,7 +17,7 @@ and when to stop and ask. `pipeline-init` fills the second part; this file is th
 | 7 | Contract review | `contract-reviewer` | diff plus the callee's code | four gates per crossing call | the diff changes a call that leaves the module: service, SDK, HTTP/RPC, queue |
 | 8 | Security review | security pass (a dedicated agent when installed, otherwise the language reviewer's security checklist) | diff | findings | the diff touches a security trigger (below) |
 | 9 | Verify findings | `review-verifier` | all findings, revision | CONFIRMED / OVERSTATED to publish, UNPROVEN as questions, REFUTED as retractions | findings go to an author or a PR |
-| 10 | Address review | main loop (`address-review` skill when installed) | confirmed findings | per-finding status, fix-up diff | confirmed findings exist |
+| 10 | Address review | main loop (`address-review` skill) | confirmed findings | per-finding status, fix-up diff | confirmed findings exist |
 | 11 | Coverage | `qa-expert` mode 2, `test-automator` | diff, matrix | matrix diff, e2e specs | rigor `standard` and above |
 | 12 | Deliver | main loop, `devops-engineer` for CI or infra | green diff | PR or release; CI change | per project |
 

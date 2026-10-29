@@ -5,6 +5,33 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.24.0] — 2026-10-29
+
+### Added
+- **`address-review` — the author's side of the review loop.** The reviewers produced findings
+  and `review-verifier` kept the ones that survived, but nothing consumed that list in a fixed
+  form: fixes happened «somehow» and the reviewer learned of them by re-reading the diff. The
+  skill (in the main loop, with the conversation that produced the code) takes the «Publish
+  these» list, or a reviewer's raw output marked `unverified`, and answers every finding with one
+  of four statuses: `addressed` (with the test or check that shows it), `declined` (only with a
+  reason that cites code or a recorded decision; a decline without one becomes `clarifying`),
+  `clarifying` (one question and the status each answer leads to), `skipped` (right fix, wrong
+  change: the blast-radius guard refuses fixes that touch files outside the diff, rewrite more
+  than a third of a file, change a public contract or need a design decision, and names the
+  follow-up). Fixes are the smallest change inside the diff's scope; the project's lint and tests
+  run on the touched files, and a fix that breaks a test is reverted and sent back as
+  `clarifying`. In `guided` and `autonomous` mode it commits the fix-ups (one per finding when two
+  or more CRITICAL/HIGH were addressed), in `propose` it stops with the diff and the commit text;
+  push, PR update and thread replies stay with the orchestrator at Gate 2, and the re-review of
+  the fix-up diff is the orchestrator's call, the skill only says «ready for re-review». Output:
+  a per-finding table the orchestrator acts on (`references/statuses.md`) and reply drafts for
+  the PR threads in the review's language (`references/replies.md`). `review-verifier`'s handoff
+  now names the skill as its consumer.
+
+### Fixed
+- `skills/pipeline-init/hooks/session-start.sh` carries its exec bit (shipped without it in 1.23.0;
+  the hook is invoked through `bash`, so behaviour was unaffected).
+
 ## [1.23.0] — 2026-10-29
 
 ### Added
