@@ -1,6 +1,6 @@
 # claude-dev-agents
 
-![version](https://img.shields.io/badge/version-1.22.1-blue)
+![version](https://img.shields.io/badge/version-1.23.0-blue)
 
 Curated [Claude Code](https://claude.com/claude-code) **subagents** and **skills** for software development — a language-agnostic systems architect plus strictly-typed, tested, idiomatic PHP and Python builders with built-in reviewers, a front-end reviewer for JavaScript/TypeScript and Vue, language-agnostic review roles for cross-service contracts and for verifying findings before they reach the author, and a QA pair: a coverage strategist/auditor and a Playwright E2E builder.
 
@@ -37,6 +37,7 @@ Curated [Claude Code](https://claude.com/claude-code) **subagents** and **skills
 | `explanation-patterns` | Shapes for delivering information so the reader can follow the reasoning — Minto pyramid + SCQA + MECE for a document, Context-Action-Result for a narrative, Need-Solution-Result for a proposal, **a six-beat shape for a decision somebody else has to make** (question, options including «do nothing», price and gain of each, reversibility, your recommendation, who decides by when), What/So-what/Now-what for a paragraph, and **mechanism plus failure condition** for explaining a defect; picks the shape by scale and genre (each with its own "does not fit"), forbids visible scaffolding (no heading named after a beat), **refuses to invent the need behind a proposal** (no concrete scenario in which the need shows itself means it is not established: the gap is reported as a gap and proportionality flagged), makes the «so what» mandatory for every fact, and adds density ceilings (one «доля (N из M)» per paragraph, enumerations no longer than four, business-layer sentences under ~25 words, frame sentences explicitly legal); language-agnostic, `references/frameworks.md` + `references/diagnosis.md` |
 | `ru-output-style` | Style guard for Russian prose written for humans (findings, verdicts, plans, summaries) — hard-bans the telltale AI-slop patterns (negative parallelisms, long dash, math signs in prose, rule of three, «подводя итог» closings, unusable gerunds like «платя», closing clauses with nothing to check) **and guards reader comprehension** (a term is glossed at its first use, opposite pairs are defined when introduced, a percentage carries its base, result before method, a defect is written as a condition rather than an absence, an evaluation carries its threshold) + a distilled 52-pattern catalog (with a «Разборы пограничных случаев» section that rules on every pair of rules which look contradictory) with cures, gold examples per genre (`references/gold.md`), a deterministic linter (`scripts/lint-ru.sh` — exit 1 on hard bans; warns on rhythm monotony, AI-lexicon, in HTML on a gloss attached to a later occurrence than the first bare one, and on the density ceilings and framework-named headings documented in `explanation-patterns`) and a mandatory three-question final check (fact integrity + preserve-human-details, adapted from [blader/humanizer](https://github.com/blader/humanizer), plus «can the reader parse this»); distilled from [smixs/humanizer-ru](https://github.com/smixs/humanizer-ru) (MIT) |
 | `playwright-patterns` | Playwright E2E patterns — Page Object Model & fixtures, config house defaults (pinned locale/timezone/viewport, artifacts on failure), flaky-test diagnosis by cause with cures, CI integration (GitHub Actions/GitLab, sharding), critical-flow testing (financial/destructive guards, wallet/web3 mocking) |
+| `pipeline-init` | Writes the project's development pipeline down once so every later session knows which agents run when — scans the repo for pipeline signals (`scripts/pipeline-signals.sh` + a byte-identical `.ps1`: stack, CI jobs, CODEOWNERS/PR template, migration dirs, API schemas, external-service calls, tests, tracker prefixes), reads `.claude-docs/architecture.md` when `/onboard-memory` has written one, asks at most four questions (typical operations, one-way doors, autonomy mode `propose`/`guided`/`autonomous`, reader and language), shows the plan including the agents it will **not** use here, and after an explicit yes writes `docs/PIPELINE.md` (stages by operation × size, two gates, security triggers, artifact paths, definition of done, delivery checklist) in the user's language plus an eight-line block in the project's `CLAUDE.md`; re-run to diff signals and patch; optional SessionStart reminder hook in `hooks/` |
 
 Each skill is a thin `SKILL.md` entry point (principles digest + routing table) plus
 `references/*.md` read on demand — agents load only the sections the task needs instead
@@ -175,6 +176,28 @@ not checked out) or `OUT_OF_SCOPE` (not this agent's job; it names whose). Show 
 user as is rather than folding it into a summary; answer it and re-run with the full brief. A
 second `NEEDS_INPUT` from the same agent on the same task means the work belongs in the main
 loop, with the conversation, not in a subagent.
+
+### Setting up a project's pipeline
+
+Run `/pipeline-init` once in a repository (or just ask «с чего начать на этом проекте» / «which
+agents should I use here»). It scans the project, asks up to four questions and, after your yes,
+writes `docs/PIPELINE.md` and a short `## Pipeline` block into the project's `CLAUDE.md`. From
+then on every session states the task's operation and size, follows the matching row, announces
+which agents it will spawn, and stops at the two gates. The universal skeleton (stage order, owners,
+default masks, gates, autonomy modes) lives in the skill's `references/stages.md`; the project
+file holds only what differs. Re-running on a project that has a pipeline file diffs the signals
+and patches the file.
+
+To be reminded in repositories that have code but no pipeline yet, add the optional SessionStart
+hook to `~/.claude/settings.json` (nothing is installed automatically):
+
+```json
+{ "hooks": { "SessionStart": [ { "hooks": [ { "type": "command",
+  "command": "bash ~/.claude/skills/pipeline-init/hooks/session-start.sh" } ] } ] } }
+```
+
+(`powershell -NoProfile -File $HOME/.claude/skills/pipeline-init/hooks/session-start.ps1` on
+Windows without Git Bash.) It prints one line, or nothing.
 
 ## Uninstall
 

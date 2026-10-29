@@ -11,6 +11,8 @@ Entry point for Claude Code agents working on this repo.
 - `bash test/lint-ru-test.sh` — fixture regression for the ru-output-style linter (in CI)
 - `bash test/agent-lint.sh` — frontmatter + agent-contract lint for `agents/*.md` and
   `skills/*/SKILL.md` (spec: `docs/AGENT-CONTRACT.md`; in CI)
+- `bash test/pipeline-signals-parity.sh` — bash vs pwsh7 output parity of the pipeline-init
+  signals scan (needs pwsh on PATH; locally `PIPELINE_PS=powershell`; CI covers it)
 - `bash eval/ru-output-style/run-model-eval.sh` — model eval of the skill via `claude -p`
   (COSTS TOKENS, manual only, never CI; needs authenticated `claude` CLI)
   - **Preferred way to run the model eval: subagents from an interactive session, NOT the

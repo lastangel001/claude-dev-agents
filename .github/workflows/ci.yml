@@ -33,10 +33,10 @@ jobs:
           echo "PASS: no CRLF in .sh/.ps1/.md"
 
       - name: Bash syntax parse
-        run: bash -n install.sh test/version-check.sh test/smoke.sh test/parity.sh test/lint-ru-test.sh test/agent-lint.sh skills/ru-output-style/scripts/lint-ru.sh eval/ru-output-style/run-model-eval.sh
+        run: bash -n install.sh test/version-check.sh test/smoke.sh test/parity.sh test/lint-ru-test.sh test/agent-lint.sh test/pipeline-signals-parity.sh skills/ru-output-style/scripts/lint-ru.sh skills/pipeline-init/scripts/pipeline-signals.sh skills/pipeline-init/hooks/session-start.sh eval/ru-output-style/run-model-eval.sh
 
       - name: shellcheck
-        run: shellcheck install.sh test/version-check.sh test/smoke.sh test/parity.sh test/lint-ru-test.sh test/agent-lint.sh skills/ru-output-style/scripts/lint-ru.sh eval/ru-output-style/run-model-eval.sh
+        run: shellcheck install.sh test/version-check.sh test/smoke.sh test/parity.sh test/lint-ru-test.sh test/agent-lint.sh test/pipeline-signals-parity.sh skills/ru-output-style/scripts/lint-ru.sh skills/pipeline-init/scripts/pipeline-signals.sh skills/pipeline-init/hooks/session-start.sh eval/ru-output-style/run-model-eval.sh
 
       - name: version-check.sh
         run: bash test/version-check.sh
@@ -171,6 +171,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: parity.sh
         run: bash test/parity.sh
+
+      - name: pipeline-signals-parity.sh
+        # bash vs pwsh7 output of the pipeline-init signals scan must be byte-identical
+        run: bash test/pipeline-signals-parity.sh
 
   # ---------------------------------------------------------------------------
   # Aggregator — required branch protection check

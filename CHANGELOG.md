@@ -5,6 +5,30 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.23.0] — 2026-10-29
+
+### Added
+- **`pipeline-init` — the pipeline written down once, at the level of the project.** Without a
+  harness the results were worse and every session had to be told by hand which agents were needed
+  and where. The skill (a skill, not an agent: it asks and waits, which a subagent cannot) reads the
+  project — `.claude-docs/architecture.md` when `/onboard-memory` has written one, otherwise the
+  manifests — and runs a signals scan (`scripts/pipeline-signals.sh`, with a byte-identical
+  `.ps1` for Windows: stack, CI jobs, CODEOWNERS and PR template, migration directories, API
+  schemas, files calling external services, test layout, tracker prefixes); asks at most four
+  questions (typical operations, one-way doors, autonomy mode, reader and language); shows a card
+  including the agents the masks name but this stack does not use; and after an explicit yes
+  writes `docs/PIPELINE.md` in the user's language plus a block of at most eight lines in the
+  project's `CLAUDE.md`, which every later session loads. The skeleton is universal and lives in
+  `references/stages.md`: twelve stages with owners, default masks by operation × size (trivial,
+  small, standard, large), two gates (after Clarify and Design, before Deliver), three autonomy
+  modes (`propose`, `guided`, `autonomous`), the security-trigger list, how `NEEDS_INPUT` /
+  `BLOCKED` / `OUT_OF_SCOPE` stop or reroute a run, and the delivery checklist. The filled copy is
+  the project's. On a repository that already has `docs/PIPELINE.md` the skill diffs the signals
+  against the recorded ones and patches, never overwrites. An optional SessionStart hook
+  (`hooks/session-start.sh` and `.ps1`, not installed automatically) prints one line when a
+  repository has code but no pipeline file. `test/pipeline-signals-parity.sh` (CI, pwsh 7) proves
+  the two scans agree.
+
 ## [1.22.1] — 2026-10-29
 
 ### Added
