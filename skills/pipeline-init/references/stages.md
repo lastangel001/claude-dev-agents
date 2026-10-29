@@ -12,7 +12,7 @@ and when to stop and ask. `pipeline-init` fills the second part; this file is th
 | 2 | Design | `architect` | requirements, repository | ADR or a short answer | a one-way door: data model, persistence engine, public API contract, service boundary, auth model |
 | 3 | Pressure-test | `design-reviewer` | the design, or the approach in a diff, or an old ADR | falsifiable findings, open questions | same one-way doors; any decision expensive to reverse |
 | 4 | Test strategy | `qa-expert` mode 1 | requirements, acceptance criteria | `docs/qa/TEST-STRATEGY.md`, matrix rows | a feature with more than one test level, or acceptance criteria that look untestable |
-| 5 | Implement | language builder (`php-developer`, `python-developer`) or the main loop with the pattern skill | expanded requirements, Accepted ADR, test strategy | diff plus the report (what changed, which tests prove it, what ran) | always |
+| 5 | Implement | language builder (`php-developer`, `python-developer`, `js-developer`) or the main loop with the pattern skill | expanded requirements, Accepted ADR, test strategy | diff plus the report (what changed, which tests prove it, what ran) | always |
 | 6 | Code review | `php-reviewer`, `python-reviewer`, `js-reviewer` | diff plus description or builder report | findings with severity, `file:line`, claim, scenario | always, matched to the stack |
 | 7 | Contract review | `contract-reviewer` | diff plus the callee's code | four gates per crossing call | the diff changes a call that leaves the module: service, SDK, HTTP/RPC, queue |
 | 8 | Security review | security pass (a dedicated agent when installed, otherwise the language reviewer's security checklist) | diff | findings | the diff touches a security trigger (below) |

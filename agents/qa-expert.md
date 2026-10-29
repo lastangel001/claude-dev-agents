@@ -226,7 +226,7 @@ detail. The caller routes on it; never fold it into a summary.
 
 Three consumers read the gaps, each by owner:
 
-- Builders (`php-developer`, `python-developer`, or the human developer) take unit and
+- Builders (`php-developer`, `python-developer`, `js-developer`, or the human developer) take unit and
   integration gaps: each carries the behaviour, the `path:line` of the untested code and the
   failure consequence, so the builder knows what the test must assert.
 - `test-automator` takes e2e gaps by `QA-NNN` id and reports back by the same ids; an e2e gap

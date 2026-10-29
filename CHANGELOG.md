@@ -5,6 +5,35 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.26.0] — 2026-10-29
+
+### Added
+- **The front-end triad: `js-patterns` skill, `js-developer` builder, a slimmer `js-reviewer`.**
+  PHP and Python each had a builder, a reviewer and a patterns skill; the front end had only a
+  reviewer, and because it had no skill to point at, `js-reviewer` carried its knowledge inline
+  and was the largest agent in the set. **`js-patterns`** now holds the idioms once: Vue 3 (SFC
+  order, typed props and emits, `defineModel`, composables with cleanup, `ref` vs `reactive`,
+  `computed` purity, `watch` sources, `shallowRef` for large data, Pinia setup stores, typed
+  routes, Vue 3.5 APIs), Vue 2 differences and migration traps, Nuxt (`useAsyncData`/`useFetch`,
+  server routes, runtime config), TypeScript at the boundary (`unknown` over `any`, discriminated
+  unions, `satisfies`, guards for API responses), browser code (event delegation,
+  `AbortController`, leaks in long-lived SPAs, one request client with surfaced errors, XSS-safe
+  rendering), testing (Vitest, Vue Test Utils, MSW, no fixed timeouts) and tooling (ESLint flat
+  config, `vue-tsc`, Vite, strict `tsconfig`). Scope is Vue 3, Vue 2, Nuxt, TypeScript and
+  framework-free browser code; React and server-side JavaScript are out. The Vue sections are
+  distilled from [affaan-m/ECC](https://github.com/affaan-m/ECC) `vue-patterns` (MIT).
+  **`js-developer`** mirrors the PHP and Python builders: detects the stack and idiom first
+  (Vue major, Options or Composition, Nuxt, TS or JS, linter config) and keeps it, then writes
+  typed, tested, linter-clean code under hard rules (every listener, timer, observer, chart or
+  socket disposed on unmount; `v-html` only with sanitised input; store state changed only through
+  actions; no `async` in `computed`; one request client that surfaces errors), with the agent
+  contract: hands the diff and its report to `js-reviewer`, to `contract-reviewer` when a call
+  reaches the backend, and blocks on a `Proposed` ADR. **`js-reviewer`** keeps its process (stack
+  detection, reading the linter first, confidence filtering, false-positive list, output format,
+  contract) and replaces the inline checklist with headlines that point at the skill's references,
+  the way `php-reviewer` and `python-reviewer` already did. The builder lists in `architect`,
+  `qa-expert`, `docs/AGENT-CONTRACT.md` and the pipeline skeleton name `js-developer`.
+
 ## [1.25.0] — 2026-10-29
 
 ### Changed

@@ -1,6 +1,6 @@
 # claude-dev-agents
 
-![version](https://img.shields.io/badge/version-1.25.0-blue)
+![version](https://img.shields.io/badge/version-1.26.0-blue)
 
 Curated [Claude Code](https://claude.com/claude-code) **subagents** and **skills** for software development — a language-agnostic systems architect plus strictly-typed, tested, idiomatic PHP and Python builders with built-in reviewers, a front-end reviewer for JavaScript/TypeScript and Vue, language-agnostic review roles for cross-service contracts and for verifying findings before they reach the author, and a QA pair: a coverage strategist/auditor and a Playwright E2E builder.
 
@@ -18,6 +18,7 @@ Curated [Claude Code](https://claude.com/claude-code) **subagents** and **skills
 | `data-analyst` | Turns a raw dataset (xlsx/csv/json) into a self-contained one-page HTML report — KPI cards, inline-SVG charts, full metrics table; every metric as absolute + % |
 | `design-reviewer` | Cold adversarial review of a technical design decision, three inputs: a design before it becomes an issue, an ADR or a PR; the approach behind a PR or diff before merge (the right place and coupling, not line-level correctness); an existing ADR revisited against the current code (do its assumptions still hold) — arrives without the discussion history, hunts unstated assumptions, failure modes, unconsidered alternatives, internal contradictions, irreversibility and standing operational cost; grounds every assumption in the actual repo, calibrates rigor to reversibility, hands back falsifiable scenarios instead of a rewritten design; not for UI/UX design |
 | `devops-engineer` | DevOps builder — CI/CD pipelines (GitHub Actions/GitLab CI/Jenkins), Dockerfiles, Kubernetes/Helm, IaC (Terraform/Ansible), deployment strategies with rollback, observability, build/pipeline performance; pinned, least-privilege, idempotent automation |
+| `js-developer` | JS/TS front-end builder — Vue 3 (Composition or Options), Vue 2, Nuxt, framework-free browser code; detects the project's stack and idiom first, writes typed, tested, linter-clean components, composables, Pinia stores, routes and request layers with lifecycle cleanup and XSS-safe rendering; reads `js-patterns` for idioms |
 | `js-reviewer` | JS/TS front-end reviewer — Vue 3 (Options and Composition), Vue 2, Nuxt, framework-free browser code; detects the project's stack and linter coverage first, then reviews what tooling misses: XSS via raw-HTML rendering, reactivity and lifecycle bugs, listener/chart/observer leaks, component contracts, store discipline, request-layer failure handling |
 | `php-developer` | PHP 8.3+ builder — Laravel/Symfony APIs, services, CLI, queues, packages |
 | `php-reviewer` | PHP reviewer — PSR-12, strict types, security (SQLi/XSS/CSRF), framework patterns |
@@ -30,6 +31,7 @@ Curated [Claude Code](https://claude.com/claude-code) **subagents** and **skills
 ### Skills (`skills/`)
 | Skill | Purpose |
 |-------|---------|
+| `js-patterns` | Idiomatic front-end patterns — Vue 3 (SFC order, typed props/emits, `defineModel`, composables with cleanup, reactivity rules, Pinia setup stores, typed routes, Vue 3.5 APIs), Vue 2 differences and migration traps, Nuxt (`useAsyncData`/`useFetch`, server routes, runtime config), TypeScript at the boundary (`unknown` over `any`, discriminated unions, `satisfies`, guards for API responses), browser code (event delegation, `AbortController`, leaks in long-lived SPAs, one request client with surfaced errors, XSS-safe rendering), testing (Vitest, Vue Test Utils, MSW, no fixed timeouts) and tooling (ESLint flat config, `vue-tsc`, Vite, strict `tsconfig`); Vue sections distilled from [affaan-m/ECC](https://github.com/affaan-m/ECC) `vue-patterns` (MIT) |
 | `php-patterns` | Idiomatic PHP 8.3+ patterns — enums, readonly DTOs, repository/service layers, Laravel/Symfony, security, testing |
 | `python-patterns` | Idiomatic Python 3.11+ patterns — type hints, idioms, async/TaskGroup, FastAPI, tooling |
 | `facilitation-patterns` | Facilitation craft, now including the meeting plan itself (the former `facilitator` agent folded in) — classify the meeting (base / strategic / global), goals pyramid and target level, the main question (главный вопрос), Strachan's questioning principles, client's role A / B / C, session lifecycle and real-time interventions, method catalog (brainstorm, 6-3-5, 1-2-4-All, World Café, Liberating Structures, SWOT/SOAR, dot-voting…), preparation & the after-phase, online facilitation, and the fixed plan skeleton (`references/plan-building.md`); the plan is written in the request's language, Russian prose via `ru-output-style` |

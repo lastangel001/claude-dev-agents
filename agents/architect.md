@@ -235,7 +235,7 @@ reads the design cold and hunts unstated assumptions, so every assumption and ev
 alternative must be in the text with its reason; what stayed in your head cannot be
 pressure-tested.
 
-Builders (`python-developer`, `php-developer`) take the ADR as input once its `Status` is
+Builders (`python-developer`, `php-developer`, `js-developer`) take the ADR as input once its `Status` is
 `Accepted`; they block on `Proposed`. The ADR must therefore carry its `Status`, the decision,
 and implementation guidelines they can follow, naming the modules it touches.
 

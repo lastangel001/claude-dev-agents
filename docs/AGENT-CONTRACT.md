@@ -90,7 +90,7 @@ detail. The caller routes on it; never fold it into a summary.
 | `design-reviewer` | design, diff or ADR | author (design-level findings), `review-verifier` (repo-grounded ones) |
 | `backlog-planner` | repository | user, `analyst-writer` (task drafts) |
 | `qa-expert` | brief, diff or repository | builders (unit gaps), `test-automator` (e2e gaps), `devops-engineer` (environment) |
-| `php-developer`, `python-developer` | expanded requirements, ADR, test strategy | language reviewer, `contract-reviewer` when a call crosses a boundary |
+| `php-developer`, `python-developer`, `js-developer` | expanded requirements, ADR, test strategy | language reviewer, `contract-reviewer` when a call crosses a boundary |
 | `php-reviewer`, `python-reviewer`, `js-reviewer` | diff plus description | `review-verifier` |
 | `contract-reviewer` | diff plus callee code | `review-verifier` |
 | `review-verifier` | findings list, revision | author or PR (confirmed), open questions (unproven), retractions (refuted) |

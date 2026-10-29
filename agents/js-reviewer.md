@@ -115,130 +115,26 @@ A small, idiomatic, guarded diff gets `APPROVE` with no rows. Do not manufacture
 
 Ask: "would a senior front-end engineer on this team actually change this in review?" If no, skip.
 
-## Review Checklist
+## Review Checklist (headlines)
 
-### CRITICAL — Security
+One line per family; the detail is in the `js-patterns` skill (`## Reference`). Open the named
+section before writing a finding in that family. Paths are relative to the skill.
 
-- **Raw HTML from untrusted data** — `v-html`, `innerHTML`, `outerHTML`, `insertAdjacentHTML`,
-  `document.write`, React's `dangerouslySetInnerHTML` bound to anything derived from API data, URL
-  parameters, or user input. Trace the value to its source; if it can carry user text, it is XSS.
-- **`eval` / `new Function` / `setTimeout("string")`** on any non-literal input.
-- **URL sinks** — `href`/`src`/`window.open`/`location.assign` built from user data without a scheme
-  allowlist (`javascript:`, `data:text/html`).
-- **`target="_blank"` without `rel="noopener"`** on links to user-supplied hosts (tab-nabbing).
-- **`postMessage` without an `origin` check** on the receiving side, or `'*'` as target origin for
-  anything non-public.
-- **Secrets in the bundle** — API keys, tokens or internal hostnames inlined via build-time env
-  (`process.env.*`, `import.meta.env.*` without a public prefix). Everything shipped is public.
-- **Tokens in `localStorage`** where the project's convention is httpOnly cookies; XSS then means
-  full account takeover.
-- **Rendering user-controlled SVG/markdown** without sanitisation.
-
-```vue
-<!-- BAD: user text reaches the DOM as markup -->
-<div v-html="message.text"></div>
-
-<!-- GOOD: text stays text -->
-<div>{{ message.text }}</div>
-
-<!-- ALSO FINE: server-sanitised highlight markup, with the reason recorded -->
-<!-- highlight markup produced and escaped by the search backend -->
-<div v-html="message.highlighted"></div>
-```
-
-### CRITICAL — Data and failure handling
-
-- **HTTP status ignored** — `fetch` resolves for 4xx/5xx. `await res.json()` on an error page throws
-  and lands in a `catch` that returns a generic object; the caller then treats failure as data.
-  Read the project's request wrapper and check what it does with `res.ok`, aborts and non-JSON
-  bodies — then review each new call against that reality.
-- **Swallowed rejections** — `catch {}`, `.catch(() => {})`, unawaited promises in event handlers.
-- **Aborts unhandled** — a wrapper that returns `undefined` on `AbortError` while the caller
-  destructures the result: every fast retype throws.
-- **Race conditions** — search/autocomplete/filter requests without an `AbortController` or a
-  request-sequence guard: a slow earlier response overwrites a fast later one.
-- **Optimistic UI without rollback** — local state updated before the request, never reverted on
-  failure.
-
-### HIGH — Lifecycle and leaks (SPAs live for hours)
-
-- `addEventListener` on `window`/`document`/`body` without the matching `removeEventListener` in the
-  unmount hook — including listeners added inside `watch` or `onMounted` callbacks.
-- `setInterval` / `setTimeout` / `requestAnimationFrame` not cleared on unmount.
-- `IntersectionObserver` / `ResizeObserver` / `MutationObserver` never `disconnect()`ed.
-- **Third-party instances not destroyed** — charts, maps, editors, grids, players (Highcharts,
-  Chart.js, Leaflet, CodeMirror…). They hold DOM nodes and listeners; a route that mounts one and
-  never destroys it leaks on every visit. Check for a `destroy()`/`dispose()`/`remove()` call.
-- Store subscriptions, event-bus handlers, WebSocket/SSE connections without teardown.
-- `keep-alive` components doing setup in `mounted` instead of `activated`.
-
-### HIGH — Vue correctness
-
-- `v-for` without `:key`, or `:key` not unique/stable within its list.
-- `v-if` on the same element as `v-for`.
-- **Mutating props** — assigning to a prop, or mutating an object/array prop in place.
-- **Side effects in `computed`** — mutating state, dispatching, or performing async work.
-- `computed` with no return on a branch; `async computed`.
-- **Reactivity loss** — destructuring `reactive()` or `props` without `toRefs`, replacing a
-  `reactive` object wholesale, `.value` forgotten or doubled, adding properties to a plain object
-  and expecting reactivity (Vue 2: needs `Vue.set`).
-- **Object/array prop defaults** not wrapped in a factory (`default: () => ([])`).
-- Watchers that write the value they watch (feedback loop); `immediate: true` firing before data.
-- `nextTick` misuse: DOM read before it, or awaited in the wrong order.
-- Vue 2 leftovers in a Vue 3 file: `.native` modifier, filters, `$listeners`, `$children`.
-
-### HIGH — Component contract
-
-- Emitted events not declared in `emits` (Vue 3) — the contract is invisible to the parent and the
-  event silently lands as a fallthrough attribute.
-- Props without a type, or with a type that lies about nullability.
-- Two-way binding done by mutating a prop instead of `update:modelValue` / `.sync`.
-- `$refs` reaching into a child's internals where a prop or event is the contract.
-- `$parent` / `$root` traversal — breaks on any structural change.
-- New global registration (component, directive, plugin) for something used in one place.
-
-### HIGH — State management (Pinia / Vuex / store of choice)
-
-- Store state mutated from a component instead of through an action/mutation.
-- Derived data stored instead of computed — two sources of truth that drift.
-- The store used as an event bus.
-- Cross-store cycles, or a page store reaching into another page's store.
-- Server data cached in the store without invalidation on the events that change it.
-
-### MEDIUM — Performance
-
-- Expensive work in `computed` recomputed on every keystroke; missing memoisation.
-- `scroll` / `resize` / `mousemove` handlers without throttle/debounce, or not `{ passive: true }`.
-- Long lists rendered without virtualisation or pagination.
-- Heavy library imported statically into a route chunk (`import Chart from 'chart.js'` at module
-  scope in a rarely-visited view) instead of a dynamic import.
-- Whole-library imports where the package supports subpath imports.
-- Layout thrash: reading `offsetWidth`/`getBoundingClientRect` in a loop that also writes styles.
-- Images without dimensions (CLS) or without lazy-loading below the fold.
-
-### MEDIUM — SSR / Nuxt
-
-- `window`, `document`, `localStorage` touched during setup or in a universal composable.
-- Hydration mismatch: `Date.now()`, `Math.random()`, locale-dependent formatting rendered on both
-  sides.
-- `useAsyncData`/`useFetch` without a stable key, or fetching in `mounted` when it should be
-  universal.
-- Server-only secrets read in a file that ships to the client.
-
-### MEDIUM — Accessibility
-
-- Click handler on a non-interactive element without `role`, `tabindex` and a keyboard handler.
-- Inputs without labels; icon-only buttons without an accessible name.
-- Modals/dropdowns without focus trap, `Esc`, and focus restoration.
-- Colour as the only carrier of state; `alt` missing on informative images.
-
-### LOW — Conventions
-
-- Console logging left in shipped code (unless the project allows `warn`/`error`).
-- Naming, file placement, or import-alias use that diverges from neighbours.
-- Dead code, commented-out blocks, TODO without a ticket.
-- Layer violations where the project defines layers (a shared/presentational component reaching into
-  a page store).
+- CRITICAL Raw HTML / URL sinks / `postMessage` from user data → references/browser.md §XSS-safe Rendering
+- CRITICAL Secrets in the bundle, tokens in `localStorage` → references/browser.md §Storage and Secrets
+- CRITICAL Status ignored, swallowed rejections, aborts, races, no rollback → references/browser.md §Request Layer
+- HIGH Listeners, timers, observers, chart instances, sockets never disposed → references/browser.md §Leaks, references/vue.md §Lifecycle Cleanup
+- HIGH Reactivity lost by destructuring a reactive object or props, `.value` misuse, `Vue.set` → references/vue.md §Reactivity Rules
+- HIGH Side effects or async in `computed`, watcher feedback loops, `nextTick` misuse → references/vue.md §Reactivity Rules
+- HIGH `v-for` key, `v-if` with `v-for`, prop mutation, factory-less defaults, Vue 2 leftovers → references/vue.md §Template Patterns
+- HIGH Undeclared emits, lying prop types, `$refs` / `$parent` reach-through, one-use globals → references/vue.md §Component Architecture
+- HIGH Store mutated outside actions, derived data stored, store as event bus → references/vue.md §Pinia
+- HIGH `any`, unrelated `as`, bare `!`, casts instead of a schema at the API boundary → references/typescript.md
+- MEDIUM Hot `computed`, unthrottled scroll, unvirtualised lists, heavy static imports, CLS → references/vue.md §Performance
+- MEDIUM `window` in setup, hydration mismatch, keyless `useAsyncData`, server secrets client-side → references/vue.md §Nuxt 3/4
+- MEDIUM Non-interactive click targets, unlabelled inputs, modals without focus management → references/browser.md §Accessibility
+- MEDIUM Fixed timeouts in tests, mocked wrapper instead of MSW, snapshot-only asserts → references/testing.md
+- LOW Console logging, naming drift, dead code, ticketless TODO, layer violations → project conventions; references/tooling.md
 
 ## Diagnostic Commands
 
@@ -303,6 +199,14 @@ layers and aliases, its state library, its test framework, its browser support t
 that includes old Safari rules out syntax the docs recommend). When the repo carries agent notes
 (`CLAUDE.md`, `AGENTS.md`, docs on conventions or gotchas), read them first — they usually explain
 the surprising thing you are about to flag.
+
+## Reference
+
+For the detail behind every checklist headline — Vue reactivity and lifecycle rules, the SPA leak
+checklist, the request-layer contract, XSS-safe rendering, TypeScript at the boundary, Vitest and
+Vue Test Utils patterns, ESLint flat-config holes — read the `js-patterns` skill directly: locate
+it via Glob (`**/skills/js-patterns/SKILL.md` under `~/.claude/` or the project's `.claude/`), read
+`SKILL.md` for the routing table, then open only the `references/*.md` files the review needs.
 
 ---
 
