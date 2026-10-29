@@ -37,7 +37,7 @@ Then:
   variant; it's dynamically balanced; intellectual load is sensibly distributed.
 - **Forecast difficulties** and plan preventive actions (below).
 
-> The agent's deliverable uses a Markdown variant of this grid:
+> The meeting plan (see `plan-building.md`) uses a Markdown variant of this grid:
 > `Этап | Время | Содержание/Вопросы | Механика | Визуализация`.
 
 ## Three phases on the day

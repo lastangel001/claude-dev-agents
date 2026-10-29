@@ -97,8 +97,7 @@ detail. The caller routes on it; never fold it into a summary.
 | `test-automator` | coverage matrix gaps | `qa-expert` (matrix update), `devops-engineer` (`docs/qa/ENVIRONMENT.md`) |
 | `devops-engineer` | brief, `docs/qa/ENVIRONMENT.md` | user |
 | `data-analyst` | dataset | user, `analyst-writer` (business narrative) |
-| `analyst-writer` | material, decisions, reader | user, tracker (after approval) |
-| `facilitator` | meeting goal | user |
+| `analyst-writer` (fan-out form of the `analyst-patterns` skill) | material, decisions, reader, shared glossary | user, tracker (after approval) |
 
 ## Adding an agent
 

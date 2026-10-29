@@ -5,6 +5,31 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.25.0] — 2026-10-29
+
+### Changed
+- **The two conversational agents move their knowledge into skills.** A subagent cannot ask a
+  question and wait; `analyst-writer` in Analyze mode and `facilitator` building a meeting plan
+  both have to, so as subagents they returned questions, the main loop relayed them, and the next
+  call started from nothing. The craft now loads into the main loop, where the conversation is.
+  **`analyst-patterns`** is a new skill holding what `agents/analyst-writer.md` carried: the three
+  modes (Explain with the «объясни нетехническому специалисту» direction, Analyze with the
+  proportionality check, Draft-task), the forming-questions method, the read-with-someone-else's-
+  eyes final check, the deliverable skeletons and calibration, with the routing to
+  `explanation-patterns` and `ru-output-style`. The **`analyst-writer` agent stays, thin**: a
+  wrapper that loads the skill, for the runs that need N fresh contexts (N analysts writing N
+  task descriptions, a batch of post-mortems); its contract keeps the fan-out rule (every brief
+  carries the shared glossary, the format and the decisions taken, because instances cannot see
+  each other) and tracker issues are still created only in the main loop after approval.
+  **`facilitator` is removed**: its process, level classification, main-question method, client
+  roles, lifecycle, interventions and the fixed plan skeleton fold into `facilitation-patterns`
+  (`references/plan-building.md`), which already held the rest; a meeting plan is built in
+  dialogue, and a fan-out over N meetings does not occur in practice. The installer merges
+  manifests and never deletes a file that left the release, so an install of 1.24.0 keeps a stale
+  `agents/facilitator.md`: remove it once with `./install.sh --uninstall --agent facilitator`
+  (or `.\install.ps1 -Uninstall -Agent facilitator`), then reinstall. Precedent: the `critic` →
+  `design-reviewer` rename in 1.21.0 shipped as a minor release the same way.
+
 ## [1.24.0] — 2026-10-29
 
 ### Added
