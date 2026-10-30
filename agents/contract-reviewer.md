@@ -169,6 +169,8 @@ What this role exists to catch. Each entry is a real class, not a hypothetical:
 - **MEDIUM** — degradation without a signal; the caller cannot tell that a request was downgraded.
 - **LOW** — contract hygiene: undocumented shape, naming that invites misuse, missing counterpart map.
 
+These refine the shared table in `docs/AGENT-CONTRACT.md` (`## Severity vocabulary`: breaks now / breaks under conditions / costs later / punishes the next change) for the boundary family and never contradict it.
+
 ## Output format
 
 ```text

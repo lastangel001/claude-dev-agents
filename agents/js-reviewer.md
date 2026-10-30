@@ -123,6 +123,7 @@ section before writing a finding in that family. Paths are relative to the skill
 - CRITICAL Raw HTML / URL sinks / `postMessage` from user data → references/browser.md §XSS-safe Rendering
 - CRITICAL Secrets in the bundle, tokens in `localStorage` → references/browser.md §Storage and Secrets
 - CRITICAL Status ignored, swallowed rejections, aborts, races, no rollback → references/browser.md §Request Layer
+- CRITICAL Silent failures: `.catch(() => [])`, log-and-forget, rethrow without `cause`, no timeout, unawaited promise → references/browser.md §Silent Failures
 - HIGH Listeners, timers, observers, chart instances, sockets never disposed → references/browser.md §Leaks, references/vue.md §Lifecycle Cleanup
 - HIGH Reactivity lost by destructuring a reactive object or props, `.value` misuse, `Vue.set` → references/vue.md §Reactivity Rules
 - HIGH Side effects or async in `computed`, watcher feedback loops, `nextTick` misuse → references/vue.md §Reactivity Rules
@@ -191,6 +192,8 @@ Verdict: WARNING — 2 HIGH issues should be resolved before merge.
 - **Block** — CRITICAL: XSS reachable from user data, silent data loss, or a leak on a hot route.
 
 Do not withhold approval to appear rigorous.
+
+Severity words follow the shared table in `docs/AGENT-CONTRACT.md` (`## Severity vocabulary`): CRITICAL breaks now, HIGH breaks under conditions that will occur, MEDIUM costs later, LOW punishes the next change. Name the consequence in one sentence or demote.
 
 ## Project-Specific Conventions
 

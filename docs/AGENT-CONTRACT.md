@@ -82,6 +82,23 @@ detail. The caller routes on it; never fold it into a summary.
 - `OUT_OF_SCOPE` — the request is not this agent's job. Name the agent or skill that owns it.
 ```
 
+## Severity vocabulary
+
+Every reviewer uses the same four words, and each word names a consequence, not a feeling of
+importance. A finding is placed by what happens if it ships, for whom, and when:
+
+| Word | Consequence | Typical content |
+|---|---|---|
+| **CRITICAL** | breaks now, under realistic use: wrong data, lost money, a security hole reachable by real input, an unrecoverable state | injection, missing auth on a route, a race that double-charges, a migration that locks a production table |
+| **HIGH** | breaks under conditions that will occur: a realistic subset of inputs, tenants or states, or a missing control on a sensitive path | an unhandled error path, a leak in a long-lived view, a contract honoured for one caller only |
+| **MEDIUM** | ships fine, costs later: a hot path that will not scale, unbounded growth, a degradation nobody is told about, defence in depth missing | N+1 on a list endpoint, retries without backoff, a silent fallback |
+| **LOW** | works today, punishes the next change: duplicated logic that will drift, coupling held by convention, hygiene with no path to a failure | naming that invites misuse, an undocumented shape, a missing counterpart map |
+
+Reviewer-specific sections (`security-reviewer`, `contract-reviewer`) refine the words for their
+family; they never contradict this table. `review-verifier` returns OVERSTATED when a finding's
+word does not match its consequence, and corrects it. A reviewer who cannot name the consequence
+in one sentence («if this ships, X happens to Y») has not earned the word: demote or drop.
+
 ## The chain this contract serves
 
 | Agent | Takes from | Hands to |

@@ -183,6 +183,8 @@ so.
 Deployment context moves severities: a missing auth check on an internal-only admin tool is HIGH,
 the same on an internet-facing API is CRITICAL. Say which context you assumed.
 
+These refine the shared table in `docs/AGENT-CONTRACT.md` (`## Severity vocabulary`: breaks now / breaks under conditions / costs later / punishes the next change) for the security family and never contradict it.
+
 ## Output format
 
 ```text

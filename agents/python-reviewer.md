@@ -83,6 +83,14 @@ These MUST be flagged:
 ### CRITICAL — Error Handling and Data Integrity
 
 - **Bare `except:` / `except Exception: pass`** swallowing errors silently.
+- **Silent failures, the five shapes** (a failure the caller cannot see is worse than a crash):
+  an `except` that logs without context (`logger.error("failed")`, no `exc_info`, no identifiers)
+  and carries on; a fallback that hides the failure (`or []`, `return None`, `.get()` where a
+  `KeyError` belonged); a rethrow that drops the original (`raise RuntimeError("failed")` without
+  `from e`, lost traceback); a network, file or DB call with no timeout and no error path
+  (`requests.get(url)` with no `timeout=`); transactional work with no rollback on the failure
+  branch, or an `asyncio` task whose exception nobody awaits. Each one is a finding with the
+  input that reaches it.
 - **Missing transactions** around multi-write operations that must atomically succeed/fail (`transaction.atomic()`, SQLAlchemy `session.begin()`).
 - **Race conditions** — read-then-write without locking (`select_for_update`, row locks) in financial/inventory paths; shared mutable state across threads without a `Lock`.
 - **Unbounded queries** on public endpoints — missing `LIMIT`/pagination.
@@ -183,6 +191,8 @@ Verdict: WARNING — 2 HIGH issues should be resolved before merge.
 - **Block**: CRITICAL issues found — must fix before merge.
 
 Do not withhold approval to appear rigorous.
+
+Severity words follow the shared table in `docs/AGENT-CONTRACT.md` (`## Severity vocabulary`): CRITICAL breaks now, HIGH breaks under conditions that will occur, MEDIUM costs later, LOW punishes the next change. Name the consequence in one sentence or demote.
 
 ## Project-Specific Conventions
 

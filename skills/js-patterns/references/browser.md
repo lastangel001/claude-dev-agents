@@ -92,6 +92,38 @@ export async function request<T>(path: string, init: RequestInit & { timeoutMs?:
 - Fire-and-forget (analytics, prefetch) is marked `void track(...)` with the reason, not left as
   an unawaited promise by accident.
 
+## Silent Failures — the five shapes
+
+A failure the caller cannot see is worse than a crash: the UI shows stale or empty data as if it
+were real, and nobody is paged. Every shape below is a finding with the input that reaches it.
+
+```ts
+// BAD — each line hides a failure
+const items = await api.list().catch(() => []);          // empty list looks like "no items"
+try { await save(form); } catch (e) { console.log(e); }  // logged, forgotten, user sees nothing
+catch (e) { throw new Error('save failed'); }            // original error and stack gone
+await fetch(url);                                        // no timeout, no status check
+const p = refresh();                                     // promise never awaited: rejection lost
+
+// GOOD
+const items = await api.list();                          // let the request layer surface it
+try { await save(form); } catch (e) { notify.error(toMessage(e)); report(e, { formId }); throw e; }
+catch (e) { throw new Error('save failed', { cause: e }); }
+await fetch(url, { signal: AbortSignal.timeout(10_000) }).then(assertOk);
+await refresh();                                         // or void refresh().catch(report)
+```
+
+1. **Fallback that hides the failure** — `.catch(() => [])`, `?? defaultValue` on a failed call,
+   a store that keeps the previous state and clears the error. Show the error state instead.
+2. **Log-and-forget** — a catch that logs without identifiers and continues as if nothing
+   happened. Log with context, surface to the user, rethrow or return an explicit error result.
+3. **Lost cause** — `throw new Error('x')` without `{ cause }`; the stack and the original message
+   are gone, and the investigator starts from zero.
+4. **No timeout, no status check** — a request that can hang forever, or `res.json()` on a 500.
+   One client with `AbortSignal.timeout` and an `assertOk` step (see Request Layer).
+5. **Unawaited promise** — `refresh()` without `await` or `.catch`; the rejection is unhandled and
+   the UI never learns. `await` it, or `void p.catch(report)` when fire-and-forget is intended.
+
 ## XSS-safe Rendering
 
 ```ts

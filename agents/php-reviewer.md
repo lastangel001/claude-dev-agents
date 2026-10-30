@@ -113,6 +113,12 @@ User::create($data);                     // and $fillable on the model
 ### CRITICAL — Error Handling and Data Integrity
 
 - **Empty `catch (\Throwable $e) {}`** or `catch (\Exception $e) { return null; }` swallowing errors.
+- **Silent failures, the five shapes** (a failure the caller cannot see is worse than a crash):
+  a catch that logs without context (no exception, no identifiers) and carries on; a fallback that
+  hides the failure (`?? []`, `return null`, a default value where an error belonged); a rethrow that
+  drops the original (`throw new RuntimeException('failed')` without `$e` as previous, lost stack);
+  a network, file or DB call with no timeout and no error path; transactional work with no rollback
+  on the failure branch. Each one is a finding with the input that reaches it.
 - **Missing transactions** around multi-write operations that must atomically succeed/fail (`DB::transaction(fn() => ...)` / `EntityManager::beginTransaction()`).
 - **Race conditions** — read-then-write without locking (`lockForUpdate`/`SELECT ... FOR UPDATE`) in financial/inventory paths.
 - **Unbounded queries** on public endpoints — missing `LIMIT`/`paginate()`.
@@ -222,6 +228,8 @@ Verdict: WARNING — 2 HIGH issues should be resolved before merge.
 - **Block**: CRITICAL issues found — must fix before merge.
 
 Do not withhold approval to appear rigorous.
+
+Severity words follow the shared table in `docs/AGENT-CONTRACT.md` (`## Severity vocabulary`): CRITICAL breaks now, HIGH breaks under conditions that will occur, MEDIUM costs later, LOW punishes the next change. Name the consequence in one sentence or demote.
 
 ## Project-Specific Conventions
 

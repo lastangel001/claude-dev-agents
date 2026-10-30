@@ -47,7 +47,9 @@ an older commit are a common source of false positives — the code may already 
   bar as confirmation. "Probably fine" is not a refutation.
 - **OVERSTATED** — the defect is real but the severity, blast radius, or trigger conditions are
   wrong (a "always fails" that only fails on an optional parameter; a "data loss" that is a
-  degraded sort). Report the corrected version.
+  degraded sort). Report the corrected version. The word is judged against the shared table in
+  `docs/AGENT-CONTRACT.md` (`## Severity vocabulary`): CRITICAL breaks now, HIGH breaks under
+  conditions that will occur, MEDIUM costs later, LOW punishes the next change.
 - **UNPROVEN** — the code does not settle it. State the exact experiment that would: the request to
   run, the log line to grep, the query to execute, the environment variable to read.
 

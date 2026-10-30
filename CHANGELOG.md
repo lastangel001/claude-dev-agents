@@ -5,6 +5,34 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.32.0] — 2026-10-30
+
+### Changed
+- **Silent failures get their own block in every language reviewer.** Each reviewer had one
+  bullet on the empty catch; the other shapes of a failure the caller cannot see were caught only
+  when the reviewer happened to think of them. `php-reviewer` and `python-reviewer` now carry the
+  five shapes in the CRITICAL error-handling family, with the language's own idioms: a catch that
+  logs without context and carries on; a fallback that hides the failure (`?? []`, `or []`,
+  `return null`, `.get()` where a `KeyError` belonged); a rethrow that drops the original (no
+  `previous`, no `from e`); a network, file or DB call with no timeout and no error path;
+  transactional work with no rollback on the failure branch, or an `asyncio` task whose exception
+  nobody awaits. The front end gets the same five in `js-patterns/references/browser.md`
+  (`.catch(() => [])`, log-and-forget, `throw new Error('x')` without `{ cause }`, no
+  `AbortSignal.timeout`, an unawaited promise) with a BAD/GOOD pair, and a CRITICAL headline in
+  `js-reviewer`. The rule in each: a failure the caller cannot see is worse than a crash, and each
+  shape is a finding with the input that reaches it.
+- **One severity vocabulary, defined by consequence.** The reviewers all said CRITICAL, HIGH,
+  MEDIUM, LOW, but each defined the words for itself, and a reader of the review threads could not
+  tell what a MEDIUM from `contract-reviewer` had in common with one from `js-reviewer`. The words
+  stay (they are understood in PR threads without a glossary); `docs/AGENT-CONTRACT.md` gains a
+  shared table that names each one by what happens if it ships: CRITICAL breaks now under
+  realistic use, HIGH breaks under conditions that will occur, MEDIUM ships fine and costs later,
+  LOW works today and punishes the next change. The three language reviewers point at it from
+  their approval criteria; `security-reviewer` and `contract-reviewer` keep their family-specific
+  refinements and say they never contradict the table; `review-verifier` judges OVERSTATED against
+  it. A reviewer who cannot name the consequence in one sentence has not earned the word and
+  demotes or drops the finding.
+
 ## [1.31.0] — 2026-10-29
 
 ### Added
