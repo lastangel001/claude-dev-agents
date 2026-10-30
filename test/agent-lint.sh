@@ -117,7 +117,8 @@ for f in "${REPO_ROOT}"/agents/*.md; do
   if [ "$n" -ne 1 ]; then
     fail "$base: expected exactly one '### Terminal states', found $n"; ok=0
   else
-    awk '/^### Terminal states$/ { p = 1 } p' "$f" | head -n "$SPEC_LINES" > "$TMP/agent.txt"
+    # awk stops itself: an `awk | head` pipeline dies of SIGPIPE under pipefail on Linux (exit 141)
+    awk -v n="$SPEC_LINES" '/^### Terminal states$/ { p = 1 } p { print; c++; if (c >= n) exit }' "$f" > "$TMP/agent.txt"
     if ! cmp -s "$TMP/spec.txt" "$TMP/agent.txt"; then
       fail "$base: terminal-states block differs from docs/AGENT-CONTRACT.md"; ok=0
       diff "$TMP/spec.txt" "$TMP/agent.txt" | head -n 6 >&2 || true
@@ -128,7 +129,7 @@ for f in "${REPO_ROOT}"/agents/*.md; do
   if [ "$n" -ne 1 ]; then
     fail "$base: expected exactly one '### Project pipeline' (inside ## Input), found $n"; ok=0
   else
-    awk '/^### Project pipeline$/ { p = 1 } p' "$f" | head -n "$SPEC2_LINES" > "$TMP/agent2.txt"
+    awk -v n="$SPEC2_LINES" '/^### Project pipeline$/ { p = 1 } p { print; c++; if (c >= n) exit }' "$f" > "$TMP/agent2.txt"
     if ! cmp -s "$TMP/spec2.txt" "$TMP/agent2.txt"; then
       fail "$base: project-pipeline block differs from docs/AGENT-CONTRACT.md"; ok=0
       diff "$TMP/spec2.txt" "$TMP/agent2.txt" | head -n 6 >&2 || true

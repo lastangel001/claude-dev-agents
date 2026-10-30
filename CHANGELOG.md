@@ -5,6 +5,16 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.34.1] — 2026-10-30
+
+### Fixed
+- **CI `agent-lint.sh` died with exit 141 on 1.34.0.** The block comparison used `awk … | head -n N`;
+  with the new `### Project pipeline` block sitting in the middle of each agent file, `awk` kept
+  printing after `head` had closed the pipe, got SIGPIPE, and `set -o pipefail` turned that into
+  a failure on Linux (Git Bash on Windows does not reproduce it, which is why it passed locally).
+  `awk` now stops itself after N lines; no pipe, no `head`. Same change for the terminal-states
+  comparison, which only survived because that block sits at the end of the file.
+
 ## [1.34.0] — 2026-10-30
 
 ### Fixed
