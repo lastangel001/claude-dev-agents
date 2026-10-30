@@ -78,3 +78,8 @@ Entry point for Claude Code agents working on this repo.
 - Expressions in step-level `shell:` in workflows — GitHub rejects the whole file at parse
   time (CI ran 0s with no jobs for 4 days because of this).
 - GNU-only flags in test scripts (`sed -i` w/o suffix breaks BSD sed on macOS CI).
+- `[ test ] && pass || fail` in test scripts — shellcheck SC2015 fails CI; write `if/else`
+  (shellcheck is not installed locally, only CI catches it).
+- `awk … | head -n N` under `set -o pipefail` — on Linux awk gets SIGPIPE when it still has
+  output and the job dies with exit 141; Git Bash on Windows never reproduces it. Let awk stop
+  itself (`{ print; c++; if (c >= n) exit }`).

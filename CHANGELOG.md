@@ -5,6 +5,14 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.34.3] — 2026-10-30
+
+### Changed
+- **CLAUDE.md records the two CI traps that cost 1.32.1 and 1.34.1.** `[ test ] && pass || fail`
+  (shellcheck SC2015, not installed locally) and `awk … | head` under `set -o pipefail` (SIGPIPE,
+  exit 141 on Linux only) join the MUST NOT list next to the GNU-only-flags rule, so the next test
+  script does not relearn them through a red build.
+
 ## [1.34.2] — 2026-10-30
 
 ### Added
