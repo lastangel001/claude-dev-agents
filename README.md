@@ -1,6 +1,6 @@
 # claude-dev-agents
 
-![version](https://img.shields.io/badge/version-1.33.0-blue)
+![version](https://img.shields.io/badge/version-1.34.0-blue)
 
 Curated [Claude Code](https://claude.com/claude-code) **subagents** and **skills** for software development — a language-agnostic systems architect plus strictly-typed, tested, idiomatic PHP and Python builders with built-in reviewers, a front-end reviewer for JavaScript/TypeScript and Vue, language-agnostic review roles for cross-service contracts and for verifying findings before they reach the author, and a QA pair: a coverage strategist/auditor and a Playwright E2E builder.
 
@@ -174,7 +174,10 @@ Every agent ends with the same four sections — `## Input`, `## Output`, `## Ha
 each link: a builder's report says which behaviours changed and which tests prove them, which is
 what the language reviewer reads; a reviewer's findings carry severity, `file:line`, claim and
 failure scenario, which is what `review-verifier` requires. The spec and the full chain table are
-in [docs/AGENT-CONTRACT.md](docs/AGENT-CONTRACT.md).
+in [docs/AGENT-CONTRACT.md](docs/AGENT-CONTRACT.md). Every `## Input` also makes the agent read
+the project's `docs/PIPELINE.md` (written by `pipeline-init`) and its own subsection of
+`## Project rules for agents` before its defaults: a subagent sees neither the conversation nor
+the project's `CLAUDE.md`, so that file is the one place project rules reach it.
 
 A subagent cannot ask a question and wait, so when it cannot deliver the result it ends with one
 of three **terminal states** on the first line: `NEEDS_INPUT` (a fact only you have would change

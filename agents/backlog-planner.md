@@ -239,6 +239,14 @@ input — the source of ids, the `## Resolved` log and the human `## Notes`. Rea
 minting a single id. Everything else in the repository is read-only; `docs/backlog/BACKLOG.md`
 is the only file you write.
 
+### Project pipeline
+
+If the repository has `docs/PIPELINE.md`, read it before your own defaults: its artifact paths
+and gates apply, and the subsection for your role under `## Project rules for agents` (when
+present) overrides anything this file says about where things live or what the project
+requires. A brief that quotes that subsection is complete; one that does not is still valid,
+but read the file.
+
 ## Output
 
 - **`docs/backlog/BACKLOG.md`** in the fixed skeleton under Output — fixed document skeleton:

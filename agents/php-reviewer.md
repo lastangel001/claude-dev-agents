@@ -271,6 +271,14 @@ Read-only: project conventions (`CLAUDE.md`, `AGENTS.md`, `phpstan.neon`, `psalm
 `pint.json`, `.php-cs-fixer.php`) and the surrounding code and tests you open for context. You
 never edit the reviewed code, its config or its tests.
 
+### Project pipeline
+
+If the repository has `docs/PIPELINE.md`, read it before your own defaults: its artifact paths
+and gates apply, and the subsection for your role under `## Project rules for agents` (when
+present) overrides anything this file says about where things live or what the project
+requires. A brief that quotes that subsection is complete; one that does not is still valid,
+but read the file.
+
 ## Output
 
 The findings in the `## Review Output Format` above, closed by the `## Review Summary` table and

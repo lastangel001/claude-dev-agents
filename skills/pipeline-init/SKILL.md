@@ -97,6 +97,9 @@ Ask «Write these two files?» and wait for an explicit yes. On yes:
 1. `docs/PIPELINE.md` from `templates/PIPELINE.md`, every `{{placeholder}}` filled or the line
    removed; the `## Signals at the time of writing` block holds the script output verbatim. In an
    update run, patch instead of overwrite.
+   Fill `## Project rules for agents` with one subsection per active agent: where the role writes,
+   what it never touches, what the project adds to the role's defaults; drop the subsections of
+   agents that are not active. Every agent's contract reads its subsection before its defaults.
 2. The thin block in the project's `CLAUDE.md` from `templates/CLAUDE-block.md`: at most eight
    lines, appended under its own `## Pipeline` heading, or replaced in place if the heading
    already exists. If the project has no `CLAUDE.md`, create one holding only this block and say
@@ -108,8 +111,10 @@ Never commit. End with the two paths and the one-line summary of the mode and th
 
 Every session loads the CLAUDE.md block, which names the active agents and points at
 `docs/PIPELINE.md`. At the start of a task the main loop states the operation and size in one line,
-reads the matching row, announces the active set, and runs the stages; agents read the artifact
-paths from the pipeline file before their own defaults. Gate 2 runs the «Before delivery» list.
+reads the matching row, announces the active set, and runs the stages. Every agent's `## Input`
+contract makes it read `docs/PIPELINE.md` and its own subsection of `## Project rules for agents`
+before its defaults; the main loop also pastes that subsection into the brief, because a subagent
+reads neither the conversation nor the project's `CLAUDE.md`. Gate 2 runs the «Before delivery» list.
 
 ## Reminder hook (optional)
 

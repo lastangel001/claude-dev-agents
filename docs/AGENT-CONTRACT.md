@@ -25,6 +25,22 @@ What must be true before the agent can work:
 An agent that already has an `## Input` section earlier in the file keeps it there and does not
 duplicate it at the end.
 
+Every `## Input` ends with the **project pipeline** sub-block, verbatim (the lint compares it):
+a subagent reads nothing of the conversation and nothing of the project's `CLAUDE.md`, so the one
+file that can carry project rules to it is `docs/PIPELINE.md`, written by `pipeline-init`, with a
+`## Project rules for agents` section holding one subsection per role. The main loop also pastes
+that subsection into the brief; the agent reads the file anyway.
+
+```markdown
+### Project pipeline
+
+If the repository has `docs/PIPELINE.md`, read it before your own defaults: its artifact paths
+and gates apply, and the subsection for your role under `## Project rules for agents` (when
+present) overrides anything this file says about where things live or what the project
+requires. A brief that quotes that subsection is complete; one that does not is still valid,
+but read the file.
+```
+
 ### `## Output`
 
 What the caller gets, in a shape the next link can consume:

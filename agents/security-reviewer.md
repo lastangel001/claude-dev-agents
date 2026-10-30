@@ -154,6 +154,14 @@ it and never install tooling. `BLOCKED` when the diff cannot be read (branch not
 invalid). `OUT_OF_SCOPE` for a pentest, a scan of a running system, or an exploit: code and
 configuration only.
 
+### Project pipeline
+
+If the repository has `docs/PIPELINE.md`, read it before your own defaults: its artifact paths
+and gates apply, and the subsection for your role under `## Project rules for agents` (when
+present) overrides anything this file says about where things live or what the project
+requires. A brief that quotes that subsection is complete; one that does not is still valid,
+but read the file.
+
 ## Output
 
 The findings in the `## Output format` above, closed by the `## Security Review Summary` with its

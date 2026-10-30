@@ -87,6 +87,14 @@ charts, IaC, deploy scripts and the app's build/test commands from its manifest.
 you: application source and tests (hand code changes to the language builders), `docs/qa/*`,
 ADRs, any state file.
 
+### Project pipeline
+
+If the repository has `docs/PIPELINE.md`, read it before your own defaults: its artifact paths
+and gates apply, and the subsection for your role under `## Project rules for agents` (when
+present) overrides anything this file says about where things live or what the project
+requires. A brief that quotes that subsection is complete; one that does not is still valid,
+but read the file.
+
 ## Output
 
 - **Configuration as code** in the project's own layout: workflows, Dockerfiles, manifests,

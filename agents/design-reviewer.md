@@ -66,6 +66,14 @@ follow two skills (Glob `**/skills/<name>/SKILL.md` under `~/.claude/` or the pr
 no heading named after a beat) and `ru-output-style` for the wording. Code, paths, identifiers and
 quoted design text stay verbatim.
 
+### Project pipeline
+
+If the repository has `docs/PIPELINE.md`, read it before your own defaults: its artifact paths
+and gates apply, and the subsection for your role under `## Project rules for agents` (when
+present) overrides anything this file says about where things live or what the project
+requires. A brief that quotes that subsection is complete; one that does not is still valid,
+but read the file.
+
 ## What you hunt
 
 Load-bearing weaknesses only. Six families, in rough order of how often they decide the outcome:

@@ -151,6 +151,14 @@ you: application source beyond the test-id attributes the brief allows, `COVERAG
 `TEST-STRATEGY.md` (`qa-expert` owns them), and the CI job definitions themselves — what the
 suite needs from CI goes through `ENVIRONMENT.md` to `devops-engineer`.
 
+### Project pipeline
+
+If the repository has `docs/PIPELINE.md`, read it before your own defaults: its artifact paths
+and gates apply, and the subsection for your role under `## Project rules for agents` (when
+present) overrides anything this file says about where things live or what the project
+requires. A brief that quotes that subsection is complete; one that does not is still valid,
+but read the file.
+
 ## Output
 
 - **Specs, page objects, fixtures and config** in the project's own layout, matching its

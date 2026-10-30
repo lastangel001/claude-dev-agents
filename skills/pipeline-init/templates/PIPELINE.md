@@ -76,6 +76,40 @@ moves that stage into the main loop.
 | Environment spec | {{env_path}} |
 | Backlog | {{backlog_path}} |
 
+## Project rules for agents
+
+<!-- One subsection per ACTIVE agent (the table above). Every agent's contract reads this file
+     and its own subsection before its defaults; the main loop also pastes the subsection into
+     the brief. Keep each one short: where this role writes, what it must never touch, what the
+     project adds to the role's defaults. Delete subsections for agents that are not active. -->
+
+### {{builder}}
+
+- Writes: {{builder_writes}}
+- Never touches: {{builder_never}}
+- Project rules: {{builder_rules}}
+
+### {{code_reviewer}}
+
+- Conventions to honour: {{reviewer_conventions}}
+- Severity notes for this project: {{reviewer_severity_notes}}
+
+### architect
+
+- ADRs: {{adr_path}}; numbering and status words as the existing ADRs use them
+
+### qa-expert
+
+- Strategy and matrix: {{qa_path}}; test levels this project runs: {{test_levels}}
+
+### test-automator
+
+- E2E suite root and runner: {{e2e_root}}; environment spec: {{env_path}}
+
+### devops-engineer
+
+- CI files: {{ci_files}}; protected paths: {{protected_paths}}; secrets policy: names only
+
 ## Definition of done
 
 {{definition_of_done}}

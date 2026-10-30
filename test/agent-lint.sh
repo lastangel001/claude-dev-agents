@@ -9,6 +9,7 @@
 #   - exactly one of each contract heading outside fenced code:
 #       ## Input   ## Output   ## Handoff   ## Fragile points
 #   - the `### Terminal states` block matches docs/AGENT-CONTRACT.md verbatim
+#   - the `### Project pipeline` block (inside ## Input) matches docs/AGENT-CONTRACT.md verbatim
 # Skills (skills/*/SKILL.md):
 #   - frontmatter present, no CR; name == directory name; description non-empty
 #
@@ -51,11 +52,26 @@ heading_count() {
 echo "=== agent-lint.sh ==="
 [ -f "$SPEC" ] || { echo "spec not found: $SPEC" >&2; exit 1; }
 
-# The canonical terminal-states block: the first ```markdown fence in the spec.
-awk '/^```markdown$/ { p = 1; next } /^```$/ { if (p) exit } p' "$SPEC" > "$TMP/spec.txt"
+# The canonical blocks live in ```markdown fences in the spec, each recognised by its first line.
+# spec_block HEADING -> prints the fence whose first line is HEADING
+spec_block() {
+  awk -v h="$1" '
+    /^```markdown$/ { infence = 1; first = 1; next }
+    /^```$/ { if (p) exit; infence = 0; next }
+    infence && first { first = 0; if ($0 == h) p = 1; else infence = 0 }
+    p { print }
+  ' "$SPEC"
+}
+spec_block "### Terminal states" > "$TMP/spec.txt"
 SPEC_LINES="$(awk 'END { print NR }' "$TMP/spec.txt")"
-if [ "$SPEC_LINES" -lt 5 ] || [ "$(head -n 1 "$TMP/spec.txt")" != "### Terminal states" ]; then
+if [ "$SPEC_LINES" -lt 5 ]; then
   echo "could not extract the terminal-states block from $SPEC" >&2
+  exit 1
+fi
+spec_block "### Project pipeline" > "$TMP/spec2.txt"
+SPEC2_LINES="$(awk 'END { print NR }' "$TMP/spec2.txt")"
+if [ "$SPEC2_LINES" -lt 3 ]; then
+  echo "could not extract the project-pipeline block from $SPEC" >&2
   exit 1
 fi
 
@@ -105,6 +121,17 @@ for f in "${REPO_ROOT}"/agents/*.md; do
     if ! cmp -s "$TMP/spec.txt" "$TMP/agent.txt"; then
       fail "$base: terminal-states block differs from docs/AGENT-CONTRACT.md"; ok=0
       diff "$TMP/spec.txt" "$TMP/agent.txt" | head -n 6 >&2 || true
+    fi
+  fi
+
+  n="$(heading_count "$f" "### Project pipeline")"
+  if [ "$n" -ne 1 ]; then
+    fail "$base: expected exactly one '### Project pipeline' (inside ## Input), found $n"; ok=0
+  else
+    awk '/^### Project pipeline$/ { p = 1 } p' "$f" | head -n "$SPEC2_LINES" > "$TMP/agent2.txt"
+    if ! cmp -s "$TMP/spec2.txt" "$TMP/agent2.txt"; then
+      fail "$base: project-pipeline block differs from docs/AGENT-CONTRACT.md"; ok=0
+      diff "$TMP/spec2.txt" "$TMP/agent2.txt" | head -n 6 >&2 || true
     fi
   fi
 

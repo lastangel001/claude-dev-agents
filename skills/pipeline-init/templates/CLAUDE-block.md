@@ -5,3 +5,4 @@
 - Mandatory for every change: {{always_stages}}. One-way doors ({{one_way_doors}}): add `architect` and `design-reviewer`.
 - Mode `{{autonomy}}`: Gate 1 after Clarify, Gate 2 before Deliver; an agent's `NEEDS_INPUT` / `BLOCKED` is shown verbatim.
 - Artifacts: ADRs {{adr_path}}, QA {{qa_path}}, backlog {{backlog_path}}. Reports in {{language}}.
+- Briefs: paste the role's subsection of `## Project rules for agents` from docs/PIPELINE.md into every subagent brief; a subagent reads neither this file nor the conversation.

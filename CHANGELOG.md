@@ -5,6 +5,27 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.34.0] — 2026-10-30
+
+### Fixed
+- **Agents now actually read `docs/PIPELINE.md`.** `pipeline-init` promised since 1.23.0 that
+  «agents read the artifact paths from the pipeline file before their own defaults», but only
+  `security-reviewer` mentioned the file; a subagent started without an explicit brief never
+  opened it, and the project's rules for a role never reached the role. Found on the first real
+  use of the skill in another session, where the workaround was a `## Project rules for agents`
+  section in the project's pipeline file and a CLAUDE.md rule telling the main loop to paste the
+  role's subsection into every brief. That shape is now the standard. Every agent's `## Input`
+  ends with a verbatim `### Project pipeline` block (read `docs/PIPELINE.md` when it exists; its
+  paths and gates apply; the role's subsection under `## Project rules for agents` overrides the
+  agent file's defaults; a brief that quotes the subsection is complete, one that does not is
+  still valid, but read the file), checked byte for byte by `test/agent-lint.sh` against
+  `docs/AGENT-CONTRACT.md`, the same way the terminal-states block is. The pipeline template gains
+  the `## Project rules for agents` section with one subsection per active agent (where the role
+  writes, what it never touches, what the project adds), `pipeline-init` fills it in Phase 3, and
+  the CLAUDE.md block tells the main loop to paste the subsection into each brief, since a
+  subagent reads neither the conversation nor the project's `CLAUDE.md`. The lint now finds the
+  spec's fenced blocks by their first line instead of by position.
+
 ## [1.33.0] — 2026-10-30
 
 ### Added

@@ -38,6 +38,14 @@ verifiable, that would be verifying your own claim rather than theirs.
 Also record the **revision** the findings were written against, if known. Findings written against
 an older commit are a common source of false positives — the code may already have changed.
 
+### Project pipeline
+
+If the repository has `docs/PIPELINE.md`, read it before your own defaults: its artifact paths
+and gates apply, and the subsection for your role under `## Project rules for agents` (when
+present) overrides anything this file says about where things live or what the project
+requires. A brief that quotes that subsection is complete; one that does not is still valid,
+but read the file.
+
 ## Verdicts
 
 - **CONFIRMED** — you can exhibit the path: concrete input/state, the code that runs, the wrong

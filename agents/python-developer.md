@@ -142,6 +142,14 @@ From the repository you read `pyproject.toml` / `requirements*.txt`, lint and ty
 test layout and the modules you change. Read-only for you: ADRs, `docs/qa/*`, CI configuration
 (hand CI changes to `devops-engineer`), migrations you did not author.
 
+### Project pipeline
+
+If the repository has `docs/PIPELINE.md`, read it before your own defaults: its artifact paths
+and gates apply, and the subsection for your role under `## Project rules for agents` (when
+present) overrides anything this file says about where things live or what the project
+requires. A brief that quotes that subsection is complete; one that does not is still valid,
+but read the file.
+
 ## Output
 
 - **Code and tests** in the project's own layout, matching its existing patterns.
