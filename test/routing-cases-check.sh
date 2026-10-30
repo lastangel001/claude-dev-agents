@@ -24,13 +24,13 @@ exists() {
 
 IDS="$(awk '/^- id:/ { print $3 }' "$CASES")"
 N="$(printf '%s\n' "$IDS" | grep -c . || true)"
-[ "$N" -ge 10 ] && pass "$N cases" || fail "only $N cases (need at least 10)"
+if [ "$N" -ge 10 ]; then pass "$N cases"; else fail "only $N cases (need at least 10)"; fi
 DUP="$(printf '%s\n' "$IDS" | sort | uniq -d)"
-[ -z "$DUP" ] && pass "ids unique" || fail "duplicate ids: $DUP"
+if [ -z "$DUP" ]; then pass "ids unique"; else fail "duplicate ids: $DUP"; fi
 
 for key in request expect why; do
   K="$(grep -c "^  ${key}:" "$CASES" || true)"
-  [ "$K" -eq "$N" ] && pass "every case has ${key}" || fail "${K} of ${N} cases have ${key}"
+  if [ "$K" -eq "$N" ]; then pass "every case has ${key}"; else fail "${K} of ${N} cases have ${key}"; fi
 done
 
 # expected and accepted names
@@ -41,7 +41,7 @@ BAD=0
 for n in $NAMES; do
   exists "$n" || { fail "unknown target: $n"; BAD=1; }
 done
-[ "$BAD" -eq 0 ] && pass "all targets exist in agents/ or skills/"
+if [ "$BAD" -eq 0 ]; then pass "all targets exist in agents/ or skills/"; fi
 
 echo
 if [ "$FAILS" -gt 0 ]; then

@@ -5,6 +5,14 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.32.1] — 2026-10-30
+
+### Fixed
+- **CI `static-bash` was red since 1.31.0: shellcheck SC2015 in `test/routing-cases-check.sh`.**
+  Three `[ test ] && pass || fail` lines, the shape shellcheck flags because `fail` would also run
+  if `pass` itself failed; rewritten as `if/else`. Nothing else in 1.31.0 or 1.32.0 was affected
+  (the other jobs passed), but the aggregator `ci-pass` was failing with them.
+
 ## [1.32.0] — 2026-10-30
 
 ### Changed
