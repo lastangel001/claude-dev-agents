@@ -198,3 +198,14 @@
   request: "Напиши ответ ревьюеру, почему мы это место менять не будем"
   expect: address-review
   why: a declined finding with its reply draft
+
+- id: H11
+  request: "Проверь зависимости проекта на известные уязвимости перед релизом"
+  expect: security-reviewer
+  accept: [security-patterns]
+  why: a review on a security trigger (dependency manifests); the agent runs the audit, the skill holds the commands
+
+- id: H12
+  request: "Пишу сервис, как правильно хранить и ротировать API-токены клиентов?"
+  expect: security-patterns
+  why: building, not reviewing: the skill in the main loop, no diff to hand to the agent

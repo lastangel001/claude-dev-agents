@@ -23,7 +23,8 @@ Entry point for Claude Code agents working on this repo.
   (agent = subagent, skill = main loop); if the main loop should just do it, answer none. Reply
   with exactly one name.» Compare with `expect`/`accept`; threshold 87% per tier. Re-run whenever
   a description changes, an agent is added or renamed. Validated 2026-10-29: 34/34 (24 plain +
-  10 hard, one via `accept`).
+  10 hard, one via `accept`); 2026-10-30 after `security-patterns` was added: the 3 security
+  cases re-run, 3/3 (36 cases total).
 - `bash eval/ru-output-style/run-model-eval.sh` — model eval of the skill via `claude -p`
   (COSTS TOKENS, manual only, never CI; needs authenticated `claude` CLI)
   - **Preferred way to run the model eval: subagents from an interactive session, NOT the

@@ -5,6 +5,16 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.34.2] — 2026-10-30
+
+### Added
+- **Two routing cases for the agent-or-skill boundary that `security-patterns` created.** A
+  new skill is a new candidate for every security request, so the eval gained H11 («check the
+  project's dependencies for known vulnerabilities before the release» → `security-reviewer`, the
+  skill accepted) and H12 («I am writing a service, how do I store and rotate client API tokens»
+  → `security-patterns`: building, not reviewing, nothing to hand an agent). Re-run of the three
+  security cases against the 1.34.1 catalog: 3 of 3; the suite is 36 cases.
+
 ## [1.34.1] — 2026-10-30
 
 ### Fixed
