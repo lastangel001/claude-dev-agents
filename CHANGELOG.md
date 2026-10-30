@@ -5,6 +5,19 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.32.2] — 2026-10-30
+
+### Added
+- **`docs/reviews/2026-10-29-agents-review-vs-external.md` — the review that produced releases
+  1.22.0 through 1.32.1.** The set was compared with Anthropic's «when to fold subagents into
+  your main agent loop», openronin, Claude-Code-Game-Studios, and then ECC, VoltAgent and
+  lodetomasi: which agents earn a fresh context and which belong in the main loop as skills, why a
+  universal pipeline does not exist but a universal skeleton does, which gaps the chain had, and
+  what each external set is worth borrowing from. Kept as the original analysis with a status
+  note at the top (all twelve plan items shipped; two decisions changed on the way: the
+  `analyst-writer` agent stayed as the thin fan-out form, `js-developer` was added). Russian prose,
+  linted with `ru-output-style`.
+
 ## [1.32.1] — 2026-10-30
 
 ### Fixed
