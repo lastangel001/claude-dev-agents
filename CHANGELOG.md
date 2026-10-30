@@ -5,6 +5,45 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.33.0] — 2026-10-30
+
+### Added
+- **`security-patterns` — the security reviewer's knowledge lives once, and the builders can read
+  it before the review.** `security-reviewer` carried its eight families with their questions, a
+  pattern → severity → fix catalog and the false-positive list inline, 320 lines that every run
+  paid for and no builder could consult. The skill holds it in five references: `families.md`
+  (the eight families with the questions per family and one BAD/GOOD pair each: object-level
+  authorization, uploads checked by content, `ORDER BY` from the request, path canonicalisation,
+  SSRF with private ranges blocked, JWT with a pinned algorithm, production config, dependencies),
+  `catalog.md` (26 rows, up from 22: mass assignment, identifiers in `ORDER BY`, missing timeouts
+  and a lockfile out of step with the manifest are new; samples in PHP, Python and TypeScript per
+  shape, and a table of how deployment context moves the severity word), `false-positives.md`
+  (example files, fixtures, publishable keys, checksums, framework defaults named with their
+  version, internal-only services with the evidence, the reachable-path rule, consolidation, what
+  a zero-finding review must say), `audit-tooling.md` (read-only commands per stack: Composer,
+  pip and Poetry, npm/pnpm/Yarn, `govulncheck`, `cargo audit`, `bundle audit`, .NET, Maven only
+  when the plugin is configured, Trivy/Grype, `gitleaks`/`trufflehog`, `actionlint`; presence
+  check first, never install, never `--fix`, «not checked» by name) and `ci-security.md`
+  (`permissions` at the top and widened per job, `pull_request_target` with PR-head checkout and
+  its three fixes, event-payload interpolation into `run:`, pinning by SHA and digest, secrets in
+  logs, artifacts, build args and the command line, GitLab masked and protected variables, a
+  checklist). Every sample is invented.
+
+### Changed
+- **`security-reviewer` slimmed from 320 to about 200 lines.** Keeps the role, scope, triggers,
+  method, severity refinement, output format, approval criteria and the four contract sections;
+  points at the skill the way `devops-engineer` points at `devops-patterns` (`## Security
+  Patterns (read the skill)`), and carries an `## Essentials (always)` list of ten rules that hold
+  when the skill is not loaded (reachable path, logged in is not authorized, group-level guard,
+  bound values only, allowlisted outbound targets, framework crypto, rotate on exposure, audit
+  counts from a tool that ran, severity by context, one finding per pattern). One more fragile
+  point: the skill not found means the review ran on the essentials alone and must say so.
+  Description unchanged, so the routing eval stands.
+- **`php-developer`, `python-developer`, `js-developer` load `security-patterns` on a security
+  trigger**: one paragraph each in the skill-loading section naming the triggers for that stack
+  and the two references to read, so the code arrives at `security-reviewer` already written the
+  way it reviews.
+
 ## [1.32.2] — 2026-10-30
 
 ### Added

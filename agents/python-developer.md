@@ -40,6 +40,8 @@ For idioms (comprehensions, generators, dataclasses, decorators, context manager
 
 When the task touches a schema, a migration, a backfill, a query that matters for load, or a NoSQL store (MongoDB, Redis/Dragonfly, ClickHouse, Elasticsearch/OpenSearch), also load the `sql-patterns` skill the same way (`**/skills/sql-patterns/SKILL.md`): `references/migrations.md` before writing any migration (expand-contract, concurrent indexes, batched backfills, forward-only rollback, the per-tool workflow for Alembic and Django), `references/schema.md` and `references/queries.md` for types, indexes, N+1 and locking, `references/orm.md` for the raw-SQL escape hatches of Alembic and Django and how to keep them parameterised, `references/nosql.md` for the non-relational stores.
 
+When the task touches a security trigger (authentication or authorization, user input or uploads, queries, file-system paths built from input, outbound calls, cryptography, tokens or sessions, secrets or environment configuration, dependency manifests or lockfiles), also load the `security-patterns` skill the same way (`**/skills/security-patterns/SKILL.md`): `references/families.md` for the questions of the families the task touches and `references/catalog.md` for the pattern → severity → fix shapes, so the code arrives at `security-reviewer` already written the way it reviews.
+
 ## Async
 
 - Async for **I/O-bound** code (network, DB, files). Threads for blocking libs you can't replace. Processes for CPU-bound.
