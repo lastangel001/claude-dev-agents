@@ -5,6 +5,27 @@ All notable changes to this project are documented here. Format loosely follows
 
 ## [Unreleased]
 
+## [1.35.0] — 2026-11-26
+
+### Added
+- **`facilitation-patterns` now works from a library of named practices.** The skill knew
+  methods (how to analyse, generate, choose) but had no openings, check-ins, energizers or
+  closings, and mentioned facilab.ru only as a resource. Asked for a practice by name, it
+  described a plausible exercise of its own under that title. New `references/practices.md`
+  sets the rules: a named practice is looked up and built from its card, every opening and
+  closing in a plan is a practice cited with its card id, a change against the card (time,
+  group size, dropped steps) is declared next to the stage, the artifact a practice leaves
+  goes into the scenario. It carries a short list of 30 practices with one line of mechanics
+  each and tells how to open a card (the site is a single-page app; the text is served as
+  JSON). New `references/practices-index.md` indexes all 191 cards of the library by stage:
+  id, a one-line gloss, group size, time.
+
+### Changed
+- `SKILL.md` gains core principle 9 «practices are sourced, not invented» and two routing
+  rows; `plan-building.md` step 5 takes the opening, the closing and energizers from the
+  library and lists «a practice reconstructed from its name» under what goes wrong;
+  `extended.md` points its check-in, energizer and parking-lot notes at the library.
+
 ## [1.34.3] — 2026-10-30
 
 ### Changed

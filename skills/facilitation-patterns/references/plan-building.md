@@ -141,6 +141,10 @@ and avoid groupthink.
 3. Set the **rational and existential goals** and the **target pyramid level**.
 4. Determine the **situation type** (analysis / options / choice) and the Path-to-Action shape.
 5. **Select methods** for the level and each stage (with a one-line "why this method here").
+   The opening, the closing and any energizer are **practices from `practices.md`**: pick by
+   purpose, group size and minutes, open the card, and name the practice with its card id in
+   the «Механика» column. A practice the user named is built from its card; what was changed
+   against the card goes next to the stage.
 6. Build the **scenario grid** with timing; add program-minimum and program-maximum; alternate formats.
 7. Write the **question bank** per stage (Strachan-clean, risk-laddered), including the main question.
 8. Forecast difficulties (**Голова / Руки / Сердце** — knowledge / skills / motivation) with
@@ -208,6 +212,10 @@ is run, not after.
 - A missing time budget: the scenario's minutes rest on an assumed total, and the
   program-minimum has nothing real to cut from. Put the assumed budget first under
   «Допущения»; it is the one assumption that invalidates every row of the scenario.
+- A practice reconstructed from its name: the user asks for a known exercise and the plan
+  describes a plausible invention under the same title. The owner prepares the wrong
+  materials and the group does a different exercise. Look the practice up in
+  `practices-index.md` and read its card; when it is not there, ask for the source.
 - The level misclassified: a strategy session planned as a base meeting gets two techniques
   and no arc; a status sync planned as strategic gets ceremony nobody needs. State the level
   and the reason so the owner can correct it.

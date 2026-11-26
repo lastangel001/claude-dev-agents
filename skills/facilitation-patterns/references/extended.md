@@ -42,6 +42,9 @@ pyramid (O/R ≈ shared field, I ≈ alternatives, D ≈ decision/roadmap).
 - **Energizers / breaks:** short, purposeful — to re-engage a tired or stuck group; tie back to
   the metaphor method when you need a fresh angle, not just a stretch.
 
+The concrete exercises for check-in, check-out, energizers and the parking lot are named
+practices with cards: pick them from `practices.md`, do not design them from scratch.
+
 ## Online & hybrid facilitation
 
 - **Shared boards (Miro/FigJam/whiteboards):** the digital flipchart — make the main question and
@@ -64,7 +67,8 @@ The strongest practice blends two sources of knowledge:
 - **Local adaptation** — resources like facilab.ru contextualize these methods to the local
   culture and organization: adapted examples, local cases (corporate / public / startup),
   ready-made templates and checklists, and hybrid models combining Western structures with local
-  practice.
+  practice. Its library of practice cards is indexed in `practices-index.md` and is the
+  source for named practices (rules in `practices.md`).
 
 Value is in the synthesis. Ignoring the international side → reinventing known solutions in
 isolation. Ignoring the local side → blind copying that doesn't fit the real context. When
